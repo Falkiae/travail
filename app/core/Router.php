@@ -21,7 +21,7 @@ class Router
         $uri = rtrim($uri, '/') ?: '/';
 
         // Vérifier le mode maintenance (hors /admin)
-        if (!strncmp($uri, '/' . ADMIN_PATH), strlen('/' . ADMIN_PATH))) === 0 {
+        if (strncmp($uri, '/' . ADMIN_PATH, strlen('/' . ADMIN_PATH)) !== 0) {
             $this->checkMaintenanceMode();
         }
 

@@ -65,7 +65,7 @@ class MediaController extends BaseController
         }
 
         $width = $height = null;
-        if (strncmp($mime, 'image/') && $mime !== 'image/webp', strlen('image/') && $mime !== 'image/webp')) === 0 {
+        if (strncmp($mime, 'image/', 6) === 0 && $mime !== 'image/webp') {
             [$width, $height] = getimagesize($dest) ?: [null, null];
         }
 
