@@ -8,7 +8,7 @@ use PDOException;
 
 class Database
 {
-    private static ?PDO $instance = null;
+    private static $instance = null;
 
     public static function getInstance(): PDO
     {
@@ -26,7 +26,7 @@ class Database
                 );
             } catch (PDOException $e) {
                 if (APP_ENV === 'development') {
-                    throw $e;
+                    die('DB Error: ' . $e->getMessage());
                 }
                 http_response_code(500);
                 die('Erreur de connexion à la base de données.');

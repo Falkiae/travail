@@ -35,7 +35,7 @@ return [
     'GET /admin/media'                          => ['MediaController', 'index'],
     'POST /admin/media/upload'                  => ['MediaController', 'upload'],
     'POST /admin/media/alt'                     => ['MediaController', 'updateAlt'],
-    'POST /admin/media/delete'                  => ['MediaController', 'delete'],
+    'POST /admin/media/delete'                  => ['MediaController', 'deleteMedia'],
     'GET /admin/media/json'                     => ['MediaController', 'jsonList'],
 
     'GET /admin/menus'                          => ['MenuController', 'index'],
@@ -47,7 +47,7 @@ return [
 
     'GET /admin/redirections'                   => ['RedirectionController', 'index'],
     'POST /admin/redirections'                  => ['RedirectionController', 'store'],
-    'POST /admin/redirections/{id}/delete'      => ['RedirectionController', 'delete'],
+    'POST /admin/redirections/{id}/delete'      => ['RedirectionController', 'deleteRedirection'],
 
     'GET /admin/error-logs'                     => ['ErrorLogController', 'index'],
 

@@ -8,7 +8,7 @@ use App\Models\Project;
 
 class ProjectController extends BaseController
 {
-    private Project $projectModel;
+    private $projectModel;
 
     public function __construct()
     {
@@ -19,7 +19,7 @@ class ProjectController extends BaseController
     public function index(): void
     {
         $this->requireLogin();
-        $projects = array_merge($this->projectModel->findAll('fr'), $this->projectModel->findAll('nl'));
+        $projects  = array_merge($this->projectModel->findAll('fr'), $this->projectModel->findAll('nl'));
         $csrfToken = Auth::generateCsrfToken();
         $this->view->render('admin/projects/index', [
             'title'      => 'Projets',
@@ -42,41 +42,41 @@ class ProjectController extends BaseController
     public function store(): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
             Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/projects');
         }
 
-        $title = trim($_POST['title'] ?? '');
+        $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
         if ($title === '') {
             Auth::setFlash('error', 'Le titre est obligatoire.');
             $this->redirect('/' . ADMIN_PATH . '/projects/new');
         }
 
-        $lang   = in_array($_POST['lang'] ?? 'fr', ['fr', 'nl']) ? $_POST['lang'] : 'fr';
-        $slug   = $this->slugify(trim($_POST['slug'] ?? '') ?: $title);
+        $lang   = in_array(isset($_POST['lang']) ? $_POST['lang'] : 'fr', ['fr', 'nl']) ? $_POST['lang'] : 'fr';
+        $slug   = $this->slugify(trim(isset($_POST['slug']) ? $_POST['slug'] : '') ?: $title);
         $slug   = $this->ensureUniqueSlug('projects', $slug, $lang);
-        $status = in_array($_POST['status'] ?? 'draft', ['draft', 'published']) ? $_POST['status'] : 'draft';
+        $status = in_array(isset($_POST['status']) ? $_POST['status'] : 'draft', ['draft', 'published']) ? $_POST['status'] : 'draft';
         if (isset($_POST['publish'])) $status = 'published';
 
-        $content = $_POST['content'] ?? null;
+        $content = isset($_POST['content']) ? $_POST['content'] : null;
         if ($content !== null && json_decode($content) === null) $content = null;
 
-        $thumbnail = (int)($_POST['thumbnail'] ?? 0) ?: null;
+        $thumbnail = (int)(isset($_POST['thumbnail']) ? $_POST['thumbnail'] : 0) ?: null;
 
         $this->projectModel->create([
             'lang'             => $lang,
             'slug'             => $slug,
             'title'            => $title,
-            'excerpt'          => trim($_POST['excerpt'] ?? ''),
+            'excerpt'          => trim(isset($_POST['excerpt']) ? $_POST['excerpt'] : ''),
             'content'          => $content,
             'status'           => $status,
-            'sort_order'       => (int)($_POST['sort_order'] ?? 0),
+            'sort_order'       => (int)(isset($_POST['sort_order']) ? $_POST['sort_order'] : 0),
             'thumbnail'        => $thumbnail,
-            'tags'             => trim($_POST['tags'] ?? ''),
-            'meta_title'       => mb_substr(trim($_POST['meta_title'] ?? ''), 0, 70),
-            'meta_description' => mb_substr(trim($_POST['meta_description'] ?? ''), 0, 160),
-            'og_image'         => trim($_POST['og_image'] ?? ''),
+            'tags'             => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
+            'meta_title'       => mb_substr(trim(isset($_POST['meta_title']) ? $_POST['meta_title'] : ''), 0, 70),
+            'meta_description' => mb_substr(trim(isset($_POST['meta_description']) ? $_POST['meta_description'] : ''), 0, 160),
+            'og_image'         => trim(isset($_POST['og_image']) ? $_POST['og_image'] : ''),
         ]);
 
         Auth::setFlash('success', 'Projet créé avec succès.');
@@ -102,7 +102,7 @@ class ProjectController extends BaseController
     public function update(string $id): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
             Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/projects');
         }
@@ -113,7 +113,7 @@ class ProjectController extends BaseController
             $this->redirect('/' . ADMIN_PATH . '/projects');
         }
 
-        $title = trim($_POST['title'] ?? '');
+        $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
         if ($title === '') {
             Auth::setFlash('error', 'Le titre est obligatoire.');
             $this->redirect('/' . ADMIN_PATH . '/projects/' . $id . '/edit');
@@ -121,30 +121,30 @@ class ProjectController extends BaseController
 
         $this->saveRevision('project', (int)$id, $project['content']);
 
-        $lang   = in_array($_POST['lang'] ?? $project['lang'], ['fr', 'nl']) ? $_POST['lang'] : $project['lang'];
-        $slug   = $this->slugify(trim($_POST['slug'] ?? '') ?: $title);
+        $lang   = in_array(isset($_POST['lang']) ? $_POST['lang'] : $project['lang'], ['fr', 'nl']) ? $_POST['lang'] : $project['lang'];
+        $slug   = $this->slugify(trim(isset($_POST['slug']) ? $_POST['slug'] : '') ?: $title);
         $slug   = $this->ensureUniqueSlug('projects', $slug, $lang, (int)$id);
-        $status = in_array($_POST['status'] ?? 'draft', ['draft', 'published']) ? $_POST['status'] : 'draft';
+        $status = in_array(isset($_POST['status']) ? $_POST['status'] : 'draft', ['draft', 'published']) ? $_POST['status'] : 'draft';
         if (isset($_POST['publish'])) $status = 'published';
 
-        $content = $_POST['content'] ?? null;
+        $content = isset($_POST['content']) ? $_POST['content'] : null;
         if ($content !== null && json_decode($content) === null) $content = null;
 
-        $thumbnail = (int)($_POST['thumbnail'] ?? 0) ?: null;
+        $thumbnail = (int)(isset($_POST['thumbnail']) ? $_POST['thumbnail'] : 0) ?: null;
 
         $this->projectModel->update((int)$id, [
             'lang'             => $lang,
             'slug'             => $slug,
             'title'            => $title,
-            'excerpt'          => trim($_POST['excerpt'] ?? ''),
+            'excerpt'          => trim(isset($_POST['excerpt']) ? $_POST['excerpt'] : ''),
             'content'          => $content,
             'status'           => $status,
-            'sort_order'       => (int)($_POST['sort_order'] ?? 0),
+            'sort_order'       => (int)(isset($_POST['sort_order']) ? $_POST['sort_order'] : 0),
             'thumbnail'        => $thumbnail,
-            'tags'             => trim($_POST['tags'] ?? ''),
-            'meta_title'       => mb_substr(trim($_POST['meta_title'] ?? ''), 0, 70),
-            'meta_description' => mb_substr(trim($_POST['meta_description'] ?? ''), 0, 160),
-            'og_image'         => trim($_POST['og_image'] ?? ''),
+            'tags'             => trim(isset($_POST['tags']) ? $_POST['tags'] : ''),
+            'meta_title'       => mb_substr(trim(isset($_POST['meta_title']) ? $_POST['meta_title'] : ''), 0, 70),
+            'meta_description' => mb_substr(trim(isset($_POST['meta_description']) ? $_POST['meta_description'] : ''), 0, 160),
+            'og_image'         => trim(isset($_POST['og_image']) ? $_POST['og_image'] : ''),
         ]);
 
         Auth::setFlash('success', 'Projet mis à jour.');
@@ -154,7 +154,7 @@ class ProjectController extends BaseController
     public function delete(string $id): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
             Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/projects');
         }

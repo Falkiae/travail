@@ -11,13 +11,7 @@ class Auth
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_name(SESSION_NAME);
-            session_set_cookie_params([
-                'lifetime' => 0,
-                'path'     => '/',
-                'secure'   => APP_ENV === 'production',
-                'httponly' => true,
-                'samesite' => 'Strict',
-            ]);
+            session_set_cookie_params(0, '/', '', APP_ENV === 'production', true);
             session_start();
         }
     }
@@ -50,6 +44,10 @@ class Auth
     public static function logout(): void
     {
         $_SESSION = [];
+        if (ini_get('session.use_cookies')) {
+            $p = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
+        }
         session_destroy();
     }
 
@@ -88,7 +86,7 @@ class Auth
 
     public static function getFlash(): ?array
     {
-        $flash = $_SESSION['flash'] ?? null;
+        $flash = isset($_SESSION['flash']) ? $_SESSION['flash'] : null;
         unset($_SESSION['flash']);
         return $flash;
     }
@@ -96,7 +94,7 @@ class Auth
     private static function isRateLimited(): bool
     {
         $pdo = Database::getInstance();
-        $ip  = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $ip  = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
         $stmt = $pdo->prepare(
             'SELECT COUNT(*) FROM kn_login_attempts WHERE ip = ? AND attempted_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)'
         );
@@ -107,7 +105,7 @@ class Auth
     private static function recordFailedAttempt(): void
     {
         $pdo = Database::getInstance();
-        $ip  = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $ip  = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
         $pdo->prepare('INSERT INTO kn_login_attempts (ip) VALUES (?)')->execute([$ip]);
     }
 }

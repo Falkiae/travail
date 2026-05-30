@@ -5,7 +5,7 @@ namespace App\Core;
 
 class Router
 {
-    private array $routes;
+    private $routes = [];
 
     public function __construct()
     {
@@ -16,20 +16,21 @@ class Router
     {
         Auth::start();
 
-        // Nettoyer l'URI
         $uri = parse_url($uri, PHP_URL_PATH);
-        $uri = rtrim($uri, '/') ?: '/';
+        $uri = rtrim($uri, '/');
+        if ($uri === '') $uri = '/';
 
-        // Vérifier le mode maintenance (hors /admin)
-        if (strncmp($uri, '/' . ADMIN_PATH, strlen('/' . ADMIN_PATH)) !== 0) {
+        // Mode maintenance (hors /admin)
+        $adminPrefix = '/' . ADMIN_PATH;
+        if (strncmp($uri, $adminPrefix, strlen($adminPrefix)) !== 0) {
             $this->checkMaintenanceMode();
+            $this->checkRedirections($uri);
         }
 
-        // Vérifier les redirections 301
-        $this->checkRedirections($uri);
-
         foreach ($this->routes as $route => $handler) {
-            [$routeMethod, $routePath] = explode(' ', $route, 2);
+            $parts       = explode(' ', $route, 2);
+            $routeMethod = $parts[0];
+            $routePath   = $parts[1];
 
             if ($routeMethod !== $method) {
                 continue;
@@ -37,15 +38,15 @@ class Router
 
             $params = $this->matchRoute($routePath, $uri);
             if ($params !== null) {
-                [$controllerName, $action] = $handler;
+                $controllerName  = $handler[0];
+                $action          = $handler[1];
                 $controllerClass = 'App\\Controllers\\' . $controllerName;
-                $controller = new $controllerClass();
-                $controller->$action(...array_values($params));
+                $controller      = new $controllerClass();
+                call_user_func_array([$controller, $action], array_values($params));
                 return;
             }
         }
 
-        // Aucune route trouvée → 404
         $this->handleNotFound($uri);
     }
 
@@ -58,13 +59,11 @@ class Router
             return null;
         }
 
-        // Extraire les noms de paramètres
         preg_match_all('/\{([a-z_]+)\}/', $routePath, $paramNames);
         $params = [];
         foreach ($paramNames[1] as $i => $name) {
             $params[$name] = $matches[$i + 1];
         }
-
         return $params;
     }
 
@@ -79,12 +78,15 @@ class Router
                 http_response_code(503);
                 $stmt2 = $pdo->prepare("SELECT `value` FROM kn_settings WHERE `key` = 'maintenance_message'");
                 $stmt2->execute();
-                $msg = $stmt2->fetch()['value'] ?? 'Site en maintenance.';
-                echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Maintenance</title></head><body style="font-family:sans-serif;text-align:center;padding:4rem"><h1>🛠</h1><p>' . htmlspecialchars($msg) . '</p></body></html>';
+                $row2 = $stmt2->fetch();
+                $msg  = $row2 ? $row2['value'] : 'Site en maintenance.';
+                echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Maintenance</title></head>'
+                   . '<body style="font-family:sans-serif;text-align:center;padding:4rem">'
+                   . '<h1>Maintenance</h1><p>' . htmlspecialchars($msg) . '</p></body></html>';
                 exit;
             }
         } catch (\Exception $e) {
-            // Si la DB n'est pas disponible, on laisse passer
+            // DB pas encore dispo, on laisse passer
         }
     }
 
@@ -99,22 +101,18 @@ class Router
                 header('Location: ' . $row['to_url'], true, 301);
                 exit;
             }
-        } catch (\Exception $e) {
-            // Silencieux si la DB n'est pas encore configurée
-        }
+        } catch (\Exception $e) {}
     }
 
     private function handleNotFound(string $uri): void
     {
         try {
             $pdo  = Database::getInstance();
-            $ip   = $_SERVER['REMOTE_ADDR'] ?? '';
-            $ref  = $_SERVER['HTTP_REFERER'] ?? null;
-            $stmt = $pdo->prepare(
+            $ref  = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
+            $pdo->prepare(
                 'INSERT INTO kn_error_logs (url, referer, count, last_seen) VALUES (?, ?, 1, NOW())
                  ON DUPLICATE KEY UPDATE count = count + 1, last_seen = NOW()'
-            );
-            $stmt->execute([$uri, $ref]);
+            )->execute([$uri, $ref]);
         } catch (\Exception $e) {}
 
         $controller = new \App\Controllers\FrontController();

@@ -45,13 +45,12 @@ class MenuController extends BaseController
     public function update(string $id): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
             Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/menus');
         }
 
         $pdo = $this->db();
-        // Check menu exists
         $stmt = $pdo->prepare("SELECT id FROM kn_menus WHERE id = ? LIMIT 1");
         $stmt->execute([(int)$id]);
         if (!$stmt->fetch()) {
@@ -59,15 +58,14 @@ class MenuController extends BaseController
             $this->redirect('/' . ADMIN_PATH . '/menus');
         }
 
-        // Delete existing items and re-insert
         $pdo->prepare("DELETE FROM kn_menu_items WHERE menu_id = ?")->execute([(int)$id]);
 
-        $items = $_POST['items'] ?? [];
+        $items = isset($_POST['items']) ? $_POST['items'] : [];
         foreach ($items as $i => $item) {
-            $label  = trim($item['label'] ?? '');
-            $url    = trim($item['url'] ?? '');
-            $target = in_array($item['target'] ?? '_self', ['_self', '_blank']) ? $item['target'] : '_self';
-            $order  = (int)($item['sort_order'] ?? $i);
+            $label  = trim(isset($item['label']) ? $item['label'] : '');
+            $url    = trim(isset($item['url']) ? $item['url'] : '');
+            $target = in_array(isset($item['target']) ? $item['target'] : '_self', ['_self', '_blank']) ? $item['target'] : '_self';
+            $order  = (int)(isset($item['sort_order']) ? $item['sort_order'] : $i);
             if ($label === '') continue;
             $pdo->prepare("INSERT INTO kn_menu_items (menu_id, label, url, target, sort_order) VALUES (?, ?, ?, ?, ?)")
                 ->execute([(int)$id, $label, $url, $target, $order]);

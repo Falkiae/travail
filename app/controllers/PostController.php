@@ -8,7 +8,7 @@ use App\Models\Post;
 
 class PostController extends BaseController
 {
-    private Post $postModel;
+    private $postModel;
 
     public function __construct()
     {
@@ -25,7 +25,7 @@ class PostController extends BaseController
     public function index(): void
     {
         $this->requireLogin();
-        $posts = array_merge($this->postModel->findAll('fr'), $this->postModel->findAll('nl'));
+        $posts     = array_merge($this->postModel->findAll('fr'), $this->postModel->findAll('nl'));
         $csrfToken = Auth::generateCsrfToken();
         $this->view->render('admin/posts/index', [
             'title'      => 'Articles',
@@ -49,44 +49,44 @@ class PostController extends BaseController
     public function store(): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
             Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/posts');
         }
 
-        $title = trim($_POST['title'] ?? '');
+        $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
         if ($title === '') {
             Auth::setFlash('error', 'Le titre est obligatoire.');
             $this->redirect('/' . ADMIN_PATH . '/posts/new');
         }
 
-        $lang   = in_array($_POST['lang'] ?? 'fr', ['fr', 'nl']) ? $_POST['lang'] : 'fr';
-        $slug   = $this->slugify(trim($_POST['slug'] ?? '') ?: $title);
+        $lang   = in_array(isset($_POST['lang']) ? $_POST['lang'] : 'fr', ['fr', 'nl']) ? $_POST['lang'] : 'fr';
+        $slug   = $this->slugify(trim(isset($_POST['slug']) ? $_POST['slug'] : '') ?: $title);
         $slug   = $this->ensureUniqueSlug('posts', $slug, $lang);
-        $status = in_array($_POST['status'] ?? 'draft', ['draft', 'published']) ? $_POST['status'] : 'draft';
+        $status = in_array(isset($_POST['status']) ? $_POST['status'] : 'draft', ['draft', 'published']) ? $_POST['status'] : 'draft';
         if (isset($_POST['publish'])) $status = 'published';
 
-        $content = $_POST['content'] ?? null;
+        $content = isset($_POST['content']) ? $_POST['content'] : null;
         if ($content !== null && json_decode($content) === null) $content = null;
 
-        $publishedAt = trim($_POST['published_at'] ?? '');
+        $publishedAt = trim(isset($_POST['published_at']) ? $_POST['published_at'] : '');
         $publishedAt = $publishedAt ? date('Y-m-d H:i:s', strtotime($publishedAt)) : null;
-        $categoryId  = (int)($_POST['category_id'] ?? 0) ?: null;
-        $featuredImage = (int)($_POST['featured_image'] ?? 0) ?: null;
+        $categoryId  = (int)(isset($_POST['category_id']) ? $_POST['category_id'] : 0) ?: null;
+        $featuredImage = (int)(isset($_POST['featured_image']) ? $_POST['featured_image'] : 0) ?: null;
 
         $this->postModel->create([
             'lang'             => $lang,
             'slug'             => $slug,
             'title'            => $title,
-            'excerpt'          => trim($_POST['excerpt'] ?? ''),
+            'excerpt'          => trim(isset($_POST['excerpt']) ? $_POST['excerpt'] : ''),
             'content'          => $content,
             'status'           => $status,
             'published_at'     => $publishedAt,
             'category_id'      => $categoryId,
             'featured_image'   => $featuredImage,
-            'meta_title'       => mb_substr(trim($_POST['meta_title'] ?? ''), 0, 70),
-            'meta_description' => mb_substr(trim($_POST['meta_description'] ?? ''), 0, 160),
-            'og_image'         => trim($_POST['og_image'] ?? ''),
+            'meta_title'       => mb_substr(trim(isset($_POST['meta_title']) ? $_POST['meta_title'] : ''), 0, 70),
+            'meta_description' => mb_substr(trim(isset($_POST['meta_description']) ? $_POST['meta_description'] : ''), 0, 160),
+            'og_image'         => trim(isset($_POST['og_image']) ? $_POST['og_image'] : ''),
         ]);
 
         Auth::setFlash('success', 'Article créé avec succès.');
@@ -113,7 +113,7 @@ class PostController extends BaseController
     public function update(string $id): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
             Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/posts');
         }
@@ -124,7 +124,7 @@ class PostController extends BaseController
             $this->redirect('/' . ADMIN_PATH . '/posts');
         }
 
-        $title = trim($_POST['title'] ?? '');
+        $title = trim(isset($_POST['title']) ? $_POST['title'] : '');
         if ($title === '') {
             Auth::setFlash('error', 'Le titre est obligatoire.');
             $this->redirect('/' . ADMIN_PATH . '/posts/' . $id . '/edit');
@@ -132,33 +132,33 @@ class PostController extends BaseController
 
         $this->saveRevision('post', (int)$id, $post['content']);
 
-        $lang   = in_array($_POST['lang'] ?? $post['lang'], ['fr', 'nl']) ? $_POST['lang'] : $post['lang'];
-        $slug   = $this->slugify(trim($_POST['slug'] ?? '') ?: $title);
+        $lang   = in_array(isset($_POST['lang']) ? $_POST['lang'] : $post['lang'], ['fr', 'nl']) ? $_POST['lang'] : $post['lang'];
+        $slug   = $this->slugify(trim(isset($_POST['slug']) ? $_POST['slug'] : '') ?: $title);
         $slug   = $this->ensureUniqueSlug('posts', $slug, $lang, (int)$id);
-        $status = in_array($_POST['status'] ?? 'draft', ['draft', 'published']) ? $_POST['status'] : 'draft';
+        $status = in_array(isset($_POST['status']) ? $_POST['status'] : 'draft', ['draft', 'published']) ? $_POST['status'] : 'draft';
         if (isset($_POST['publish'])) $status = 'published';
 
-        $content = $_POST['content'] ?? null;
+        $content = isset($_POST['content']) ? $_POST['content'] : null;
         if ($content !== null && json_decode($content) === null) $content = null;
 
-        $publishedAt   = trim($_POST['published_at'] ?? '');
+        $publishedAt   = trim(isset($_POST['published_at']) ? $_POST['published_at'] : '');
         $publishedAt   = $publishedAt ? date('Y-m-d H:i:s', strtotime($publishedAt)) : null;
-        $categoryId    = (int)($_POST['category_id'] ?? 0) ?: null;
-        $featuredImage = (int)($_POST['featured_image'] ?? 0) ?: null;
+        $categoryId    = (int)(isset($_POST['category_id']) ? $_POST['category_id'] : 0) ?: null;
+        $featuredImage = (int)(isset($_POST['featured_image']) ? $_POST['featured_image'] : 0) ?: null;
 
         $this->postModel->update((int)$id, [
             'lang'             => $lang,
             'slug'             => $slug,
             'title'            => $title,
-            'excerpt'          => trim($_POST['excerpt'] ?? ''),
+            'excerpt'          => trim(isset($_POST['excerpt']) ? $_POST['excerpt'] : ''),
             'content'          => $content,
             'status'           => $status,
             'published_at'     => $publishedAt,
             'category_id'      => $categoryId,
             'featured_image'   => $featuredImage,
-            'meta_title'       => mb_substr(trim($_POST['meta_title'] ?? ''), 0, 70),
-            'meta_description' => mb_substr(trim($_POST['meta_description'] ?? ''), 0, 160),
-            'og_image'         => trim($_POST['og_image'] ?? ''),
+            'meta_title'       => mb_substr(trim(isset($_POST['meta_title']) ? $_POST['meta_title'] : ''), 0, 70),
+            'meta_description' => mb_substr(trim(isset($_POST['meta_description']) ? $_POST['meta_description'] : ''), 0, 160),
+            'og_image'         => trim(isset($_POST['og_image']) ? $_POST['og_image'] : ''),
         ]);
 
         Auth::setFlash('success', 'Article mis à jour.');
@@ -168,7 +168,7 @@ class PostController extends BaseController
     public function delete(string $id): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
             Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/posts');
         }

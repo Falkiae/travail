@@ -5,14 +5,19 @@ namespace App\Core;
 
 class View
 {
-    private string $templateContent = '';
+    private $templateContent = '';
 
     public function render(string $template, array $data = [], string $layout = 'public'): void
     {
         extract($data, EXTR_SKIP);
 
         ob_start();
-        require APP_PATH . '/views/templates/' . $template . '.php';
+        $tplFile = APP_PATH . '/views/templates/' . $template . '.php';
+        if (file_exists($tplFile)) {
+            require $tplFile;
+        } else {
+            echo '<p>Template introuvable : ' . htmlspecialchars($template) . '</p>';
+        }
         $this->templateContent = ob_get_clean();
 
         require APP_PATH . '/views/layouts/' . $layout . '.php';

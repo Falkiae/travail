@@ -1,0 +1,21 @@
+Options -Indexes
+RewriteEngine On
+
+# Sécurité : bloquer accès direct aux dossiers sensibles
+RewriteRule ^(app|config|storage|database)/ - [F,L]
+
+# Servir les uploads depuis storage/uploads/
+RewriteRule ^uploads/(.*)$ storage/uploads/$1 [L]
+
+# Ne pas réécrire les fichiers/dossiers existants dans public/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Tout vers le front controller
+RewriteRule ^ index.php [L]
+
+<IfModule mod_headers.c>
+    Header set X-Frame-Options "DENY"
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
