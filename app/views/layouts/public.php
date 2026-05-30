@@ -35,6 +35,9 @@
 
     <link rel="stylesheet" href="/public/assets/css/tokens.css">
     <link rel="stylesheet" href="/public/assets/css/public.css">
+    <?php if (isset($block_styles) && $block_styles): ?>
+    <style id="kn-block-styles"><?php echo $block_styles; ?></style>
+    <?php endif; ?>
 
     <?php if (isset($gtm_id) && $gtm_id): ?>
     <!-- Google Tag Manager -->
