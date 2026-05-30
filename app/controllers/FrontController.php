@@ -35,6 +35,15 @@ class FrontController extends BaseController
             $blocks = array();
         }
 
+        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote'];
+        $block_styles = '';
+        foreach ($block_types as $bt) {
+            $css_key = 'block_css_' . $bt;
+            if (!empty($settings[$css_key])) {
+                $block_styles .= '/* ' . $bt . " */\n" . $settings[$css_key] . "\n";
+            }
+        }
+
         $this->view->render('home', [
             'title'       => 'Nettoyage à domicile — Canapés, Matelas &amp; Voitures | Keepnew',
             'meta_title'  => 'Nettoyage de canapés, matelas &amp; voitures à domicile | Keepnew',
@@ -45,7 +54,8 @@ class FrontController extends BaseController
             'blocks'      => $blocks,
             'gtm_id'       => isset($settings['gtm_id']) ? $settings['gtm_id'] : null,
             'noindex_all'  => isset($settings['noindex_all']) && $settings['noindex_all'] === '1',
-            'robots_global'=> isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',
+            'robots_global' => isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',
+            'block_styles'  => $block_styles,
         ], 'public');
     }
 

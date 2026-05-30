@@ -43,6 +43,11 @@ return [
     'GET /admin/menus/{id}/edit'                => ['MenuController', 'edit'],
     'POST /admin/menus/{id}/edit'               => ['MenuController', 'update'],
 
+    'GET /admin/blocks'                         => ['BlockController', 'index'],
+    'GET /admin/blocks/{type}/edit'             => ['BlockController', 'edit'],
+    'POST /admin/blocks/{type}/edit'            => ['BlockController', 'update'],
+    'POST /admin/blocks/{type}/restore'         => ['BlockController', 'restore'],
+
     'GET /admin/settings'                       => ['SettingsController', 'index'],
     'POST /admin/settings'                      => ['SettingsController', 'update'],
 

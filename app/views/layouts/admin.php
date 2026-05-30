@@ -16,6 +16,7 @@
     <a href="/admin/projects">Portfolio</a>
     <a href="/admin/media">Médiathèque</a>
     <a href="/admin/menus">Menus</a>
+    <a href="/admin/blocks">Blocs</a>
     <a href="/admin/redirections">Redirections</a>
     <a href="/admin/settings">Réglages</a>
     <a href="/admin/error-logs">Erreurs 404</a>
