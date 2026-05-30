@@ -77,6 +77,13 @@ const BLOCK_TYPES = {
   file:      'Fichier',
   accordion: 'Accordéon',
   quote:     'Citation',
+  'hero':      'Hero',
+  'services':  'Grille services',
+  'two-col':   'Deux colonnes',
+  'how':       'Comment ça marche',
+  'reviews':   'Avis clients',
+  'zone':      'Zone d\'intervention',
+  'cta-final': 'CTA final',
 };
 
 let dragSrcEl = null;
@@ -176,6 +183,80 @@ function buildBlockForm(type, data) {
         fg('Auteur', inp('author', data.author, 'Prénom Nom')) +
         fg('Fonction / Titre', inp('role', data.role, 'CEO, Entreprise'));
       break;
+
+    case 'hero':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'NETTOYAGE À DOMICILE · LIÈGE · NAMUR · BRUXELLES')) +
+        fg('H1', inp('h1', data.h1, 'Nettoyage de canapés, matelas & voitures')) +
+        fg('H1 sous-titre', inp('h1_sub', data.h1_sub, 'à domicile ou en atelier.')) +
+        fg('Preuve sociale', inp('social_proof', data.social_proof, '4,9/5 · +110 avis · +400 canapés · +250 voitures'));
+      break;
+
+    case 'services':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'NOS SERVICES')) +
+        fg('H2', inp('h2', data.h2, 'Nettoyage de canapés, matelas & voitures à domicile')) +
+        '<div class="form-group"><label>Services</label><div class="block-repeater" data-repeater="items"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter un service</button></div>';
+      (data.items || []).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['name','desc','icon'], ['Nom','Description','Icône (emoji)'], item);
+      });
+      d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['name','desc','icon'], ['Nom','Description','Icône (emoji)'], {});
+      });
+      break;
+
+    case 'two-col':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'DEUX FAÇONS DE TRAVAILLER')) +
+        fg('H2', inp('h2', data.h2, 'On vient chez vous — ou vous venez chez nous.')) +
+        fg('Titre gauche', inp('left_title', data.left_title, 'À domicile')) +
+        fg('Corps gauche', ta('left_body', data.left_body, 'Description…', 3)) +
+        fg('Titre droite', inp('right_title', data.right_title, 'Atelier à Visé')) +
+        fg('Corps droite', ta('right_body', data.right_body, 'Description…', 3));
+      break;
+
+    case 'how':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'RÉSERVATION EN LIGNE')) +
+        fg('H2', inp('h2', data.h2, 'Réservez votre nettoyage à domicile en 2 minutes')) +
+        '<div class="form-group"><label>Étapes</label><div class="block-repeater" data-repeater="steps"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="steps">+ Ajouter une étape</button></div>';
+      (data.steps || []).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="steps"]'), 'steps', ['title','body'], ['Titre','Description'], item);
+      });
+      d.querySelector('[data-repeater-add="steps"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="steps"]'), 'steps', ['title','body'], ['Titre','Description'], {});
+      });
+      break;
+
+    case 'reviews':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'ILS NOUS FONT CONFIANCE')) +
+        fg('H2', inp('h2', data.h2, '4,9/5 · +110 avis · +400 canapés nettoyés')) +
+        '<p style="color:var(--color-muted);font-size:.85em;margin:.5rem 0">Les avis sont chargés automatiquement depuis Google.</p>';
+      break;
+
+    case 'zone':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'OÙ ON INTERVIENT')) +
+        fg('H2', inp('h2', data.h2, 'Nettoyage à domicile à Liège, Namur, Bruxelles et Luxembourg')) +
+        fg('Corps', ta('body', data.body, 'Description de la zone…', 3)) +
+        '<div class="form-group"><label>Zones (pills)</label><div class="block-repeater" data-repeater="pills"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="pills">+ Ajouter une zone</button></div>';
+      (data.pills || []).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="pills"]'), 'pills', ['label'], ['Libellé'], item);
+      });
+      d.querySelector('[data-repeater-add="pills"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="pills"]'), 'pills', ['label'], ['Libellé'], {});
+      });
+      break;
+
+    case 'cta-final':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, '📅 RÉSERVATION EN LIGNE')) +
+        fg('Titre', inp('title', data.title, 'Prendre RDV en 2 min'));
+      break;
   }
 
   // Init media pick buttons
@@ -198,6 +279,24 @@ function buildBlockForm(type, data) {
   }
 
   return d;
+}
+
+function addRepeaterRow(container, repeaterName, fields, labels, data) {
+  data = data || {};
+  var row = document.createElement('div');
+  row.className = 'block-repeater-row';
+  var html = '';
+  for (var i = 0; i < fields.length; i++) {
+    var f = fields[i];
+    var l = labels[i] || f;
+    html += '<input type="text" data-rfield="' + esc(f) + '" placeholder="' + esc(l) + '" value="' + esc(data[f] || '') + '">';
+  }
+  html += '<button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
+  row.innerHTML = html;
+  row.querySelector('.remove-repeater-row').addEventListener('click', function() {
+    row.remove();
+  });
+  container.appendChild(row);
 }
 
 function addAccordionItem(container, data) {
@@ -227,6 +326,34 @@ function serializeBlock(blockItem) {
         answer:   item.querySelector('[data-subfield="answer"]').value,
       });
     });
+    return data;
+  }
+
+  // Types with repeater sub-items
+  var repeaterTypes = {
+    'services': 'items',
+    'how':      'steps',
+    'zone':     'pills',
+  };
+
+  if (repeaterTypes[type]) {
+    var repeaterKey = repeaterTypes[type];
+    // Collect regular fields first
+    body.querySelectorAll('[data-field]').forEach(function(el) {
+      var field = el.dataset.field;
+      if (field.endsWith('_display')) return;
+      data[field] = el.value;
+    });
+    // Collect repeater rows
+    var rows = [];
+    body.querySelectorAll('[data-repeater="' + repeaterKey + '"] .block-repeater-row').forEach(function(row) {
+      var obj = {};
+      row.querySelectorAll('[data-rfield]').forEach(function(inp) {
+        obj[inp.dataset.rfield] = inp.value;
+      });
+      rows.push(obj);
+    });
+    data[repeaterKey] = rows;
     return data;
   }
 
