@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// Fonctionne aussi bien en local (public/ est un sous-dossier) que sur hébergement mutualisé
-// (index.php déplacé à la racine, à côté de app/, config/, etc.)
-define('ROOT_PATH', is_dir(__DIR__ . '/app') ? __DIR__ : dirname(__DIR__));
+define('ROOT_PATH', __DIR__);
 define('APP_PATH', ROOT_PATH . '/app');
 define('CONFIG_PATH', ROOT_PATH . '/config');
 
