@@ -8,10 +8,11 @@ define('CONFIG_PATH', ROOT_PATH . '/config');
 require_once CONFIG_PATH . '/config.php';
 
 spl_autoload_register(function (string $class): void {
+    $appPath = ROOT_PATH . '/app';
     $map = [
-        'App\\Core\\' => APP_PATH . '/core/',
-        'App\\Controllers\\' => APP_PATH . '/controllers/',
-        'App\\Models\\' => APP_PATH . '/models/',
+        'App\\Core\\' => $appPath . '/core/',
+        'App\\Controllers\\' => $appPath . '/controllers/',
+        'App\\Models\\' => $appPath . '/models/',
     ];
     foreach ($map as $prefix => $dir) {
         if (str_starts_with($class, $prefix)) {
