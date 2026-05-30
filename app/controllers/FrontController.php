@@ -20,7 +20,7 @@ class FrontController extends BaseController
 
         $reviews = $this->fetchGoogleReviews($pdo, $settings);
 
-        $this->view->render('templates/home', [
+        $this->view->render('home', [
             'title'       => 'Nettoyage à domicile — Canapés, Matelas &amp; Voitures | Keepnew',
             'meta_title'  => 'Nettoyage de canapés, matelas &amp; voitures à domicile | Keepnew',
             'meta_description' => 'Keepnew — Service de nettoyage professionnel à domicile en Belgique. Canapés, matelas, voitures, terrasses. Zone Liège, Namur, Bruxelles, Luxembourg. Devis gratuit.',
