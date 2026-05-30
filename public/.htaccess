@@ -1,0 +1,24 @@
+Options -Indexes
+RewriteEngine On
+
+# HTTPS redirect (décommenter en prod)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Sécurité : bloquer accès direct aux dossiers sensibles
+RewriteRule ^(app|config|storage|database)/ - [F,L]
+
+# Ne pas réécrire les fichiers/dossiers existants
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Tout vers le front controller
+RewriteRule ^ index.php [L]
+
+# Headers sécurité
+<IfModule mod_headers.c>
+    Header set X-Frame-Options "DENY"
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
