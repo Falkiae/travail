@@ -6,6 +6,10 @@
 <div class="card">
   <?php if (empty($pages)): ?>
     <p class="text-muted">Aucune page pour l'instant.</p>
+    <form method="POST" action="/admin/pages/seed" style="margin-top:1rem;">
+      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+      <button type="submit" class="btn">Créer les pages par défaut</button>
+    </form>
   <?php else: ?>
   <div class="table-wrap">
     <table>

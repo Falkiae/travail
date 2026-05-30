@@ -142,4 +142,50 @@ class PageController extends BaseController
         Auth::setFlash('success', 'Page supprimée.');
         $this->redirect('/' . ADMIN_PATH . '/pages');
     }
+
+    public function seed(): void
+    {
+        $this->requireLogin();
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
+            Auth::setFlash('error', 'Token CSRF invalide.');
+            $this->redirect('/' . ADMIN_PATH . '/pages');
+        }
+
+        $defaults = [
+            [
+                'slug' => 'home', 'lang' => 'fr', 'title' => 'Accueil',
+                'template' => 'home', 'status' => 'published',
+                'meta_title' => 'Nettoyage de canapés, matelas & voitures à domicile | Keepnew',
+                'meta_description' => 'Keepnew — Nettoyage professionnel à domicile : canapés, matelas, voitures, terrasses. Liège, Namur, Bruxelles, Luxembourg. Devis gratuit.',
+                'content' => '[]', 'sort_order' => 0,
+            ],
+            [
+                'slug' => 'blog', 'lang' => 'fr', 'title' => 'Blog',
+                'template' => 'blog-list', 'status' => 'published',
+                'meta_title' => 'Blog nettoyage à domicile — Conseils & astuces | Keepnew',
+                'meta_description' => 'Conseils et actualités sur le nettoyage à domicile par Keepnew.',
+                'content' => '[]', 'sort_order' => 2,
+            ],
+            [
+                'slug' => 'portfolio', 'lang' => 'fr', 'title' => 'Réalisations',
+                'template' => 'portfolio', 'status' => 'published',
+                'meta_title' => 'Nos réalisations — Avant / Après | Keepnew',
+                'meta_description' => 'Découvrez les réalisations de Keepnew : canapés, matelas et voitures nettoyés.',
+                'content' => '[]', 'sort_order' => 3,
+            ],
+        ];
+
+        $pdo  = $this->db();
+        $stmt = $pdo->prepare(
+            'INSERT IGNORE INTO kn_pages (slug, lang, title, template, status, meta_title, meta_description, content, sort_order)
+             VALUES (:slug, :lang, :title, :template, :status, :meta_title, :meta_description, :content, :sort_order)'
+        );
+
+        foreach ($defaults as $page) {
+            $stmt->execute($page);
+        }
+
+        Auth::setFlash('success', 'Pages par défaut créées.');
+        $this->redirect('/' . ADMIN_PATH . '/pages');
+    }
 }
