@@ -11,6 +11,7 @@ return [
     'POST /admin/login'               => ['AdminController', 'loginPost'],
     'GET /admin/logout'               => ['AdminController', 'logout'],
 
+    'POST /admin/pages/seed'           => ['PageController', 'seed'],
     'GET /admin/pages'                => ['PageController', 'index'],
     'GET /admin/pages/new'            => ['PageController', 'create'],
     'POST /admin/pages/new'           => ['PageController', 'store'],
