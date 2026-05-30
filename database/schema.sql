@@ -1,7 +1,7 @@
 SET NAMES utf8mb4;
 SET time_zone = '+00:00';
 
-CREATE TABLE IF NOT EXISTS `pages` (
+CREATE TABLE IF NOT EXISTS `kn_pages` (
   `id` int NOT NULL AUTO_INCREMENT,
   `lang` varchar(2) NOT NULL DEFAULT 'fr',
   `translation_id` int DEFAULT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `pages` (
   UNIQUE KEY `unique_slug_lang` (`slug`,`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `posts` (
+CREATE TABLE IF NOT EXISTS `kn_posts` (
   `id` int NOT NULL AUTO_INCREMENT,
   `lang` varchar(2) NOT NULL DEFAULT 'fr',
   `translation_id` int DEFAULT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   UNIQUE KEY `unique_slug_lang` (`slug`,`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `categories` (
+CREATE TABLE IF NOT EXISTS `kn_categories` (
   `id` int NOT NULL AUTO_INCREMENT,
   `lang` varchar(2) NOT NULL DEFAULT 'fr',
   `slug` varchar(255) NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
   UNIQUE KEY `unique_slug_lang` (`slug`,`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `projects` (
+CREATE TABLE IF NOT EXISTS `kn_projects` (
   `id` int NOT NULL AUTO_INCREMENT,
   `lang` varchar(2) NOT NULL DEFAULT 'fr',
   `translation_id` int DEFAULT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `projects` (
   UNIQUE KEY `unique_slug_lang` (`slug`,`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `menus` (
+CREATE TABLE IF NOT EXISTS `kn_menus` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `location` enum('header','footer') NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `menus` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `menu_items` (
+CREATE TABLE IF NOT EXISTS `kn_menu_items` (
   `id` int NOT NULL AUTO_INCREMENT,
   `menu_id` int NOT NULL,
   `parent_id` int DEFAULT NULL,
@@ -92,10 +92,10 @@ CREATE TABLE IF NOT EXISTS `menu_items` (
   `sort_order` int DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `menu_id` (`menu_id`),
-  CONSTRAINT `fk_menu_items_menu` FOREIGN KEY (`menu_id`) REFERENCES `menus` (`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_menu_items_menu` FOREIGN KEY (`menu_id`) REFERENCES `kn_menus` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `media` (
+CREATE TABLE IF NOT EXISTS `kn_media` (
   `id` int NOT NULL AUTO_INCREMENT,
   `filename` varchar(255) NOT NULL,
   `original_name` varchar(255) NOT NULL,
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `media` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `users` (
+CREATE TABLE IF NOT EXISTS `kn_users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
@@ -120,13 +120,13 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `settings` (
+CREATE TABLE IF NOT EXISTS `kn_settings` (
   `key` varchar(100) NOT NULL,
   `value` text,
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `redirections` (
+CREATE TABLE IF NOT EXISTS `kn_redirections` (
   `id` int NOT NULL AUTO_INCREMENT,
   `from_url` varchar(500) NOT NULL,
   `to_url` varchar(500) NOT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS `redirections` (
   UNIQUE KEY `unique_from_url` (`from_url`(255))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `error_logs` (
+CREATE TABLE IF NOT EXISTS `kn_error_logs` (
   `id` int NOT NULL AUTO_INCREMENT,
   `url` varchar(500) NOT NULL,
   `referer` varchar(500) DEFAULT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS `error_logs` (
   UNIQUE KEY `unique_url` (`url`(255))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `revisions` (
+CREATE TABLE IF NOT EXISTS `kn_revisions` (
   `id` int NOT NULL AUTO_INCREMENT,
   `entity_type` enum('page','post','project') NOT NULL,
   `entity_id` int NOT NULL,
@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS `revisions` (
   KEY `idx_entity` (`entity_type`,`entity_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `login_attempts` (
+CREATE TABLE IF NOT EXISTS `kn_login_attempts` (
   `id` int NOT NULL AUTO_INCREMENT,
   `ip` varchar(45) NOT NULL,
   `attempted_at` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `login_attempts` (
   KEY `idx_ip_time` (`ip`,`attempted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT IGNORE INTO `settings` (`key`, `value`) VALUES
+INSERT IGNORE INTO `kn_settings` (`key`, `value`) VALUES
 ('site_name', 'Keepnew'),
 ('site_baseline', ''),
 ('gtm_id', ''),

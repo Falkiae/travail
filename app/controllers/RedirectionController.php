@@ -11,7 +11,7 @@ class RedirectionController extends BaseController
     {
         $this->requireLogin();
         $pdo  = $this->db();
-        $redirections = $pdo->query("SELECT * FROM redirections ORDER BY id DESC")->fetchAll();
+        $redirections = $pdo->query("SELECT * FROM kn_redirections ORDER BY id DESC")->fetchAll();
         $csrfToken = Auth::generateCsrfToken();
         $fromPrefill = trim($_GET['from'] ?? '');
         $this->view->render('admin/redirections/index', [
@@ -40,7 +40,7 @@ class RedirectionController extends BaseController
 
         $pdo = $this->db();
         $pdo->prepare(
-            "INSERT INTO redirections (from_url, to_url) VALUES (?, ?) ON DUPLICATE KEY UPDATE to_url = ?"
+            "INSERT INTO kn_redirections (from_url, to_url) VALUES (?, ?) ON DUPLICATE KEY UPDATE to_url = ?"
         )->execute([$fromUrl, $toUrl, $toUrl]);
 
         Auth::setFlash('success', 'Redirection ajoutée.');
@@ -54,7 +54,7 @@ class RedirectionController extends BaseController
             Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/redirections');
         }
-        $this->db()->prepare("DELETE FROM redirections WHERE id = ?")->execute([(int)$id]);
+        $this->db()->prepare("DELETE FROM kn_redirections WHERE id = ?")->execute([(int)$id]);
         Auth::setFlash('success', 'Redirection supprimée.');
         $this->redirect('/' . ADMIN_PATH . '/redirections');
     }

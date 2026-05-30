@@ -5,5 +5,5 @@ namespace App\Models;
 
 class Page extends BaseModel
 {
-    protected string $table = 'pages';
+    protected string $table = 'kn_pages';
 }

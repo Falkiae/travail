@@ -11,7 +11,7 @@ class MenuController extends BaseController
     {
         $this->requireLogin();
         $pdo   = $this->db();
-        $menus = $pdo->query("SELECT * FROM menus ORDER BY lang, location")->fetchAll();
+        $menus = $pdo->query("SELECT * FROM kn_menus ORDER BY lang, location")->fetchAll();
         $this->view->render('admin/menus/index', [
             'title' => 'Menus',
             'menus' => $menus,
@@ -22,16 +22,16 @@ class MenuController extends BaseController
     {
         $this->requireLogin();
         $pdo  = $this->db();
-        $menu = $pdo->prepare("SELECT * FROM menus WHERE id = ?")->execute([(int)$id]);
-        $stmt = $pdo->prepare("SELECT * FROM menus WHERE id = ? LIMIT 1");
+        $menu = $pdo->prepare("SELECT * FROM kn_menus WHERE id = ?")->execute([(int)$id]);
+        $stmt = $pdo->prepare("SELECT * FROM kn_menus WHERE id = ? LIMIT 1");
         $stmt->execute([(int)$id]);
         $menu = $stmt->fetch();
         if (!$menu) {
             Auth::setFlash('error', 'Menu introuvable.');
             $this->redirect('/' . ADMIN_PATH . '/menus');
         }
-        $items = $pdo->prepare("SELECT * FROM menu_items WHERE menu_id = ? ORDER BY sort_order")->execute([(int)$id]);
-        $itemStmt = $pdo->prepare("SELECT * FROM menu_items WHERE menu_id = ? ORDER BY sort_order");
+        $items = $pdo->prepare("SELECT * FROM kn_menu_items WHERE menu_id = ? ORDER BY sort_order")->execute([(int)$id]);
+        $itemStmt = $pdo->prepare("SELECT * FROM kn_menu_items WHERE menu_id = ? ORDER BY sort_order");
         $itemStmt->execute([(int)$id]);
         $items = $itemStmt->fetchAll();
 
@@ -54,7 +54,7 @@ class MenuController extends BaseController
 
         $pdo = $this->db();
         // Check menu exists
-        $stmt = $pdo->prepare("SELECT id FROM menus WHERE id = ? LIMIT 1");
+        $stmt = $pdo->prepare("SELECT id FROM kn_menus WHERE id = ? LIMIT 1");
         $stmt->execute([(int)$id]);
         if (!$stmt->fetch()) {
             Auth::setFlash('error', 'Menu introuvable.');
@@ -62,7 +62,7 @@ class MenuController extends BaseController
         }
 
         // Delete existing items and re-insert
-        $pdo->prepare("DELETE FROM menu_items WHERE menu_id = ?")->execute([(int)$id]);
+        $pdo->prepare("DELETE FROM kn_menu_items WHERE menu_id = ?")->execute([(int)$id]);
 
         $items = $_POST['items'] ?? [];
         foreach ($items as $i => $item) {
@@ -71,7 +71,7 @@ class MenuController extends BaseController
             $target = in_array($item['target'] ?? '_self', ['_self', '_blank']) ? $item['target'] : '_self';
             $order  = (int)($item['sort_order'] ?? $i);
             if ($label === '') continue;
-            $pdo->prepare("INSERT INTO menu_items (menu_id, label, url, target, sort_order) VALUES (?, ?, ?, ?, ?)")
+            $pdo->prepare("INSERT INTO kn_menu_items (menu_id, label, url, target, sort_order) VALUES (?, ?, ?, ?, ?)")
                 ->execute([(int)$id, $label, $url, $target, $order]);
         }
 

@@ -29,7 +29,7 @@ class Auth
         }
 
         $pdo = Database::getInstance();
-        $stmt = $pdo->prepare('SELECT id, email, password_hash, role FROM users WHERE email = ? LIMIT 1');
+        $stmt = $pdo->prepare('SELECT id, email, password_hash, role FROM kn_users WHERE email = ? LIMIT 1');
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
@@ -98,7 +98,7 @@ class Auth
         $pdo = Database::getInstance();
         $ip  = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
         $stmt = $pdo->prepare(
-            'SELECT COUNT(*) FROM login_attempts WHERE ip = ? AND attempted_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)'
+            'SELECT COUNT(*) FROM kn_login_attempts WHERE ip = ? AND attempted_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)'
         );
         $stmt->execute([$ip]);
         return (int) $stmt->fetchColumn() >= 5;
@@ -108,6 +108,6 @@ class Auth
     {
         $pdo = Database::getInstance();
         $ip  = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-        $pdo->prepare('INSERT INTO login_attempts (ip) VALUES (?)')->execute([$ip]);
+        $pdo->prepare('INSERT INTO kn_login_attempts (ip) VALUES (?)')->execute([$ip]);
     }
 }

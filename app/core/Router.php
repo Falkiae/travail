@@ -72,12 +72,12 @@ class Router
     {
         try {
             $pdo  = Database::getInstance();
-            $stmt = $pdo->prepare("SELECT `value` FROM settings WHERE `key` = 'maintenance_mode'");
+            $stmt = $pdo->prepare("SELECT `value` FROM kn_settings WHERE `key` = 'maintenance_mode'");
             $stmt->execute();
             $row = $stmt->fetch();
             if ($row && $row['value'] === '1') {
                 http_response_code(503);
-                $stmt2 = $pdo->prepare("SELECT `value` FROM settings WHERE `key` = 'maintenance_message'");
+                $stmt2 = $pdo->prepare("SELECT `value` FROM kn_settings WHERE `key` = 'maintenance_message'");
                 $stmt2->execute();
                 $msg = $stmt2->fetch()['value'] ?? 'Site en maintenance.';
                 echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Maintenance</title></head><body style="font-family:sans-serif;text-align:center;padding:4rem"><h1>🛠</h1><p>' . htmlspecialchars($msg) . '</p></body></html>';
@@ -92,7 +92,7 @@ class Router
     {
         try {
             $pdo  = Database::getInstance();
-            $stmt = $pdo->prepare('SELECT to_url FROM redirections WHERE from_url = ? LIMIT 1');
+            $stmt = $pdo->prepare('SELECT to_url FROM kn_redirections WHERE from_url = ? LIMIT 1');
             $stmt->execute([$uri]);
             $row = $stmt->fetch();
             if ($row) {
@@ -111,7 +111,7 @@ class Router
             $ip   = $_SERVER['REMOTE_ADDR'] ?? '';
             $ref  = $_SERVER['HTTP_REFERER'] ?? null;
             $stmt = $pdo->prepare(
-                'INSERT INTO error_logs (url, referer, count, last_seen) VALUES (?, ?, 1, NOW())
+                'INSERT INTO kn_error_logs (url, referer, count, last_seen) VALUES (?, ?, 1, NOW())
                  ON DUPLICATE KEY UPDATE count = count + 1, last_seen = NOW()'
             );
             $stmt->execute([$uri, $ref]);

@@ -55,11 +55,11 @@ abstract class BaseController
     {
         $pdo = $this->db();
         $pdo->prepare(
-            "DELETE FROM revisions WHERE entity_type = ? AND entity_id = ? AND id NOT IN (
-                SELECT id FROM (SELECT id FROM revisions WHERE entity_type = ? AND entity_id = ? ORDER BY created_at DESC LIMIT 4) t
+            "DELETE FROM kn_revisions WHERE entity_type = ? AND entity_id = ? AND id NOT IN (
+                SELECT id FROM (SELECT id FROM kn_revisions WHERE entity_type = ? AND entity_id = ? ORDER BY created_at DESC LIMIT 4) t
             )"
         )->execute([$entityType, $entityId, $entityType, $entityId]);
-        $pdo->prepare("INSERT INTO revisions (entity_type, entity_id, content) VALUES (?, ?, ?)")
+        $pdo->prepare("INSERT INTO kn_revisions (entity_type, entity_id, content) VALUES (?, ?, ?)")
             ->execute([$entityType, $entityId, $content]);
     }
 

@@ -5,5 +5,5 @@ namespace App\Models;
 
 class Post extends BaseModel
 {
-    protected string $table = 'posts';
+    protected string $table = 'kn_posts';
 }

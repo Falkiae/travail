@@ -42,7 +42,7 @@ try {
     $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
 
     $stmt = $pdo->prepare(
-        "INSERT INTO users (email, password_hash, role) VALUES (?, ?, 'admin')
+        "INSERT INTO kn_users (email, password_hash, role) VALUES (?, ?, 'admin')
          ON DUPLICATE KEY UPDATE password_hash = ?"
     );
     $stmt->execute([$email, $hash, $hash]);

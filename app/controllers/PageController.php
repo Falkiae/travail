@@ -140,7 +140,7 @@ class PageController extends BaseController
             $newUrl = '/' . $slug;
             $pdo = $this->db();
             $pdo->prepare(
-                "INSERT INTO redirections (from_url, to_url) VALUES (?, ?) ON DUPLICATE KEY UPDATE to_url = ?"
+                "INSERT INTO kn_redirections (from_url, to_url) VALUES (?, ?) ON DUPLICATE KEY UPDATE to_url = ?"
             )->execute([$oldUrl, $newUrl, $newUrl]);
         }
 

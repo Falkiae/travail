@@ -12,10 +12,10 @@ class AdminController extends BaseController
         $this->requireLogin();
         $pdo = $this->db();
         $stats = [
-            'pages'    => $pdo->query("SELECT COUNT(*) FROM pages WHERE status = 'published'")->fetchColumn(),
-            'posts'    => $pdo->query("SELECT COUNT(*) FROM posts WHERE status = 'published'")->fetchColumn(),
-            'projects' => $pdo->query("SELECT COUNT(*) FROM projects WHERE status = 'published'")->fetchColumn(),
-            'errors404'=> $pdo->query("SELECT COUNT(*) FROM error_logs")->fetchColumn(),
+            'pages'    => $pdo->query("SELECT COUNT(*) FROM kn_pages WHERE status = 'published'")->fetchColumn(),
+            'posts'    => $pdo->query("SELECT COUNT(*) FROM kn_posts WHERE status = 'published'")->fetchColumn(),
+            'projects' => $pdo->query("SELECT COUNT(*) FROM kn_projects WHERE status = 'published'")->fetchColumn(),
+            'errors404'=> $pdo->query("SELECT COUNT(*) FROM kn_error_logs")->fetchColumn(),
         ];
         $this->view->render('admin/dashboard', ['title' => 'Dashboard', 'stats' => $stats], 'admin');
     }

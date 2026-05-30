@@ -18,7 +18,7 @@ class PostController extends BaseController
 
     private function getCategories(): array
     {
-        $stmt = $this->db()->query("SELECT id, name FROM categories ORDER BY name");
+        $stmt = $this->db()->query("SELECT id, name FROM kn_categories ORDER BY name");
         return $stmt->fetchAll();
     }
 

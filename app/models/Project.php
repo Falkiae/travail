@@ -5,5 +5,5 @@ namespace App\Models;
 
 class Project extends BaseModel
 {
-    protected string $table = 'projects';
+    protected string $table = 'kn_projects';
 }

@@ -11,7 +11,7 @@ class SettingsController extends BaseController
     {
         $this->requireLogin();
         $pdo  = $this->db();
-        $stmt = $pdo->query("SELECT `key`, `value` FROM settings");
+        $stmt = $pdo->query("SELECT `key`, `value` FROM kn_settings");
         $settings = [];
         while ($row = $stmt->fetch()) {
             $settings[$row['key']] = $row['value'];
@@ -46,7 +46,7 @@ class SettingsController extends BaseController
             $value = $_POST[$key] ?? null;
             if ($value !== null) {
                 $pdo->prepare(
-                    "INSERT INTO settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = ?"
+                    "INSERT INTO kn_settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = ?"
                 )->execute([$key, $value, $value]);
             }
         }
