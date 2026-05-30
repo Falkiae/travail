@@ -16,27 +16,80 @@ class PostController extends BaseController
         $this->postModel = new Post();
     }
 
+    private function getCategories(): array
+    {
+        $stmt = $this->db()->query("SELECT id, name FROM categories ORDER BY name");
+        return $stmt->fetchAll();
+    }
+
     public function index(): void
     {
         $this->requireLogin();
-        $posts = $this->postModel->findAll();
-        $this->view->render('admin/posts/index', ['title' => 'Articles', 'posts' => $posts], 'admin');
+        $posts = array_merge($this->postModel->findAll('fr'), $this->postModel->findAll('nl'));
+        $csrfToken = Auth::generateCsrfToken();
+        $this->view->render('admin/posts/index', [
+            'title'      => 'Articles',
+            'posts'      => $posts,
+            'csrf_token' => $csrfToken,
+        ], 'admin');
     }
 
     public function create(): void
     {
         $this->requireLogin();
         $csrfToken = Auth::generateCsrfToken();
-        $this->view->render('admin/posts/form', ['title' => 'Nouvel article', 'csrf_token' => $csrfToken, 'post' => null], 'admin');
+        $this->view->render('admin/posts/form', [
+            'title'      => 'Nouvel article',
+            'csrf_token' => $csrfToken,
+            'post'       => null,
+            'categories' => $this->getCategories(),
+        ], 'admin');
     }
 
     public function store(): void
     {
         $this->requireLogin();
         if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+            Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/posts');
         }
-        // TODO Phase 2
+
+        $title = trim($_POST['title'] ?? '');
+        if ($title === '') {
+            Auth::setFlash('error', 'Le titre est obligatoire.');
+            $this->redirect('/' . ADMIN_PATH . '/posts/new');
+        }
+
+        $lang   = in_array($_POST['lang'] ?? 'fr', ['fr', 'nl']) ? $_POST['lang'] : 'fr';
+        $slug   = $this->slugify(trim($_POST['slug'] ?? '') ?: $title);
+        $slug   = $this->ensureUniqueSlug('posts', $slug, $lang);
+        $status = in_array($_POST['status'] ?? 'draft', ['draft', 'published']) ? $_POST['status'] : 'draft';
+        if (isset($_POST['publish'])) $status = 'published';
+
+        $content = $_POST['content'] ?? null;
+        if ($content !== null && json_decode($content) === null) $content = null;
+
+        $publishedAt = trim($_POST['published_at'] ?? '');
+        $publishedAt = $publishedAt ? date('Y-m-d H:i:s', strtotime($publishedAt)) : null;
+        $categoryId  = (int)($_POST['category_id'] ?? 0) ?: null;
+        $featuredImage = (int)($_POST['featured_image'] ?? 0) ?: null;
+
+        $this->postModel->create([
+            'lang'             => $lang,
+            'slug'             => $slug,
+            'title'            => $title,
+            'excerpt'          => trim($_POST['excerpt'] ?? ''),
+            'content'          => $content,
+            'status'           => $status,
+            'published_at'     => $publishedAt,
+            'category_id'      => $categoryId,
+            'featured_image'   => $featuredImage,
+            'meta_title'       => mb_substr(trim($_POST['meta_title'] ?? ''), 0, 70),
+            'meta_description' => mb_substr(trim($_POST['meta_description'] ?? ''), 0, 160),
+            'og_image'         => trim($_POST['og_image'] ?? ''),
+        ]);
+
+        Auth::setFlash('success', 'Article créé avec succès.');
         $this->redirect('/' . ADMIN_PATH . '/posts');
     }
 
@@ -44,17 +97,71 @@ class PostController extends BaseController
     {
         $this->requireLogin();
         $post = $this->postModel->findById((int)$id);
+        if (!$post) {
+            Auth::setFlash('error', 'Article introuvable.');
+            $this->redirect('/' . ADMIN_PATH . '/posts');
+        }
         $csrfToken = Auth::generateCsrfToken();
-        $this->view->render('admin/posts/form', ['title' => "Modifier l'article", 'csrf_token' => $csrfToken, 'post' => $post], 'admin');
+        $this->view->render('admin/posts/form', [
+            'title'      => "Modifier l'article",
+            'csrf_token' => $csrfToken,
+            'post'       => $post,
+            'categories' => $this->getCategories(),
+        ], 'admin');
     }
 
     public function update(string $id): void
     {
         $this->requireLogin();
         if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+            Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/posts');
         }
-        // TODO Phase 2
+
+        $post = $this->postModel->findById((int)$id);
+        if (!$post) {
+            Auth::setFlash('error', 'Article introuvable.');
+            $this->redirect('/' . ADMIN_PATH . '/posts');
+        }
+
+        $title = trim($_POST['title'] ?? '');
+        if ($title === '') {
+            Auth::setFlash('error', 'Le titre est obligatoire.');
+            $this->redirect('/' . ADMIN_PATH . '/posts/' . $id . '/edit');
+        }
+
+        $this->saveRevision('post', (int)$id, $post['content']);
+
+        $lang   = in_array($_POST['lang'] ?? $post['lang'], ['fr', 'nl']) ? $_POST['lang'] : $post['lang'];
+        $slug   = $this->slugify(trim($_POST['slug'] ?? '') ?: $title);
+        $slug   = $this->ensureUniqueSlug('posts', $slug, $lang, (int)$id);
+        $status = in_array($_POST['status'] ?? 'draft', ['draft', 'published']) ? $_POST['status'] : 'draft';
+        if (isset($_POST['publish'])) $status = 'published';
+
+        $content = $_POST['content'] ?? null;
+        if ($content !== null && json_decode($content) === null) $content = null;
+
+        $publishedAt   = trim($_POST['published_at'] ?? '');
+        $publishedAt   = $publishedAt ? date('Y-m-d H:i:s', strtotime($publishedAt)) : null;
+        $categoryId    = (int)($_POST['category_id'] ?? 0) ?: null;
+        $featuredImage = (int)($_POST['featured_image'] ?? 0) ?: null;
+
+        $this->postModel->update((int)$id, [
+            'lang'             => $lang,
+            'slug'             => $slug,
+            'title'            => $title,
+            'excerpt'          => trim($_POST['excerpt'] ?? ''),
+            'content'          => $content,
+            'status'           => $status,
+            'published_at'     => $publishedAt,
+            'category_id'      => $categoryId,
+            'featured_image'   => $featuredImage,
+            'meta_title'       => mb_substr(trim($_POST['meta_title'] ?? ''), 0, 70),
+            'meta_description' => mb_substr(trim($_POST['meta_description'] ?? ''), 0, 160),
+            'og_image'         => trim($_POST['og_image'] ?? ''),
+        ]);
+
+        Auth::setFlash('success', 'Article mis à jour.');
         $this->redirect('/' . ADMIN_PATH . '/posts');
     }
 
@@ -62,9 +169,11 @@ class PostController extends BaseController
     {
         $this->requireLogin();
         if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+            Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/posts');
         }
-        // TODO Phase 2
+        $this->postModel->delete((int)$id);
+        Auth::setFlash('success', 'Article supprimé.');
         $this->redirect('/' . ADMIN_PATH . '/posts');
     }
 }

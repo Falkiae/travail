@@ -81,6 +81,18 @@ class Auth
         return hash_equals($_SESSION['csrf_token'], $token);
     }
 
+    public static function setFlash(string $type, string $message): void
+    {
+        $_SESSION['flash'] = ['type' => $type, 'message' => $message];
+    }
+
+    public static function getFlash(): ?array
+    {
+        $flash = $_SESSION['flash'] ?? null;
+        unset($_SESSION['flash']);
+        return $flash;
+    }
+
     private static function isRateLimited(): bool
     {
         $pdo = Database::getInstance();

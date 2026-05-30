@@ -97,7 +97,9 @@ tbody tr:hover { background: #eff6ff; }
 
 /* ── Buttons ── */
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
   padding: .45rem 1rem;
   border-radius: var(--radius);
   border: none;
@@ -107,10 +109,13 @@ tbody tr:hover { background: #eff6ff; }
   text-decoration: none;
   transition: opacity .15s;
   line-height: 1.4;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: inherit;
 }
-.btn:hover { opacity: .85; }
-.btn { background: var(--color-primary); color: #fff; }
+.btn:hover { opacity: .85; color: #fff; text-decoration: none; }
 .btn-secondary { background: #e5e7eb; color: var(--color-text); }
+.btn-secondary:hover { color: var(--color-text); }
 .btn-danger { background: var(--color-danger); color: #fff; }
 .btn-sm { padding: .25rem .6rem; font-size: .8rem; }
 .btn-outline { background: transparent; border: 1px solid var(--color-primary); color: var(--color-primary); }
@@ -139,10 +144,13 @@ input:focus, select:focus, textarea:focus {
 input[readonly] { background: #f9fafb; color: var(--color-muted); }
 textarea { min-height: 120px; resize: vertical; }
 .help-text { font-size: .8rem; color: var(--color-muted); margin-top: .25rem; }
+.input-row { display: flex; gap: .5rem; align-items: center; }
+.input-row input { flex: 1; }
 
 /* ── Form row ── */
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+.form-actions { display: flex; gap: .75rem; align-items: center; padding-top: 1rem; border-top: 1px solid #e5e7eb; margin-top: 1rem; }
 
 /* ── Flash messages ── */
 .flash-success, .flash-error, .flash-info {
@@ -181,6 +189,7 @@ textarea { min-height: 120px; resize: vertical; }
   display: block; width: 100%; text-align: left;
   padding: .5rem 1rem; background: none; border: none;
   cursor: pointer; font-size: .875rem; color: var(--color-text);
+  font-family: inherit;
 }
 .block-add-menu button:hover { background: #f3f4f6; }
 
@@ -246,7 +255,7 @@ textarea { min-height: 120px; resize: vertical; }
   margin-bottom: 1.5rem;
 }
 .drop-zone.drag-over { border-color: var(--color-primary); background: #eff6ff; }
-.drop-zone label { cursor: pointer; }
+.drop-zone label { cursor: pointer; font-weight: normal; }
 
 /* ── Modal ── */
 .modal-overlay {

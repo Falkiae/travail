@@ -19,24 +19,67 @@ class ProjectController extends BaseController
     public function index(): void
     {
         $this->requireLogin();
-        $projects = $this->projectModel->findAll();
-        $this->view->render('admin/projects/index', ['title' => 'Projets', 'projects' => $projects], 'admin');
+        $projects = array_merge($this->projectModel->findAll('fr'), $this->projectModel->findAll('nl'));
+        $csrfToken = Auth::generateCsrfToken();
+        $this->view->render('admin/projects/index', [
+            'title'      => 'Projets',
+            'projects'   => $projects,
+            'csrf_token' => $csrfToken,
+        ], 'admin');
     }
 
     public function create(): void
     {
         $this->requireLogin();
         $csrfToken = Auth::generateCsrfToken();
-        $this->view->render('admin/projects/form', ['title' => 'Nouveau projet', 'csrf_token' => $csrfToken, 'project' => null], 'admin');
+        $this->view->render('admin/projects/form', [
+            'title'      => 'Nouveau projet',
+            'csrf_token' => $csrfToken,
+            'project'    => null,
+        ], 'admin');
     }
 
     public function store(): void
     {
         $this->requireLogin();
         if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+            Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/projects');
         }
-        // TODO Phase 2
+
+        $title = trim($_POST['title'] ?? '');
+        if ($title === '') {
+            Auth::setFlash('error', 'Le titre est obligatoire.');
+            $this->redirect('/' . ADMIN_PATH . '/projects/new');
+        }
+
+        $lang   = in_array($_POST['lang'] ?? 'fr', ['fr', 'nl']) ? $_POST['lang'] : 'fr';
+        $slug   = $this->slugify(trim($_POST['slug'] ?? '') ?: $title);
+        $slug   = $this->ensureUniqueSlug('projects', $slug, $lang);
+        $status = in_array($_POST['status'] ?? 'draft', ['draft', 'published']) ? $_POST['status'] : 'draft';
+        if (isset($_POST['publish'])) $status = 'published';
+
+        $content = $_POST['content'] ?? null;
+        if ($content !== null && json_decode($content) === null) $content = null;
+
+        $thumbnail = (int)($_POST['thumbnail'] ?? 0) ?: null;
+
+        $this->projectModel->create([
+            'lang'             => $lang,
+            'slug'             => $slug,
+            'title'            => $title,
+            'excerpt'          => trim($_POST['excerpt'] ?? ''),
+            'content'          => $content,
+            'status'           => $status,
+            'sort_order'       => (int)($_POST['sort_order'] ?? 0),
+            'thumbnail'        => $thumbnail,
+            'tags'             => trim($_POST['tags'] ?? ''),
+            'meta_title'       => mb_substr(trim($_POST['meta_title'] ?? ''), 0, 70),
+            'meta_description' => mb_substr(trim($_POST['meta_description'] ?? ''), 0, 160),
+            'og_image'         => trim($_POST['og_image'] ?? ''),
+        ]);
+
+        Auth::setFlash('success', 'Projet créé avec succès.');
         $this->redirect('/' . ADMIN_PATH . '/projects');
     }
 
@@ -44,17 +87,67 @@ class ProjectController extends BaseController
     {
         $this->requireLogin();
         $project = $this->projectModel->findById((int)$id);
+        if (!$project) {
+            Auth::setFlash('error', 'Projet introuvable.');
+            $this->redirect('/' . ADMIN_PATH . '/projects');
+        }
         $csrfToken = Auth::generateCsrfToken();
-        $this->view->render('admin/projects/form', ['title' => 'Modifier le projet', 'csrf_token' => $csrfToken, 'project' => $project], 'admin');
+        $this->view->render('admin/projects/form', [
+            'title'      => 'Modifier le projet',
+            'csrf_token' => $csrfToken,
+            'project'    => $project,
+        ], 'admin');
     }
 
     public function update(string $id): void
     {
         $this->requireLogin();
         if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+            Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/projects');
         }
-        // TODO Phase 2
+
+        $project = $this->projectModel->findById((int)$id);
+        if (!$project) {
+            Auth::setFlash('error', 'Projet introuvable.');
+            $this->redirect('/' . ADMIN_PATH . '/projects');
+        }
+
+        $title = trim($_POST['title'] ?? '');
+        if ($title === '') {
+            Auth::setFlash('error', 'Le titre est obligatoire.');
+            $this->redirect('/' . ADMIN_PATH . '/projects/' . $id . '/edit');
+        }
+
+        $this->saveRevision('project', (int)$id, $project['content']);
+
+        $lang   = in_array($_POST['lang'] ?? $project['lang'], ['fr', 'nl']) ? $_POST['lang'] : $project['lang'];
+        $slug   = $this->slugify(trim($_POST['slug'] ?? '') ?: $title);
+        $slug   = $this->ensureUniqueSlug('projects', $slug, $lang, (int)$id);
+        $status = in_array($_POST['status'] ?? 'draft', ['draft', 'published']) ? $_POST['status'] : 'draft';
+        if (isset($_POST['publish'])) $status = 'published';
+
+        $content = $_POST['content'] ?? null;
+        if ($content !== null && json_decode($content) === null) $content = null;
+
+        $thumbnail = (int)($_POST['thumbnail'] ?? 0) ?: null;
+
+        $this->projectModel->update((int)$id, [
+            'lang'             => $lang,
+            'slug'             => $slug,
+            'title'            => $title,
+            'excerpt'          => trim($_POST['excerpt'] ?? ''),
+            'content'          => $content,
+            'status'           => $status,
+            'sort_order'       => (int)($_POST['sort_order'] ?? 0),
+            'thumbnail'        => $thumbnail,
+            'tags'             => trim($_POST['tags'] ?? ''),
+            'meta_title'       => mb_substr(trim($_POST['meta_title'] ?? ''), 0, 70),
+            'meta_description' => mb_substr(trim($_POST['meta_description'] ?? ''), 0, 160),
+            'og_image'         => trim($_POST['og_image'] ?? ''),
+        ]);
+
+        Auth::setFlash('success', 'Projet mis à jour.');
         $this->redirect('/' . ADMIN_PATH . '/projects');
     }
 
@@ -62,9 +155,11 @@ class ProjectController extends BaseController
     {
         $this->requireLogin();
         if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+            Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/projects');
         }
-        // TODO Phase 2
+        $this->projectModel->delete((int)$id);
+        Auth::setFlash('success', 'Projet supprimé.');
         $this->redirect('/' . ADMIN_PATH . '/projects');
     }
 }
