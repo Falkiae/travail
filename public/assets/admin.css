@@ -306,6 +306,12 @@ textarea { min-height: 120px; resize: vertical; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
 }
 
+/* ── Block Repeater ── */
+.block-repeater { margin-top: .75rem; }
+.block-repeater-row { display: flex; gap: .5rem; align-items: flex-start; margin-bottom: .5rem; }
+.block-repeater-row input, .block-repeater-row textarea { flex: 1; }
+.block-repeater-add { margin-top: .5rem; }
+
 /* ── Utilities ── */
 .mt-0 { margin-top: 0; }
 .mb-0 { margin-bottom: 0; }

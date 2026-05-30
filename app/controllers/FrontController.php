@@ -20,6 +20,21 @@ class FrontController extends BaseController
 
         $reviews = $this->fetchGoogleReviews($pdo, $settings);
 
+        $blocks = array();
+        try {
+            $stmt = $pdo->prepare("SELECT content FROM kn_pages WHERE slug = 'home' AND lang = 'fr' LIMIT 1");
+            $stmt->execute();
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if ($row && isset($row['content']) && $row['content']) {
+                $decoded = json_decode($row['content'], true);
+                if (is_array($decoded)) {
+                    $blocks = $decoded;
+                }
+            }
+        } catch (\Exception $e) {
+            $blocks = array();
+        }
+
         $this->view->render('home', [
             'title'       => 'Nettoyage à domicile — Canapés, Matelas &amp; Voitures | Keepnew',
             'meta_title'  => 'Nettoyage de canapés, matelas &amp; voitures à domicile | Keepnew',
@@ -27,6 +42,7 @@ class FrontController extends BaseController
             'booking_url' => $booking_url,
             'site_name'   => $site_name,
             'reviews'     => $reviews,
+            'blocks'      => $blocks,
             'gtm_id'       => isset($settings['gtm_id']) ? $settings['gtm_id'] : null,
             'noindex_all'  => isset($settings['noindex_all']) && $settings['noindex_all'] === '1',
             'robots_global'=> isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',
