@@ -15,7 +15,7 @@ spl_autoload_register(function (string $class): void {
         'App\\Models\\' => $appPath . '/models/',
     ];
     foreach ($map as $prefix => $dir) {
-        if (str_starts_with($class, $prefix)) {
+        if (strncmp($class, $prefix, strlen($prefix)) === 0) {
             $file = $dir . substr($class, strlen($prefix)) . '.php';
             if (file_exists($file)) {
                 require_once $file;

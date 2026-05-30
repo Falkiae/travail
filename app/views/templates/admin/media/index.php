@@ -24,7 +24,7 @@
   <div class="media-grid">
     <?php foreach ($media as $file): ?>
     <div class="media-card" data-media-id="<?= (int)$file['id'] ?>">
-      <?php if (str_starts_with($file['mime_type'] ?? '', 'image/')): ?>
+      <?php if (strncmp($file['mime_type'] ?? '', 'image/', 6) === 0): ?>
         <img src="<?= htmlspecialchars($file['path']) ?>" alt="<?= htmlspecialchars($file['alt'] ?? '') ?>" loading="lazy">
       <?php else: ?>
         <div class="media-icon">📄</div>
