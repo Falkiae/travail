@@ -11,6 +11,18 @@ function s(array $settings, string $key, string $default = ''): string {
 <form method="POST" action="/admin/settings">
   <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
 
+  <!-- Mode développement -->
+  <div class="card" style="border: 2px solid #f59e0b; background: #fffbeb;">
+    <div class="card-title">⚠️ Mode développement</div>
+    <div class="form-group">
+      <label style="display:flex; align-items:center; gap:.75rem; cursor:pointer; font-weight:600;">
+        <input type="checkbox" name="noindex_all" value="1" <?= !empty($settings['noindex_all']) && $settings['noindex_all'] === '1' ? 'checked' : '' ?> style="width:1.25rem;height:1.25rem;">
+        Bloquer l'indexation (noindex,nofollow sur toutes les pages)
+      </label>
+      <p style="margin-top:.5rem; color:#92400e; font-size:.85rem;">Active <code>noindex,nofollow</code> sur l'ensemble du site — à désactiver avant le lancement en production.</p>
+    </div>
+  </div>
+
   <!-- Général -->
   <div class="card">
     <div class="card-title">Général</div>

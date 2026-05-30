@@ -12,6 +12,12 @@
     <meta name="description" content="Keepnew — Service de nettoyage professionnel à domicile : canapés, matelas, voitures, terrasses. Zone Liège, Namur, Bruxelles, Luxembourg. Atelier à Visé.">
     <?php endif; ?>
 
+    <?php if (isset($noindex_all) && $noindex_all): ?>
+    <meta name="robots" content="noindex,nofollow">
+    <?php elseif (isset($robots_global) && $robots_global && $robots_global !== 'index,follow'): ?>
+    <meta name="robots" content="<?php echo htmlspecialchars($robots_global); ?>">
+    <?php endif; ?>
+
     <?php if (isset($canonical) && $canonical): ?>
     <link rel="canonical" href="<?php echo htmlspecialchars($canonical); ?>">
     <?php endif; ?>

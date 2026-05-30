@@ -2,6 +2,20 @@
    Keepnew — Public Page Styles
    ============================================================ */
 
+/* ── Sections ───────────────────────────────────────────────── */
+.kn-section {
+  padding: 5rem 0;
+}
+.kn-section__header {
+  margin-bottom: 3rem;
+}
+.kn-section__header--center {
+  text-align: center;
+}
+.kn-section__header h2 {
+  margin-top: .35em;
+}
+
 /* ── Navbar ─────────────────────────────────────────────────── */
 .kn-nav {
   position: sticky;
