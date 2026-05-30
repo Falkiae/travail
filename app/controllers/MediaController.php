@@ -11,42 +11,34 @@ class MediaController extends BaseController
     public function index(): void
     {
         $this->requireLogin();
-        $media = (new Media())->findAll();
+        $media     = (new Media())->findAll();
         $csrfToken = Auth::generateCsrfToken();
-        $this->view->render('admin/media/index', [
-            'title'      => 'Médiathèque',
-            'media'      => $media,
-            'csrf_token' => $csrfToken,
-        ], 'admin');
+        $this->view->render('admin/media/index', ['title' => 'Médiathèque', 'media' => $media, 'csrf_token' => $csrfToken], 'admin');
     }
 
     public function upload(): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
-            Auth::setFlash('error', 'Token CSRF invalide.');
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
+            Auth::setFlash('error', 'Token invalide.');
             $this->redirect('/' . ADMIN_PATH . '/media');
         }
-
-        $file = $_FILES['file'] ?? null;
+        $file = isset($_FILES['file']) ? $_FILES['file'] : null;
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
-            Auth::setFlash('error', 'Erreur lors de l\'upload.');
+            Auth::setFlash('error', 'Erreur upload.');
             $this->redirect('/' . ADMIN_PATH . '/media');
         }
-
         if ($file['size'] > MAX_UPLOAD_SIZE) {
             Auth::setFlash('error', 'Fichier trop lourd (max 5 Mo).');
             $this->redirect('/' . ADMIN_PATH . '/media');
         }
-
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mime  = $finfo->file($file['tmp_name']);
+        $finfo   = new \finfo(FILEINFO_MIME_TYPE);
+        $mime    = $finfo->file($file['tmp_name']);
         $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
         if (!in_array($mime, $allowed, true)) {
             Auth::setFlash('error', 'Type de fichier non autorisé.');
             $this->redirect('/' . ADMIN_PATH . '/media');
         }
-
         switch ($mime) {
             case 'image/jpeg':      $ext = 'jpg'; break;
             case 'image/png':       $ext = 'png'; break;
@@ -55,20 +47,18 @@ class MediaController extends BaseController
             case 'application/pdf': $ext = 'pdf'; break;
             default:                $ext = 'bin'; break;
         }
-
         $filename = bin2hex(random_bytes(16)) . '.' . $ext;
         $dest     = UPLOAD_DIR . $filename;
-
         if (!move_uploaded_file($file['tmp_name'], $dest)) {
-            Auth::setFlash('error', 'Erreur lors du déplacement du fichier.');
+            Auth::setFlash('error', 'Erreur déplacement fichier.');
             $this->redirect('/' . ADMIN_PATH . '/media');
         }
-
-        $width = $height = null;
+        $width = null; $height = null;
         if (strncmp($mime, 'image/', 6) === 0 && $mime !== 'image/webp') {
-            [$width, $height] = getimagesize($dest) ?: [null, null];
+            $size   = getimagesize($dest);
+            $width  = $size ? $size[0] : null;
+            $height = $size ? $size[1] : null;
         }
-
         $webpPath = null;
         if (in_array($mime, ['image/jpeg', 'image/png', 'image/gif'], true) && function_exists('imagewebp')) {
             switch ($mime) {
@@ -79,13 +69,11 @@ class MediaController extends BaseController
             }
             if ($img) {
                 $webpFilename = pathinfo($filename, PATHINFO_FILENAME) . '.webp';
-                $webpDest = UPLOAD_DIR . $webpFilename;
-                imagewebp($img, $webpDest, 85);
+                imagewebp($img, UPLOAD_DIR . $webpFilename, 85);
                 imagedestroy($img);
                 $webpPath = '/uploads/' . $webpFilename;
             }
         }
-
         (new Media())->create([
             'filename'      => $filename,
             'original_name' => basename($file['name']),
@@ -97,30 +85,30 @@ class MediaController extends BaseController
             'width'         => $width,
             'height'        => $height,
         ]);
-
-        Auth::setFlash('success', 'Fichier uploadé avec succès.');
+        Auth::setFlash('success', 'Fichier uploadé.');
         $this->redirect('/' . ADMIN_PATH . '/media');
     }
 
     public function updateAlt(): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
-            $this->json(['error' => 'Token invalide'], 403);
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
+            $this->jsonResponse(['error' => 'Token invalide'], 403);
         }
-        $id  = (int)($_POST['id'] ?? 0);
-        $alt = trim($_POST['alt'] ?? '');
+        $id  = (int)(isset($_POST['id']) ? $_POST['id'] : 0);
+        $alt = trim(isset($_POST['alt']) ? $_POST['alt'] : '');
         (new Media())->update($id, ['alt' => $alt]);
-        $this->json(['ok' => true]);
+        $this->jsonResponse(['ok' => true]);
     }
 
-    public function delete(): void
+    public function deleteMedia(): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
-            $this->json(['error' => 'Token invalide'], 403);
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
+            Auth::setFlash('error', 'Token invalide.');
+            $this->redirect('/' . ADMIN_PATH . '/media');
         }
-        $id    = (int)($_POST['id'] ?? 0);
+        $id    = (int)(isset($_POST['id']) ? $_POST['id'] : 0);
         $media = (new Media())->findById($id);
         if ($media) {
             @unlink(UPLOAD_DIR . $media['filename']);
