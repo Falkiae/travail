@@ -27,7 +27,7 @@ class SettingsController extends BaseController
     public function update(): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
             Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/settings');
         }
@@ -43,7 +43,7 @@ class SettingsController extends BaseController
         ];
 
         foreach ($allowed as $key) {
-            $value = $_POST[$key] ?? null;
+            $value = isset($_POST[$key]) ? $_POST[$key] : null;
             if ($value !== null) {
                 $pdo->prepare(
                     "INSERT INTO kn_settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = ?"

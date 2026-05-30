@@ -10,10 +10,10 @@ class RedirectionController extends BaseController
     public function index(): void
     {
         $this->requireLogin();
-        $pdo  = $this->db();
+        $pdo          = $this->db();
         $redirections = $pdo->query("SELECT * FROM kn_redirections ORDER BY id DESC")->fetchAll();
-        $csrfToken = Auth::generateCsrfToken();
-        $fromPrefill = trim($_GET['from'] ?? '');
+        $csrfToken    = Auth::generateCsrfToken();
+        $fromPrefill  = trim(isset($_GET['from']) ? $_GET['from'] : '');
         $this->view->render('admin/redirections/index', [
             'title'        => 'Redirections',
             'redirections' => $redirections,
@@ -25,13 +25,13 @@ class RedirectionController extends BaseController
     public function store(): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
             Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/redirections');
         }
 
-        $fromUrl = trim($_POST['from_url'] ?? '');
-        $toUrl   = trim($_POST['to_url'] ?? '');
+        $fromUrl = trim(isset($_POST['from_url']) ? $_POST['from_url'] : '');
+        $toUrl   = trim(isset($_POST['to_url']) ? $_POST['to_url'] : '');
 
         if ($fromUrl === '' || $toUrl === '') {
             Auth::setFlash('error', 'Les deux URLs sont obligatoires.');
@@ -47,10 +47,10 @@ class RedirectionController extends BaseController
         $this->redirect('/' . ADMIN_PATH . '/redirections');
     }
 
-    public function delete(string $id): void
+    public function deleteRedirection(string $id): void
     {
         $this->requireLogin();
-        if (!Auth::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
             Auth::setFlash('error', 'Token CSRF invalide.');
             $this->redirect('/' . ADMIN_PATH . '/redirections');
         }

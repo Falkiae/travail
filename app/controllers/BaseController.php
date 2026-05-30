@@ -9,7 +9,7 @@ use App\Core\Auth;
 
 abstract class BaseController
 {
-    protected View $view;
+    protected $view;
 
     public function __construct()
     {
@@ -22,7 +22,7 @@ abstract class BaseController
         exit;
     }
 
-    protected function json(array $data, int $status = 200): void
+    protected function jsonResponse(array $data, int $status = 200): void
     {
         http_response_code($status);
         header('Content-Type: application/json; charset=utf-8');
@@ -48,7 +48,7 @@ abstract class BaseController
         }
         $str = preg_replace('/[^a-z0-9\s-]/', '', $str);
         $str = trim(preg_replace('/[\s-]+/', '-', $str), '-');
-        return $str;
+        return $str ? $str : 'page';
     }
 
     protected function saveRevision(string $entityType, int $entityId, ?string $content): void
@@ -65,20 +65,21 @@ abstract class BaseController
 
     protected function ensureUniqueSlug(string $table, string $slug, string $lang, ?int $excludeId = null): string
     {
-        $pdo = $this->db();
+        $pdo  = $this->db();
         $base = $slug;
-        $i = 1;
+        $i    = 1;
         while (true) {
-            $sql = "SELECT id FROM `$table` WHERE slug = ? AND lang = ?";
+            $sql    = "SELECT id FROM `kn_{$table}` WHERE slug = ? AND lang = ?";
             $params = [$slug, $lang];
             if ($excludeId !== null) {
-                $sql .= ' AND id != ?';
+                $sql     .= ' AND id != ?';
                 $params[] = $excludeId;
             }
             $stmt = $pdo->prepare($sql);
             $stmt->execute($params);
             if (!$stmt->fetch()) break;
-            $slug = $base . '-' . $i++;
+            $slug = $base . '-' . $i;
+            $i++;
         }
         return $slug;
     }
