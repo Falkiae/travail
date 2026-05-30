@@ -47,14 +47,14 @@ class MediaController extends BaseController
             $this->redirect('/' . ADMIN_PATH . '/media');
         }
 
-        $ext = match($mime) {
-            'image/jpeg'      => 'jpg',
-            'image/png'       => 'png',
-            'image/gif'       => 'gif',
-            'image/webp'      => 'webp',
-            'application/pdf' => 'pdf',
-            default           => 'bin',
-        };
+        switch ($mime) {
+            case 'image/jpeg':      $ext = 'jpg'; break;
+            case 'image/png':       $ext = 'png'; break;
+            case 'image/gif':       $ext = 'gif'; break;
+            case 'image/webp':      $ext = 'webp'; break;
+            case 'application/pdf': $ext = 'pdf'; break;
+            default:                $ext = 'bin'; break;
+        }
 
         $filename = bin2hex(random_bytes(16)) . '.' . $ext;
         $dest     = UPLOAD_DIR . $filename;
@@ -71,12 +71,12 @@ class MediaController extends BaseController
 
         $webpPath = null;
         if (in_array($mime, ['image/jpeg', 'image/png', 'image/gif'], true) && function_exists('imagewebp')) {
-            $img = match($mime) {
-                'image/jpeg' => imagecreatefromjpeg($dest),
-                'image/png'  => imagecreatefrompng($dest),
-                'image/gif'  => imagecreatefromgif($dest),
-                default      => null,
-            };
+            switch ($mime) {
+                case 'image/jpeg': $img = imagecreatefromjpeg($dest); break;
+                case 'image/png':  $img = imagecreatefrompng($dest); break;
+                case 'image/gif':  $img = imagecreatefromgif($dest); break;
+                default:           $img = null; break;
+            }
             if ($img) {
                 $webpFilename = pathinfo($filename, PATHINFO_FILENAME) . '.webp';
                 $webpDest = UPLOAD_DIR . $webpFilename;

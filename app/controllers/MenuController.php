@@ -22,7 +22,6 @@ class MenuController extends BaseController
     {
         $this->requireLogin();
         $pdo  = $this->db();
-        $menu = $pdo->prepare("SELECT * FROM kn_menus WHERE id = ?")->execute([(int)$id]);
         $stmt = $pdo->prepare("SELECT * FROM kn_menus WHERE id = ? LIMIT 1");
         $stmt->execute([(int)$id]);
         $menu = $stmt->fetch();
@@ -30,7 +29,6 @@ class MenuController extends BaseController
             Auth::setFlash('error', 'Menu introuvable.');
             $this->redirect('/' . ADMIN_PATH . '/menus');
         }
-        $items = $pdo->prepare("SELECT * FROM kn_menu_items WHERE menu_id = ? ORDER BY sort_order")->execute([(int)$id]);
         $itemStmt = $pdo->prepare("SELECT * FROM kn_menu_items WHERE menu_id = ? ORDER BY sort_order");
         $itemStmt->execute([(int)$id]);
         $items = $itemStmt->fetchAll();
