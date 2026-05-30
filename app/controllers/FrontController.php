@@ -27,7 +27,9 @@ class FrontController extends BaseController
             'booking_url' => $booking_url,
             'site_name'   => $site_name,
             'reviews'     => $reviews,
-            'gtm_id'      => isset($settings['gtm_id']) ? $settings['gtm_id'] : null,
+            'gtm_id'       => isset($settings['gtm_id']) ? $settings['gtm_id'] : null,
+            'noindex_all'  => isset($settings['noindex_all']) && $settings['noindex_all'] === '1',
+            'robots_global'=> isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',
         ], 'public');
     }
 
