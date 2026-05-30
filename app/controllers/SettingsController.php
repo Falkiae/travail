@@ -40,14 +40,28 @@ class SettingsController extends BaseController
             'maintenance_mode', 'maintenance_message', 'robots_global',
             'cookie_banner_enabled', 'cookie_banner_text', 'cookie_policy_url',
             'social_linkedin', 'social_twitter', 'social_facebook', 'social_instagram',
+            'booking_url', 'google_api_key', 'google_place_id',
         ];
 
+        // Champs checkbox : toujours sauvegardés (0 si absent du POST)
+        $checkboxes = ['noindex_all', 'maintenance_mode', 'cookie_banner_enabled'];
+
+        $upsert = $pdo->prepare(
+            "INSERT INTO kn_settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = ?"
+        );
+
+        foreach ($checkboxes as $key) {
+            $value = isset($_POST[$key]) && $_POST[$key] === '1' ? '1' : '0';
+            $upsert->execute([$key, $value, $value]);
+        }
+
         foreach ($allowed as $key) {
+            if (in_array($key, $checkboxes, true)) {
+                continue;
+            }
             $value = isset($_POST[$key]) ? $_POST[$key] : null;
             if ($value !== null) {
-                $pdo->prepare(
-                    "INSERT INTO kn_settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = ?"
-                )->execute([$key, $value, $value]);
+                $upsert->execute([$key, $value, $value]);
             }
         }
 
