@@ -1,6 +1,5 @@
 <?php
-$bg = isset($block['bg']) ? $block['bg'] : 'white';
-$bgClass = 'kn-bg--' . (in_array($bg, array('white','alt','blue','night','cream','rose'), true) ? $bg : 'white');
+require_once __DIR__ . '/_block_helpers.php';
 $items = array();
 if (isset($block['items']) && is_array($block['items'])) {
     $items = $block['items'];
@@ -13,7 +12,7 @@ foreach ($items as $item) {
     $normalized[] = array('q' => $q, 'a' => $a);
 }
 ?>
-<section class="kn-section <?php echo $bgClass; ?>">
+<section class="<?php echo blockClasses($block, 'white'); ?>">
   <div class="container">
     <span class="kn-eyebrow"><?php echo htmlspecialchars(isset($block['eyebrow']) ? $block['eyebrow'] : 'FAQ'); ?></span>
     <?php if (!empty($block['title'])): ?>

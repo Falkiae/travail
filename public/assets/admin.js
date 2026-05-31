@@ -129,19 +129,58 @@ function buildBlockForm(type, data) {
     return fg('Ambiance de fond', sel('bg', BG_OPTIONS, current || 'white'));
   }
 
+  var LAYOUT_OPTIONS = [
+    ['1-1', '½ + ½  (50/50)'],
+    ['2-3', '⅖ + ⅗  (40/60)'],
+    ['3-2', '⅗ + ⅖  (60/40)'],
+    ['1-2', '⅓ + ⅔  (33/67)'],
+    ['2-1', '⅔ + ⅓  (67/33)'],
+    ['1-3', '¼ + ¾  (25/75)'],
+    ['3-1', '¾ + ¼  (75/25)'],
+    ['full','Pleine largeur (texte seul)'],
+  ];
+
+  function layoutField(current) {
+    return fg('Disposition des colonnes', sel('layout', LAYOUT_OPTIONS, current || '1-1'));
+  }
+
+  function visibilityField(current) {
+    var vis = current || ['desktop','tablet','mobile'];
+    var checks = ['desktop','tablet','mobile'].map(function(v) {
+      var labels = {desktop:'🖥 Desktop (>1024px)', tablet:'📱 Tablette (768–1024px)', mobile:'📱 Mobile (<768px)'};
+      var checked = vis.indexOf(v) !== -1 ? ' checked' : '';
+      return '<label style="display:flex;align-items:center;gap:.4rem;font-weight:normal;margin:.2rem 0;">' +
+        '<input type="checkbox" data-vis="' + v + '"' + checked + '> ' + labels[v] + '</label>';
+    }).join('');
+    return '<div class="form-group"><label>Visibilité</label><div class="vis-checks">' + checks + '</div></div>';
+  }
+
+  function reverseFields(data) {
+    return fg('Options mobile',
+      '<label style="display:flex;align-items:center;gap:.4rem;font-weight:normal;margin:.2rem 0;">' +
+      '<input type="checkbox" data-field="reverse" value="1"' + (data.reverse ? ' checked' : '') + '> Inverser l\'ordre des colonnes</label>' +
+      '<label style="display:flex;align-items:center;gap:.4rem;font-weight:normal;margin:.2rem 0;">' +
+      '<input type="checkbox" data-field="mobile_reverse" value="1"' + (data.mobile_reverse ? ' checked' : '') + '> Inverser sur mobile</label>' +
+      '<label style="display:flex;align-items:center;gap:.4rem;font-weight:normal;margin:.2rem 0;">' +
+      '<input type="checkbox" data-field="mobile_hide_visual" value="1"' + (data.mobile_hide_visual ? ' checked' : '') + '> Masquer l\'image sur mobile</label>'
+    );
+  }
+
   switch (type) {
     case 'heading':
       d.innerHTML =
         fg('Niveau', sel('level', [['h2','H2'],['h3','H3'],['h4','H4']], data.level)) +
         fg('Texte', inp('text', data.text, 'Titre…')) +
         fg('Style', sel('style', [['plain','Plain'],['tape','Tape (jaune)'],['highlight','Highlight (bleu)'],['marker','Marker']], data.style)) +
-        bgField(data.bg);
+        bgField(data.bg) +
+        visibilityField(data.visible);
       break;
 
     case 'text':
       d.innerHTML =
         fg('Contenu HTML', ta('text', data.text, '<p>Votre texte…</p>', 6)) +
-        bgField(data.bg);
+        bgField(data.bg) +
+        visibilityField(data.visible);
       break;
 
     case 'image':
@@ -149,7 +188,8 @@ function buildBlockForm(type, data) {
         fg('Image', mediaBtn('media_id', 'Médiathèque')) +
         fg('Alt', inp('alt', data.alt, 'Description de l\'image')) +
         fg('Légende', inp('caption', data.caption, 'Légende optionnelle')) +
-        bgField(data.bg);
+        bgField(data.bg) +
+        visibilityField(data.visible);
       break;
 
     case 'cta':
@@ -158,27 +198,33 @@ function buildBlockForm(type, data) {
         fg('URL', inp('url', data.url, 'https://…')) +
         fg('Ouverture', sel('target', [['_self','Même onglet'],['_blank','Nouvel onglet']], data.target)) +
         fg('Style', sel('style', [['primary','Primaire'],['outline','Contour']], data.style)) +
-        bgField(data.bg);
+        bgField(data.bg) +
+        visibilityField(data.visible);
       break;
 
     case 'html':
-      d.innerHTML = fg('HTML libre', ta('html', data.html, '<div>…</div>', 8));
+      d.innerHTML =
+        fg('HTML libre', ta('html', data.html, '<div>…</div>', 8)) +
+        visibilityField(data.visible);
       break;
 
     case 'video':
       d.innerHTML =
         fg('URL (YouTube/Vimeo)', inp('url', data.url, 'https://www.youtube.com/watch?v=…')) +
-        fg('Légende', inp('caption', data.caption, 'Légende optionnelle'));
+        fg('Légende', inp('caption', data.caption, 'Légende optionnelle')) +
+        visibilityField(data.visible);
       break;
 
     case 'file':
       d.innerHTML =
         fg('Fichier', mediaBtn('media_id', 'Médiathèque')) +
-        fg('Label du lien', inp('label', data.label, 'Télécharger le document'));
+        fg('Label du lien', inp('label', data.label, 'Télécharger le document')) +
+        visibilityField(data.visible);
       break;
 
     case 'accordion':
       d.innerHTML = bgField(data.bg) +
+        visibilityField(data.visible) +
         '<div class="accordion-items" data-field="items"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm add-accordion-item-btn" style="margin-top:.5rem">+ Ajouter un item</button>';
       // Add existing items
@@ -195,12 +241,16 @@ function buildBlockForm(type, data) {
         fg('Citation', ta('text', data.text, 'Texte de la citation…', 3)) +
         fg('Auteur', inp('author', data.author, 'Prénom Nom')) +
         fg('Fonction / Titre', inp('role', data.role, 'CEO, Entreprise')) +
-        bgField(data.bg || 'rose');
+        bgField(data.bg || 'rose') +
+        visibilityField(data.visible);
       break;
 
     case 'hero':
       d.innerHTML =
         fg('Ambiance de fond', sel('bg', [['cream','🟡 Cream (défaut)'],['white','⬜ Blanc'],['alt','🔲 Gris clair'],['blue','🔵 Bleu Keepnew'],['night','⬛ Night Ink (sombre)'],['rose','🌸 Rose (premium)']], data.bg || 'cream')) +
+        layoutField(data.layout || '1-1') +
+        reverseFields(data) +
+        visibilityField(data.visible) +
         fg('Eyebrow', inp('eyebrow', data.eyebrow, 'CANAPÉ · VOITURE · MATELAS — À DOMICILE')) +
         fg('H1', inp('h1', data.h1, 'Nettoyage à domicile de canapé, matelas et voitures.')) +
         fg('Corps de texte (HTML autorisé)', ta('body', data.body, 'Keepnew nettoie vos <strong>canapés</strong>...')) +
@@ -214,6 +264,7 @@ function buildBlockForm(type, data) {
         fg('Eyebrow', inp('eyebrow', data.eyebrow, 'NOS SERVICES')) +
         fg('H2', inp('h2', data.h2, 'Nettoyage de canapés, matelas & voitures à domicile')) +
         bgField(data.bg) +
+        visibilityField(data.visible) +
         '<div class="form-group"><label>Services</label><div class="block-repeater" data-repeater="items"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter un service</button></div>';
       (data.items || []).forEach(function(item) {
@@ -226,13 +277,16 @@ function buildBlockForm(type, data) {
 
     case 'two-col':
       d.innerHTML =
+        bgField(data.bg) +
+        layoutField(data.layout || '1-1') +
+        reverseFields(data) +
+        visibilityField(data.visible) +
         fg('Eyebrow', inp('eyebrow', data.eyebrow, 'DEUX FAÇONS DE TRAVAILLER')) +
         fg('H2', inp('h2', data.h2, 'On vient chez vous — ou vous venez chez nous.')) +
         fg('Titre gauche', inp('left_title', data.left_title, 'À domicile')) +
         fg('Corps gauche', ta('left_body', data.left_body, 'Description…', 3)) +
         fg('Titre droite', inp('right_title', data.right_title, 'Atelier à Visé')) +
-        fg('Corps droite', ta('right_body', data.right_body, 'Description…', 3)) +
-        bgField(data.bg);
+        fg('Corps droite', ta('right_body', data.right_body, 'Description…', 3));
       break;
 
     case 'how':
@@ -240,6 +294,7 @@ function buildBlockForm(type, data) {
         fg('Eyebrow', inp('eyebrow', data.eyebrow, 'RÉSERVATION EN LIGNE')) +
         fg('H2', inp('h2', data.h2, 'Réservez votre nettoyage à domicile en 2 minutes')) +
         bgField(data.bg || 'alt') +
+        visibilityField(data.visible) +
         '<div class="form-group"><label>Étapes</label><div class="block-repeater" data-repeater="steps"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="steps">+ Ajouter une étape</button></div>';
       (data.steps || []).forEach(function(item) {
@@ -255,6 +310,7 @@ function buildBlockForm(type, data) {
         fg('Eyebrow', inp('eyebrow', data.eyebrow, 'ILS NOUS FONT CONFIANCE')) +
         fg('H2', inp('h2', data.h2, '4,9/5 · +110 avis · +400 canapés nettoyés')) +
         bgField(data.bg) +
+        visibilityField(data.visible) +
         '<p style="color:var(--color-muted);font-size:.85em;margin:.5rem 0">Les avis sont chargés automatiquement depuis Google.</p>';
       break;
 
@@ -264,6 +320,7 @@ function buildBlockForm(type, data) {
         fg('H2', inp('h2', data.h2, 'Nettoyage à domicile à Liège, Namur, Bruxelles et Luxembourg')) +
         fg('Corps', ta('body', data.body, 'Description de la zone…', 3)) +
         bgField(data.bg || 'night') +
+        visibilityField(data.visible) +
         '<div class="form-group"><label>Zones (pills)</label><div class="block-repeater" data-repeater="pills"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="pills">+ Ajouter une zone</button></div>';
       (data.pills || []).forEach(function(item) {
@@ -278,7 +335,8 @@ function buildBlockForm(type, data) {
       d.innerHTML =
         fg('Eyebrow', inp('eyebrow', data.eyebrow, '📅 RÉSERVATION EN LIGNE')) +
         fg('Titre', inp('title', data.title, 'Prendre RDV en 2 min')) +
-        fg('Téléphone', inp('phone', data.phone, '+32 (0)4 55 13 84 19'));
+        fg('Téléphone', inp('phone', data.phone, '+32 (0)4 55 13 84 19')) +
+        visibilityField(data.visible);
       // cta-final is always blue — no bg selector
       break;
   }
@@ -346,10 +404,18 @@ function serializeBlock(blockItem) {
     data.items = [];
     body.querySelectorAll('.accordion-item').forEach(function(item) {
       data.items.push({
-        question: item.querySelector('[data-subfield="question"]').value,
-        answer:   item.querySelector('[data-subfield="answer"]').value,
+        q: item.querySelector('[data-subfield="q"]') ? item.querySelector('[data-subfield="q"]').value : (item.querySelector('[data-subfield="question"]') ? item.querySelector('[data-subfield="question"]').value : ''),
+        a: item.querySelector('[data-subfield="a"]') ? item.querySelector('[data-subfield="a"]').value : (item.querySelector('[data-subfield="answer"]') ? item.querySelector('[data-subfield="answer"]').value : ''),
       });
     });
+    // also collect bg + visible for accordion
+    body.querySelectorAll('[data-field]').forEach(function(el) {
+      if (el.type === 'checkbox') { if (el.checked) data[el.dataset.field] = true; return; }
+      data[el.dataset.field] = el.value;
+    });
+    var vis = [];
+    body.querySelectorAll('.vis-checks input[data-vis]').forEach(function(cb) { if (cb.checked) vis.push(cb.dataset.vis); });
+    if (vis.length) data.visible = vis;
     return data;
   }
 
@@ -364,9 +430,9 @@ function serializeBlock(blockItem) {
     var repeaterKey = repeaterTypes[type];
     // Collect regular fields first
     body.querySelectorAll('[data-field]').forEach(function(el) {
-      var field = el.dataset.field;
-      if (field.endsWith('_display')) return;
-      data[field] = el.value;
+      if (el.dataset.field.endsWith('_display')) return;
+      if (el.type === 'checkbox') { data[el.dataset.field] = el.checked; return; }
+      data[el.dataset.field] = el.value;
     });
     // Collect repeater rows
     var rows = [];
@@ -378,14 +444,24 @@ function serializeBlock(blockItem) {
       rows.push(obj);
     });
     data[repeaterKey] = rows;
+    var vis2 = [];
+    body.querySelectorAll('.vis-checks input[data-vis]').forEach(function(cb) { if (cb.checked) vis2.push(cb.dataset.vis); });
+    if (vis2.length) data.visible = vis2;
     return data;
   }
 
+  // Default: collect all data-field elements
   body.querySelectorAll('[data-field]').forEach(function(el) {
-    var field = el.dataset.field;
-    if (field.endsWith('_display')) return; // skip display-only fields
-    data[field] = el.value;
+    if (el.dataset.field.endsWith('_display')) return;
+    if (el.type === 'checkbox') { data[el.dataset.field] = el.checked; return; }
+    data[el.dataset.field] = el.value;
   });
+
+  // Visibility checkboxes
+  var vis3 = [];
+  body.querySelectorAll('.vis-checks input[data-vis]').forEach(function(cb) { if (cb.checked) vis3.push(cb.dataset.vis); });
+  if (vis3.length) data.visible = vis3;
+
   return data;
 }
 

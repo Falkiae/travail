@@ -1,36 +1,35 @@
 <?php
+require_once __DIR__ . '/_block_helpers.php';
+$sectionClass = blockClasses($block, 'white', 'kn-two-col');
+$gridClass    = gridClasses($block, '1-1');
 $bg = isset($block['bg']) ? $block['bg'] : 'white';
-$bgClass = 'kn-bg--' . (in_array($bg, array('white','alt','blue','night','cream','rose'), true) ? $bg : 'white');
-$reverse = !empty($block['reverse']);
+$isDark = ($bg === 'blue' || $bg === 'night');
 ?>
-<section class="kn-section <?php echo $bgClass; ?>">
+<section class="<?php echo $sectionClass; ?>">
   <div class="container">
-    <div class="kn-two-col__inner<?php echo $reverse ? ' kn-two-col__inner--reverse' : ''; ?>">
+    <?php if (!empty($block['eyebrow'])): ?>
+    <span class="kn-eyebrow"><?php echo htmlspecialchars($block['eyebrow']); ?></span>
+    <?php endif; ?>
+    <?php if (!empty($block['title'])): ?>
+    <h2 class="kn-section__title"><?php echo htmlspecialchars($block['title']); ?></h2>
+    <?php endif; ?>
+    <div class="<?php echo $gridClass; ?>">
       <div class="kn-two-col__content">
-        <?php if (!empty($block['eyebrow'])): ?>
-        <span class="kn-eyebrow"><?php echo htmlspecialchars($block['eyebrow']); ?></span>
-        <?php else: ?>
-        <span class="kn-eyebrow">DEUX FAÇONS DE TRAVAILLER</span>
-        <?php endif; ?>
-        <?php if (!empty($block['title'])): ?>
-        <h2 class="kn-section__title"><?php echo htmlspecialchars($block['title']); ?></h2>
-        <?php elseif (!empty($block['h2'])): ?>
-        <h2 class="kn-section__title"><?php echo htmlspecialchars($block['h2']); ?></h2>
-        <?php else: ?>
-        <h2 class="kn-section__title">On vient chez vous — ou vous venez chez nous.</h2>
-        <?php endif; ?>
         <?php if (!empty($block['left_title'])): ?>
-        <p class="kn-two-col__block-title"><?php echo htmlspecialchars($block['left_title']); ?></p>
+        <h3><?php echo htmlspecialchars($block['left_title']); ?></h3>
         <?php endif; ?>
         <?php if (!empty($block['left_body'])): ?>
         <p><?php echo htmlspecialchars($block['left_body']); ?></p>
         <?php endif; ?>
+        <?php if (!empty($block['left_cta_label']) && !empty($block['left_cta_url'])): ?>
+        <a href="<?php echo htmlspecialchars($block['left_cta_url']); ?>" class="kn-btn" style="margin-top:1rem;"><?php echo htmlspecialchars($block['left_cta_label']); ?></a>
+        <?php endif; ?>
       </div>
       <div class="kn-two-col__visual">
         <?php if (!empty($block['image_url'])): ?>
-        <img src="<?php echo htmlspecialchars($block['image_url']); ?>" alt="<?php echo htmlspecialchars(isset($block['image_alt']) ? $block['image_alt'] : ''); ?>" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+        <img src="<?php echo htmlspecialchars($block['image_url']); ?>" alt="<?php echo htmlspecialchars(isset($block['image_alt']) ? $block['image_alt'] : ''); ?>" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:var(--r-card);">
         <?php else: ?>
-        <span><?php echo htmlspecialchars(isset($block['right_title']) ? $block['right_title'] : 'Photo'); ?></span>
+        <div class="kn-placeholder" style="min-height:300px;">Image</div>
         <?php endif; ?>
       </div>
     </div>
