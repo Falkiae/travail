@@ -147,49 +147,60 @@
 
 .kn-hero__inner {
   display: grid;
-  gap: 3.5rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
   align-items: center;
+  min-height: 80vh;
+  padding: 2rem 0;
+}
+
+.kn-hero__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .kn-hero__heading {
   font-weight: 900;
   font-style: italic;
-  line-height: .92;
-  letter-spacing: -.02em;
-  font-size: clamp(2.4rem, 5vw + .5rem, 4.5rem);
-  color: var(--kn-white);
-  margin-bottom: 1.5rem;
+  line-height: .88;
+  letter-spacing: -.03em;
+  font-size: clamp(3rem, 6.5vw, 6rem);
+  margin: 0;
 }
 
-.kn-hero__heading .kn-hero__sub {
-  display: block;
-  font-size: .65em;
-  opacity: .85;
-  margin-top: .3em;
+.kn-hero__body {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--kn-muted);
+  max-width: 520px;
 }
+.kn-hero__body strong { color: var(--kn-night); font-weight: 700; }
+.kn-bg--blue .kn-hero__body,
+.kn-bg--night .kn-hero__body { color: rgba(255,255,255,.8); }
+.kn-bg--blue .kn-hero__body strong,
+.kn-bg--night .kn-hero__body strong { color: var(--kn-white); }
 
 .kn-hero__pills {
-  margin-bottom: 2rem;
-}
-
-.kn-hero__social-proof {
-  margin-top: 2rem;
-  font-size: .9375rem;
-  font-weight: 600;
-  color: rgba(255,255,255,.8);
-  letter-spacing: .02em;
-}
-
-.kn-hero__img-placeholder {
-  background: var(--kn-blue-050);
-  border-radius: var(--r-card);
-  aspect-ratio: 16 / 9;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--kn-blue-700);
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.kn-hero__proof {
+  font-size: .875rem;
   font-weight: 600;
-  font-size: .9375rem;
+}
+
+.kn-hero__visual {
+  border-radius: var(--r-card);
+  overflow: hidden;
+  aspect-ratio: 4/3;
+}
+.kn-hero__visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* ── Services Section ───────────────────────────────────────── */
