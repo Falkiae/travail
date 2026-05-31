@@ -1,38 +1,34 @@
 <?php
-$svc_items = array();
-if (isset($block['items']) && is_array($block['items']) && !empty($block['items'])) {
-    $svc_items = $block['items'];
-} elseif (isset($block['items']) && is_string($block['items'])) {
-    $d = json_decode($block['items'], true);
-    if (is_array($d)) $svc_items = $d;
-}
-if (empty($svc_items)) {
-    $svc_items = array(
-        array('name' => 'Canapé',                'desc' => 'Aspiration profonde, vapeur, anti-odeurs.', 'icon' => '🛋️'),
-        array('name' => 'Matelas',               'desc' => 'Nettoyage en profondeur, anti-acariens.',   'icon' => '🛏️'),
-        array('name' => 'Voiture',               'desc' => 'Intérieur complet, sièges, moquettes.',     'icon' => '🚗'),
-        array('name' => 'Polissage & Céramique', 'desc' => 'Protection longue durée.',                  'icon' => '✨'),
-        array('name' => 'Terrasse',              'desc' => 'Haute pression et anti-mousse.',             'icon' => '🏠'),
-        array('name' => 'Atelier Visé',          'desc' => 'Traitements approfondis en atelier.',       'icon' => '🔧'),
-    );
-}
+$bg = isset($block['bg']) ? $block['bg'] : 'white';
+$bgClass = 'kn-bg--' . (in_array($bg, array('white','alt','blue','night','cream','rose'), true) ? $bg : 'white');
+$items = isset($block['items']) && is_array($block['items']) ? $block['items'] : array(
+  array('icon' => '🛋️', 'title' => 'Canapé & fauteuil', 'desc' => 'Aspiration profonde, vapeur, anti-odeurs.', 'url' => '/services/canape'),
+  array('icon' => '🛏️', 'title' => 'Matelas', 'desc' => 'Nettoyage en profondeur, désinfection UV.', 'url' => '/services/matelas'),
+  array('icon' => '🚗', 'title' => 'Voiture', 'desc' => 'Intérieur complet, cuir, moquette, vitrerie.', 'url' => '/services/voiture'),
+  array('icon' => '🏠', 'title' => 'Terrasse', 'desc' => 'Carrelage, pierre naturelle, bois composite.', 'url' => '/services/terrasse'),
+  array('icon' => '✨', 'title' => 'Polissage', 'desc' => 'Céramique, lustrage carrosserie, protection.', 'url' => '/services/polissage'),
+);
 ?>
-<section class="kn-services kn-section" aria-labelledby="services-heading">
-    <div class="container">
-        <header class="kn-section__header kn-section__header--center">
-            <span class="kn-eyebrow"><?php echo htmlspecialchars(isset($block['eyebrow']) ? $block['eyebrow'] : 'NOS SERVICES'); ?></span>
-            <h2 id="services-heading"><?php echo htmlspecialchars(isset($block['h2']) ? $block['h2'] : 'Nettoyage de canapés, matelas & voitures à domicile'); ?></h2>
-        </header>
-        <ul class="kn-services__grid" role="list">
-        <?php foreach ($svc_items as $svc): ?>
-            <li class="kn-card kn-service-card">
-                <div class="kn-service-card__icon" aria-hidden="true"><?php echo htmlspecialchars(isset($svc['icon']) ? $svc['icon'] : ''); ?></div>
-                <div>
-                    <h3 class="kn-service-card__title"><?php echo htmlspecialchars(isset($svc['name']) ? $svc['name'] : ''); ?></h3>
-                    <p class="kn-service-card__desc"><?php echo htmlspecialchars(isset($svc['desc']) ? $svc['desc'] : ''); ?></p>
-                </div>
-            </li>
-        <?php endforeach; ?>
-        </ul>
+<section class="kn-section <?php echo $bgClass; ?>">
+  <div class="container">
+    <?php if (!empty($block['eyebrow'])): ?>
+    <span class="kn-eyebrow"><?php echo htmlspecialchars($block['eyebrow']); ?></span>
+    <?php else: ?>
+    <span class="kn-eyebrow">NOS SERVICES</span>
+    <?php endif; ?>
+    <?php if (!empty($block['title'])): ?>
+    <h2 class="kn-section__title"><?php echo htmlspecialchars($block['title']); ?></h2>
+    <?php else: ?>
+    <h2 class="kn-section__title">On s'occupe de <span class="kn-tape">tout</span>.</h2>
+    <?php endif; ?>
+    <div class="kn-services__grid">
+      <?php foreach ($items as $svc): ?>
+      <a class="kn-card kn-service-card" href="<?php echo htmlspecialchars(isset($svc['url']) ? $svc['url'] : '#'); ?>">
+        <div class="kn-service-card__icon"><?php echo isset($svc['icon']) ? $svc['icon'] : '✦'; ?></div>
+        <h3><?php echo htmlspecialchars(isset($svc['title']) ? $svc['title'] : (isset($svc['name']) ? $svc['name'] : '')); ?></h3>
+        <p><?php echo htmlspecialchars(isset($svc['desc']) ? $svc['desc'] : ''); ?></p>
+      </a>
+      <?php endforeach; ?>
     </div>
+  </div>
 </section>

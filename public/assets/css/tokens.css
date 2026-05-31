@@ -391,3 +391,21 @@ p {
 
 .text-center { text-align: center; }
 .text-muted   { color: var(--kn-muted); }
+
+/* Background ambiances */
+.kn-bg--white   { background: var(--kn-white); color: var(--kn-night); }
+.kn-bg--alt     { background: var(--kn-bg-alt); color: var(--kn-night); }
+.kn-bg--blue    { background: var(--kn-blue); color: var(--kn-white); }
+.kn-bg--night   { background: var(--kn-night); color: var(--kn-white); }
+.kn-bg--cream   { background: var(--kn-cream); color: var(--kn-night); }
+.kn-bg--rose    { background: var(--kn-rose); color: var(--kn-night); }
+
+.kn-bg--blue .kn-eyebrow,
+.kn-bg--night .kn-eyebrow { color: var(--kn-yellow); }
+
+.kn-bg--blue h2, .kn-bg--blue .h2,
+.kn-bg--blue h1, .kn-bg--blue .h1,
+.kn-bg--night h2, .kn-bg--night .h2,
+.kn-bg--night h1, .kn-bg--night .h1 { color: var(--kn-white); }
+
+.kn-bg--blue p, .kn-bg--night p { color: rgba(255,255,255,.85); }
