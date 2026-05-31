@@ -200,11 +200,13 @@ function buildBlockForm(type, data) {
 
     case 'hero':
       d.innerHTML =
-        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'NETTOYAGE À DOMICILE · LIÈGE · NAMUR · BRUXELLES')) +
-        fg('H1', inp('h1', data.h1, 'Nettoyage de canapés, matelas & voitures')) +
-        fg('H1 sous-titre', inp('h1_sub', data.h1_sub, 'à domicile ou en atelier.')) +
+        fg('Ambiance de fond', sel('bg', [['cream','🟡 Cream (défaut)'],['white','⬜ Blanc'],['alt','🔲 Gris clair'],['blue','🔵 Bleu Keepnew'],['night','⬛ Night Ink (sombre)'],['rose','🌸 Rose (premium)']], data.bg || 'cream')) +
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'CANAPÉ · VOITURE · MATELAS — À DOMICILE')) +
+        fg('H1', inp('h1', data.h1, 'Nettoyage à domicile de canapé, matelas et voitures.')) +
+        fg('Corps de texte (HTML autorisé)', ta('body', data.body, 'Keepnew nettoie vos <strong>canapés</strong>...')) +
+        fg('CTA — Eyebrow', inp('cta_eyebrow', data.cta_eyebrow, 'RÉSERVATION EN LIGNE')) +
+        fg('CTA — Titre', inp('cta_title', data.cta_title, 'Prendre RDV en 2 min')) +
         fg('Preuve sociale', inp('social_proof', data.social_proof, '4,9/5 · +110 avis · +400 canapés · +250 voitures'));
-      // Hero is always blue — no bg selector
       break;
 
     case 'services':
