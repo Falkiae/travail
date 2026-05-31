@@ -1,9 +1,8 @@
 <?php
-$bg = isset($block['bg']) ? $block['bg'] : 'white';
-$bgClass = 'kn-bg--' . (in_array($bg, array('white','alt','blue','night','cream','rose'), true) ? $bg : 'white');
+require_once __DIR__ . '/_block_helpers.php';
 $src = isset($block['src']) ? $block['src'] : (isset($block['path']) ? $block['path'] : '');
 ?>
-<section class="kn-section <?php echo $bgClass; ?>">
+<section class="<?php echo blockClasses($block, 'white'); ?>">
   <div class="container" style="text-align:center;">
     <?php if (!empty($src)): ?>
     <img src="<?php echo htmlspecialchars($src); ?>" alt="<?php echo htmlspecialchars(isset($block['alt']) ? $block['alt'] : ''); ?>" loading="lazy" style="max-width:100%;border-radius:var(--r-card);">

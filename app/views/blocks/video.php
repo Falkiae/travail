@@ -6,11 +6,10 @@ if (preg_match('/youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/', $url, $m) || preg_ma
 } elseif (preg_match('/vimeo\.com\/(\d+)/', $url, $m)) {
     $embed = 'https://player.vimeo.com/video/' . $m[1];
 }
-$bg = isset($block['bg']) ? $block['bg'] : 'white';
-$bgClass = 'kn-bg--' . (in_array($bg, array('white','alt','blue','night','cream','rose'), true) ? $bg : 'white');
+require_once __DIR__ . '/_block_helpers.php';
 ?>
 <?php if ($embed): ?>
-<section class="kn-section <?php echo $bgClass; ?>">
+<section class="<?php echo blockClasses($block, 'white'); ?>">
   <div class="container">
     <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--r-card);">
       <iframe src="<?php echo htmlspecialchars($embed); ?>" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy"></iframe>

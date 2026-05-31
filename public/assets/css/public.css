@@ -142,11 +142,8 @@
   overflow: hidden;
 }
 
+/* .kn-hero__inner grid is now handled by .kn-grid--* classes */
 .kn-hero__inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: center;
   min-height: 80vh;
   padding: 2rem 0;
 }
@@ -544,10 +541,6 @@
     display: none;
   }
 
-  .kn-hero__inner {
-    grid-template-columns: 1fr 1fr;
-  }
-
   .kn-services__grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -622,9 +615,7 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); }
 .kn-accordion__a { padding: 0 1.25rem 1.1rem; color: var(--kn-muted); line-height: 1.7; }
 
 /* ── Two-col (design charter) ───────────────── */
-.kn-two-col__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-.kn-two-col__inner--reverse { direction: rtl; }
-.kn-two-col__inner--reverse > * { direction: ltr; }
+/* .kn-two-col__inner grid is now handled by .kn-grid--* classes */
 .kn-two-col__content { display: flex; flex-direction: column; gap: 1.25rem; }
 .kn-two-col__visual { border-radius: var(--r-card); overflow: hidden; aspect-ratio: 4/3; background: var(--kn-bg-alt); display: flex; align-items: center; justify-content: center; color: var(--kn-muted); }
 
@@ -641,7 +632,4 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); }
 /* ── How it works – step num colors ─────────── */
 .kn-bg--blue .kn-how__num, .kn-bg--night .kn-how__num { color: var(--kn-yellow); }
 
-@media (max-width: 768px) {
-  .kn-zone__inner,
-  .kn-two-col__inner { grid-template-columns: 1fr; }
-}
+/* .kn-two-col__inner and .kn-zone__inner mobile stacking now handled by .kn-grid--* */

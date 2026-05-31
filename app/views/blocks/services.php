@@ -1,6 +1,5 @@
 <?php
-$bg = isset($block['bg']) ? $block['bg'] : 'white';
-$bgClass = 'kn-bg--' . (in_array($bg, array('white','alt','blue','night','cream','rose'), true) ? $bg : 'white');
+require_once __DIR__ . '/_block_helpers.php';
 $items = isset($block['items']) && is_array($block['items']) ? $block['items'] : array(
   array('icon' => '🛋️', 'title' => 'Canapé & fauteuil', 'desc' => 'Aspiration profonde, vapeur, anti-odeurs.', 'url' => '/services/canape'),
   array('icon' => '🛏️', 'title' => 'Matelas', 'desc' => 'Nettoyage en profondeur, désinfection UV.', 'url' => '/services/matelas'),
@@ -9,7 +8,7 @@ $items = isset($block['items']) && is_array($block['items']) ? $block['items'] :
   array('icon' => '✨', 'title' => 'Polissage', 'desc' => 'Céramique, lustrage carrosserie, protection.', 'url' => '/services/polissage'),
 );
 ?>
-<section class="kn-section <?php echo $bgClass; ?>">
+<section class="<?php echo blockClasses($block, 'white'); ?>">
   <div class="container">
     <?php if (!empty($block['eyebrow'])): ?>
     <span class="kn-eyebrow"><?php echo htmlspecialchars($block['eyebrow']); ?></span>

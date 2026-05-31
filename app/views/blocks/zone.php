@@ -1,6 +1,5 @@
 <?php
-$bg = isset($block['bg']) ? $block['bg'] : 'night';
-$bgClass = 'kn-bg--' . (in_array($bg, array('white','alt','blue','night','cream','rose'), true) ? $bg : 'night');
+require_once __DIR__ . '/_block_helpers.php';
 $zones = isset($block['zones']) && is_array($block['zones']) ? $block['zones'] : array('Liège','Namur','Bruxelles','Luxembourg','Visé','Herstal','Seraing','Huy');
 // Also support pills array from admin (each pill has 'label' key)
 if (isset($block['pills']) && is_array($block['pills']) && !isset($block['zones'])) {
@@ -10,7 +9,7 @@ if (isset($block['pills']) && is_array($block['pills']) && !isset($block['zones'
     }
 }
 ?>
-<section class="kn-section <?php echo $bgClass; ?>">
+<section class="<?php echo blockClasses($block, 'night'); ?>">
   <div class="container">
     <div class="kn-zone__inner">
       <div class="kn-zone__content">

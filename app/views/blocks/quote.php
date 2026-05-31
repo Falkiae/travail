@@ -1,8 +1,7 @@
 <?php
-$bg = isset($block['bg']) ? $block['bg'] : 'rose';
-$bgClass = 'kn-bg--' . (in_array($bg, array('white','alt','blue','night','cream','rose'), true) ? $bg : 'rose');
+require_once __DIR__ . '/_block_helpers.php';
 ?>
-<section class="kn-section <?php echo $bgClass; ?>">
+<section class="<?php echo blockClasses($block, 'rose'); ?>">
   <div class="container">
     <div class="kn-quote">
       <p class="kn-quote__text">&ldquo;<?php echo htmlspecialchars(isset($block['text']) ? $block['text'] : ''); ?>&rdquo;</p>
