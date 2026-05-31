@@ -375,6 +375,26 @@ p {
   text-decoration: none;
 }
 
+/* Arrow button variants */
+.kn-cta-pave__arrow--white {
+  border-color: var(--kn-white);
+  color: var(--kn-white);
+}
+.kn-cta-pave__arrow--white:hover {
+  background: var(--kn-white);
+  color: var(--kn-blue);
+}
+/* On light bg: solid blue arrow */
+.kn-cta-pave__arrow--solid {
+  border-color: var(--kn-blue);
+  color: var(--kn-blue);
+  background: transparent;
+}
+.kn-cta-pave__arrow--solid:hover {
+  background: var(--kn-blue);
+  color: var(--kn-white);
+}
+
 /* 11. Misc Helpers
    ------------------------------------------------------------ */
 .sr-only {
