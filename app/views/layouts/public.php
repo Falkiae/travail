@@ -60,50 +60,113 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- ── Navigation ──────────────────────────────────────────── -->
 <nav class="kn-nav" aria-label="Navigation principale">
-    <div class="container">
-        <div class="kn-nav__inner">
-            <a class="kn-nav__logo" href="/">Keepnew</a>
-
-            <ul class="kn-nav__menu" role="list">
-                <?php if (isset($nav_items) && is_array($nav_items) && count($nav_items) > 0): ?>
-                    <?php foreach ($nav_items as $nav_item): ?>
-                    <li><a href="<?php echo htmlspecialchars($nav_item['url']); ?>"><?php echo htmlspecialchars($nav_item['label']); ?></a></li>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <li><a href="/services">Services</a></li>
-                    <li><a href="/zones">Zones</a></li>
-                    <li><a href="/atelier">Atelier</a></li>
-                    <li><a href="/blog">Blog</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                <?php endif; ?>
-            </ul>
-
-            <a href="<?php echo isset($booking_url) && $booking_url ? htmlspecialchars($booking_url) : '#'; ?>" class="kn-btn kn-nav__cta" style="display:none;">
-                Prendre RDV
-            </a>
-
-            <button class="kn-nav__toggle" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </div>
-    <div id="mobile-nav" class="kn-nav__mobile" role="navigation">
-        <?php if (isset($nav_items) && is_array($nav_items) && count($nav_items) > 0): ?>
-            <?php foreach ($nav_items as $nav_item): ?>
-            <a href="<?php echo htmlspecialchars($nav_item['url']); ?>"><?php echo htmlspecialchars($nav_item['label']); ?></a>
-            <?php endforeach; ?>
+  <div class="container">
+    <div class="kn-nav__inner">
+      <a class="kn-nav__logo" href="/">Keepnew</a>
+      <ul class="kn-nav__menu" role="list">
+        <?php if (!empty($nav_items)): ?>
+          <?php foreach ($nav_items as $item): ?>
+            <?php
+              $has_children = !empty($item['children']);
+              $has_cols = false;
+              if ($has_children) {
+                foreach ($item['children'] as $child) {
+                  if (!empty($child['col'])) { $has_cols = true; break; }
+                }
+              }
+              $is_cta = !empty($item['cta']);
+            ?>
+            <?php if ($is_cta): ?>
+              <li><a href="<?php echo htmlspecialchars(isset($item['url']) ? $item['url'] : '#'); ?>" class="kn-btn" target="<?php echo htmlspecialchars(isset($item['target']) ? $item['target'] : '_self'); ?>"><?php echo htmlspecialchars($item['label']); ?></a></li>
+            <?php elseif ($has_children && $has_cols): ?>
+              <!-- MEGA MENU -->
+              <li class="kn-nav__has-mega">
+                <a href="<?php echo htmlspecialchars(isset($item['url']) ? $item['url'] : '#'); ?>" class="kn-nav__parent"><?php echo htmlspecialchars($item['label']); ?> <span class="kn-nav__arrow">&#9662;</span></a>
+                <div class="kn-mega">
+                  <div class="container">
+                    <div class="kn-mega__grid">
+                      <?php
+                        $cols = array();
+                        foreach ($item['children'] as $child) {
+                          $c = (int)(isset($child['col']) ? $child['col'] : 1);
+                          $cols[$c][] = $child;
+                        }
+                        ksort($cols);
+                        foreach ($cols as $col_items):
+                      ?>
+                      <div class="kn-mega__col">
+                        <?php foreach ($col_items as $ci): ?>
+                        <a href="<?php echo htmlspecialchars(isset($ci['url']) ? $ci['url'] : '#'); ?>" class="kn-mega__link" target="<?php echo htmlspecialchars(isset($ci['target']) ? $ci['target'] : '_self'); ?>">
+                          <?php echo htmlspecialchars($ci['label']); ?>
+                          <?php if (!empty($ci['badge'])): ?>
+                          <span class="kn-mega__badge"><?php echo htmlspecialchars($ci['badge']); ?></span>
+                          <?php endif; ?>
+                        </a>
+                        <?php endforeach; ?>
+                      </div>
+                      <?php endforeach; ?>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            <?php elseif ($has_children): ?>
+              <!-- DROPDOWN -->
+              <li class="kn-nav__has-drop">
+                <a href="<?php echo htmlspecialchars(isset($item['url']) ? $item['url'] : '#'); ?>" class="kn-nav__parent"><?php echo htmlspecialchars($item['label']); ?> <span class="kn-nav__arrow">&#9662;</span></a>
+                <ul class="kn-dropdown">
+                  <?php foreach ($item['children'] as $ci): ?>
+                  <li>
+                    <a href="<?php echo htmlspecialchars(isset($ci['url']) ? $ci['url'] : '#'); ?>" target="<?php echo htmlspecialchars(isset($ci['target']) ? $ci['target'] : '_self'); ?>">
+                      <?php echo htmlspecialchars($ci['label']); ?>
+                      <?php if (!empty($ci['badge'])): ?>
+                      <span class="kn-mega__badge"><?php echo htmlspecialchars($ci['badge']); ?></span>
+                      <?php endif; ?>
+                    </a>
+                  </li>
+                  <?php endforeach; ?>
+                </ul>
+              </li>
+            <?php else: ?>
+              <li><a href="<?php echo htmlspecialchars(isset($item['url']) ? $item['url'] : '#'); ?>" target="<?php echo htmlspecialchars(isset($item['target']) ? $item['target'] : '_self'); ?>"><?php echo htmlspecialchars($item['label']); ?></a></li>
+            <?php endif; ?>
+          <?php endforeach; ?>
         <?php else: ?>
-            <a href="/services">Services</a>
-            <a href="/zones">Zones</a>
-            <a href="/atelier">Atelier</a>
-            <a href="/blog">Blog</a>
-            <a href="/contact">Contact</a>
+          <li><a href="/services">Services</a></li>
+          <li><a href="/zones">Zones</a></li>
+          <li><a href="/atelier">Atelier</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/contact">Contact</a></li>
         <?php endif; ?>
-        <a href="<?php echo isset($booking_url) && $booking_url ? htmlspecialchars($booking_url) : '#'; ?>" style="margin-top:.75rem; display:inline-block; font-weight:800; color:var(--kn-blue);">&#8594; Prendre RDV en 2 min</a>
+      </ul>
+      <a href="<?php echo htmlspecialchars(isset($booking_url) ? $booking_url : '#'); ?>" class="kn-btn kn-nav__cta" style="display:none;">Prendre RDV</a>
+      <button class="kn-nav__toggle" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav">
+        <span></span><span></span><span></span>
+      </button>
     </div>
+  </div>
+  <!-- mega menu overlay -->
+  <div class="kn-mega-overlay"></div>
 </nav>
+<!-- mobile nav: flat list of all links -->
+<div id="mobile-nav" class="kn-nav__mobile" role="navigation">
+  <?php if (!empty($nav_items)): ?>
+    <?php foreach ($nav_items as $item): ?>
+      <a href="<?php echo htmlspecialchars(isset($item['url']) ? $item['url'] : '#'); ?>"><?php echo htmlspecialchars($item['label']); ?></a>
+      <?php if (!empty($item['children'])): ?>
+        <?php foreach ($item['children'] as $ci): ?>
+          <a href="<?php echo htmlspecialchars(isset($ci['url']) ? $ci['url'] : '#'); ?>" style="padding-left:1.5rem; font-size:.875rem; opacity:.8;"><?php echo htmlspecialchars($ci['label']); ?></a>
+        <?php endforeach; ?>
+      <?php endif; ?>
+    <?php endforeach; ?>
+  <?php else: ?>
+    <a href="/services">Services</a>
+    <a href="/zones">Zones</a>
+    <a href="/atelier">Atelier</a>
+    <a href="/blog">Blog</a>
+    <a href="/contact">Contact</a>
+  <?php endif; ?>
+  <a href="<?php echo htmlspecialchars(isset($booking_url) ? $booking_url : '#'); ?>" style="margin-top:.75rem; display:inline-block; font-weight:800; color:var(--kn-blue);">&#8594; Prendre RDV en 2 min</a>
+</div>
 
 <!-- ── Flash Messages ───────────────────────────────────────── -->
 <?php if (isset($_SESSION['flash']) && $_SESSION['flash']): ?>

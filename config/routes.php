@@ -40,8 +40,11 @@ return [
     'GET /admin/media/json'                     => ['MediaController', 'jsonList'],
 
     'GET /admin/menus'                          => ['MenuController', 'index'],
+    'GET /admin/menus/new'                      => ['MenuController', 'create'],
+    'POST /admin/menus/new'                     => ['MenuController', 'store'],
     'GET /admin/menus/{id}/edit'                => ['MenuController', 'edit'],
     'POST /admin/menus/{id}/edit'               => ['MenuController', 'update'],
+    'POST /admin/menus/{id}/delete'             => ['MenuController', 'deleteMenu'],
 
     'GET /admin/blocks'                         => ['BlockController', 'index'],
     'GET /admin/blocks/{type}/edit'             => ['BlockController', 'edit'],

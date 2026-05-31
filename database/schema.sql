@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS `kn_menus` (
   `name` varchar(100) NOT NULL,
   `location` enum('header','footer') NOT NULL,
   `lang` varchar(2) NOT NULL DEFAULT 'fr',
+  `items` TEXT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
