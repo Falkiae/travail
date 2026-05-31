@@ -332,6 +332,15 @@ p {
   color: var(--kn-yellow);
 }
 
+.kn-cta-pave__row {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
 .kn-cta-pave__title {
   font-weight: 900;
   font-style: italic;
@@ -339,7 +348,7 @@ p {
   line-height: .95;
   letter-spacing: -.02em;
   color: var(--kn-white);
-  margin-bottom: 2rem;
+  margin: 0;
 }
 
 .kn-cta-pave__arrow {

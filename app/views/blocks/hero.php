@@ -57,10 +57,12 @@ $arrowClass = $isDark ? 'kn-cta-pave__arrow kn-cta-pave__arrow--white' : 'kn-cta
         </div>
         <div class="kn-hero__cta-block" style="<?php echo $ctaBlockStyle; ?>border-radius:var(--r-card);padding:2rem;display:flex;flex-direction:column;align-items:flex-start;gap:.75rem;">
           <span class="kn-eyebrow" style="color:<?php echo $ctaEyebrowColor; ?>;">&#128197; <?php echo htmlspecialchars(isset($block['cta_eyebrow']) ? $block['cta_eyebrow'] : 'RÉSERVATION EN LIGNE'); ?></span>
-          <p class="kn-cta-pave__title" style="color:<?php echo $ctaTitleColor; ?>;font-size:clamp(1.6rem,2.5vw,2.2rem);font-weight:900;font-style:italic;line-height:.95;margin:0;">
-            <?php echo htmlspecialchars(isset($block['cta_title']) ? $block['cta_title'] : 'Prendre RDV en 2 min'); ?>
-          </p>
-          <a href="<?php echo htmlspecialchars($booking_url); ?>" class="<?php echo $arrowClass; ?>" aria-label="Prendre rendez-vous">&#8594;</a>
+          <div class="kn-cta-pave__row" style="justify-content:flex-start;">
+            <p class="kn-cta-pave__title" style="color:<?php echo $ctaTitleColor; ?>;font-size:clamp(1.6rem,2.5vw,2.2rem);font-weight:900;font-style:italic;line-height:.95;margin:0;">
+              <?php echo htmlspecialchars(isset($block['cta_title']) ? $block['cta_title'] : 'Prendre RDV en 2 min'); ?>
+            </p>
+            <a href="<?php echo htmlspecialchars($booking_url); ?>" class="<?php echo $arrowClass; ?>" aria-label="Prendre rendez-vous">&#8594;</a>
+          </div>
         </div>
         <p class="kn-hero__proof" style="color:<?php echo $proofColor; ?>;">
           <?php echo htmlspecialchars(isset($block['social_proof']) ? $block['social_proof'] : '4,9/5 · +110 avis · +400 canapés · +250 voitures'); ?>
