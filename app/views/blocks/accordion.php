@@ -1,29 +1,50 @@
 <?php
-$acc_items = array();
+$bg = isset($block['bg']) ? $block['bg'] : 'white';
+$bgClass = 'kn-bg--' . (in_array($bg, array('white','alt','blue','night','cream','rose'), true) ? $bg : 'white');
+$items = array();
 if (isset($block['items']) && is_array($block['items'])) {
-    $acc_items = $block['items'];
+    $items = $block['items'];
+}
+// Map old 'question'/'answer' keys to 'q'/'a'
+$normalized = array();
+foreach ($items as $item) {
+    $q = isset($item['q']) ? $item['q'] : (isset($item['question']) ? $item['question'] : '');
+    $a = isset($item['a']) ? $item['a'] : (isset($item['answer']) ? $item['answer'] : '');
+    $normalized[] = array('q' => $q, 'a' => $a);
 }
 ?>
-<section class="kn-faq kn-section" aria-labelledby="faq-heading">
-    <div class="container">
-        <header class="kn-section__header kn-section__header--center">
-            <span class="kn-eyebrow">VOS QUESTIONS</span>
-            <h2 id="faq-heading">Questions fréquentes sur le nettoyage à domicile</h2>
-        </header>
-        <dl class="kn-faq__list">
-        <?php foreach ($acc_items as $faq_item): ?>
-            <div class="kn-faq__item" itemscope itemtype="https://schema.org/Question">
-                <dt>
-                    <button class="kn-faq__question" aria-expanded="false" itemprop="name">
-                        <?php echo htmlspecialchars(isset($faq_item['question']) ? $faq_item['question'] : ''); ?>
-                        <span class="kn-faq__icon" aria-hidden="true">+</span>
-                    </button>
-                </dt>
-                <dd class="kn-faq__answer" itemscope itemtype="https://schema.org/Answer" itemprop="acceptedAnswer">
-                    <p itemprop="text"><?php echo htmlspecialchars(isset($faq_item['answer']) ? $faq_item['answer'] : ''); ?></p>
-                </dd>
-            </div>
-        <?php endforeach; ?>
-        </dl>
+<section class="kn-section <?php echo $bgClass; ?>">
+  <div class="container">
+    <span class="kn-eyebrow"><?php echo htmlspecialchars(isset($block['eyebrow']) ? $block['eyebrow'] : 'FAQ'); ?></span>
+    <?php if (!empty($block['title'])): ?>
+    <h2 class="kn-section__title"><?php echo htmlspecialchars($block['title']); ?></h2>
+    <?php else: ?>
+    <h2 class="kn-section__title">Vous avez des <span class="kn-highlight">questions</span>&nbsp;?</h2>
+    <?php endif; ?>
+    <div class="kn-accordion">
+      <?php foreach ($normalized as $faq): ?>
+      <details class="kn-accordion__item">
+        <summary class="kn-accordion__q"><?php echo htmlspecialchars($faq['q']); ?></summary>
+        <div class="kn-accordion__a"><p><?php echo htmlspecialchars($faq['a']); ?></p></div>
+      </details>
+      <?php endforeach; ?>
     </div>
+  </div>
 </section>
+<?php if (!empty($normalized)): ?>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    <?php
+    $faq_ld = array();
+    foreach ($normalized as $faq) {
+        $faq_ld[] = '{"@type":"Question","name":' . json_encode($faq['q']) . ',"acceptedAnswer":{"@type":"Answer","text":' . json_encode($faq['a']) . '}}';
+    }
+    echo implode(",\n    ", $faq_ld);
+    ?>
+  ]
+}
+</script>
+<?php endif; ?>

@@ -1,13 +1,17 @@
-<section class="kn-section">
-    <div class="container">
-        <blockquote style="border-left:4px solid var(--kn-blue);padding:1.5rem 2rem;background:var(--kn-blue-050);border-radius:0 var(--r-card) var(--r-card) 0;max-width:720px;margin:0 auto;">
-            <p style="font-size:1.125rem;font-style:italic;margin:0 0 1rem;">"<?php echo htmlspecialchars(isset($block['text']) ? $block['text'] : ''); ?>"</p>
-            <?php if (!empty($block['author'])): ?>
-            <footer style="font-weight:600;color:var(--kn-blue);">
-                — <?php echo htmlspecialchars($block['author']); ?>
-                <?php if (!empty($block['role'])): ?><span style="font-weight:400;color:var(--kn-muted);">, <?php echo htmlspecialchars($block['role']); ?></span><?php endif; ?>
-            </footer>
-            <?php endif; ?>
-        </blockquote>
+<?php
+$bg = isset($block['bg']) ? $block['bg'] : 'rose';
+$bgClass = 'kn-bg--' . (in_array($bg, array('white','alt','blue','night','cream','rose'), true) ? $bg : 'rose');
+?>
+<section class="kn-section <?php echo $bgClass; ?>">
+  <div class="container">
+    <div class="kn-quote">
+      <p class="kn-quote__text">&ldquo;<?php echo htmlspecialchars(isset($block['text']) ? $block['text'] : ''); ?>&rdquo;</p>
+      <?php if (!empty($block['author'])): ?>
+      <p class="kn-quote__author"><?php echo htmlspecialchars($block['author']); ?></p>
+      <?php if (!empty($block['role'])): ?>
+      <p class="kn-quote__role"><?php echo htmlspecialchars($block['role']); ?></p>
+      <?php endif; ?>
+      <?php endif; ?>
     </div>
+  </div>
 </section>

@@ -124,29 +124,41 @@ function buildBlockForm(type, data) {
       + '</div>';
   }
 
+  var BG_OPTIONS = [['white','⬜ Blanc (défaut)'],['alt','🔲 Gris clair'],['blue','🔵 Bleu Keepnew'],['night','⬛ Night Ink (sombre)'],['cream','🟡 Cream (éditorial)'],['rose','🌸 Rose (premium)']];
+  function bgField(current) {
+    return fg('Ambiance de fond', sel('bg', BG_OPTIONS, current || 'white'));
+  }
+
   switch (type) {
     case 'heading':
       d.innerHTML =
         fg('Niveau', sel('level', [['h2','H2'],['h3','H3'],['h4','H4']], data.level)) +
-        fg('Texte', inp('text', data.text, 'Titre…'));
+        fg('Texte', inp('text', data.text, 'Titre…')) +
+        fg('Style', sel('style', [['plain','Plain'],['tape','Tape (jaune)'],['highlight','Highlight (bleu)'],['marker','Marker']], data.style)) +
+        bgField(data.bg);
       break;
 
     case 'text':
-      d.innerHTML = fg('Contenu HTML', ta('text', data.text, '<p>Votre texte…</p>', 6));
+      d.innerHTML =
+        fg('Contenu HTML', ta('text', data.text, '<p>Votre texte…</p>', 6)) +
+        bgField(data.bg);
       break;
 
     case 'image':
       d.innerHTML =
         fg('Image', mediaBtn('media_id', 'Médiathèque')) +
         fg('Alt', inp('alt', data.alt, 'Description de l\'image')) +
-        fg('Légende', inp('caption', data.caption, 'Légende optionnelle'));
+        fg('Légende', inp('caption', data.caption, 'Légende optionnelle')) +
+        bgField(data.bg);
       break;
 
     case 'cta':
       d.innerHTML =
         fg('Label', inp('label', data.label, 'Cliquez ici')) +
         fg('URL', inp('url', data.url, 'https://…')) +
-        fg('Ouverture', sel('target', [['_self','Même onglet'],['_blank','Nouvel onglet']], data.target));
+        fg('Ouverture', sel('target', [['_self','Même onglet'],['_blank','Nouvel onglet']], data.target)) +
+        fg('Style', sel('style', [['primary','Primaire'],['outline','Contour']], data.style)) +
+        bgField(data.bg);
       break;
 
     case 'html':
@@ -166,7 +178,8 @@ function buildBlockForm(type, data) {
       break;
 
     case 'accordion':
-      d.innerHTML = '<div class="accordion-items" data-field="items"></div>'
+      d.innerHTML = bgField(data.bg) +
+        '<div class="accordion-items" data-field="items"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm add-accordion-item-btn" style="margin-top:.5rem">+ Ajouter un item</button>';
       // Add existing items
       (data.items || []).forEach(function(item) {
@@ -181,7 +194,8 @@ function buildBlockForm(type, data) {
       d.innerHTML =
         fg('Citation', ta('text', data.text, 'Texte de la citation…', 3)) +
         fg('Auteur', inp('author', data.author, 'Prénom Nom')) +
-        fg('Fonction / Titre', inp('role', data.role, 'CEO, Entreprise'));
+        fg('Fonction / Titre', inp('role', data.role, 'CEO, Entreprise')) +
+        bgField(data.bg || 'rose');
       break;
 
     case 'hero':
@@ -190,12 +204,14 @@ function buildBlockForm(type, data) {
         fg('H1', inp('h1', data.h1, 'Nettoyage de canapés, matelas & voitures')) +
         fg('H1 sous-titre', inp('h1_sub', data.h1_sub, 'à domicile ou en atelier.')) +
         fg('Preuve sociale', inp('social_proof', data.social_proof, '4,9/5 · +110 avis · +400 canapés · +250 voitures'));
+      // Hero is always blue — no bg selector
       break;
 
     case 'services':
       d.innerHTML =
         fg('Eyebrow', inp('eyebrow', data.eyebrow, 'NOS SERVICES')) +
         fg('H2', inp('h2', data.h2, 'Nettoyage de canapés, matelas & voitures à domicile')) +
+        bgField(data.bg) +
         '<div class="form-group"><label>Services</label><div class="block-repeater" data-repeater="items"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter un service</button></div>';
       (data.items || []).forEach(function(item) {
@@ -213,13 +229,15 @@ function buildBlockForm(type, data) {
         fg('Titre gauche', inp('left_title', data.left_title, 'À domicile')) +
         fg('Corps gauche', ta('left_body', data.left_body, 'Description…', 3)) +
         fg('Titre droite', inp('right_title', data.right_title, 'Atelier à Visé')) +
-        fg('Corps droite', ta('right_body', data.right_body, 'Description…', 3));
+        fg('Corps droite', ta('right_body', data.right_body, 'Description…', 3)) +
+        bgField(data.bg);
       break;
 
     case 'how':
       d.innerHTML =
         fg('Eyebrow', inp('eyebrow', data.eyebrow, 'RÉSERVATION EN LIGNE')) +
         fg('H2', inp('h2', data.h2, 'Réservez votre nettoyage à domicile en 2 minutes')) +
+        bgField(data.bg || 'alt') +
         '<div class="form-group"><label>Étapes</label><div class="block-repeater" data-repeater="steps"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="steps">+ Ajouter une étape</button></div>';
       (data.steps || []).forEach(function(item) {
@@ -234,6 +252,7 @@ function buildBlockForm(type, data) {
       d.innerHTML =
         fg('Eyebrow', inp('eyebrow', data.eyebrow, 'ILS NOUS FONT CONFIANCE')) +
         fg('H2', inp('h2', data.h2, '4,9/5 · +110 avis · +400 canapés nettoyés')) +
+        bgField(data.bg) +
         '<p style="color:var(--color-muted);font-size:.85em;margin:.5rem 0">Les avis sont chargés automatiquement depuis Google.</p>';
       break;
 
@@ -242,6 +261,7 @@ function buildBlockForm(type, data) {
         fg('Eyebrow', inp('eyebrow', data.eyebrow, 'OÙ ON INTERVIENT')) +
         fg('H2', inp('h2', data.h2, 'Nettoyage à domicile à Liège, Namur, Bruxelles et Luxembourg')) +
         fg('Corps', ta('body', data.body, 'Description de la zone…', 3)) +
+        bgField(data.bg || 'night') +
         '<div class="form-group"><label>Zones (pills)</label><div class="block-repeater" data-repeater="pills"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="pills">+ Ajouter une zone</button></div>';
       (data.pills || []).forEach(function(item) {
@@ -255,7 +275,9 @@ function buildBlockForm(type, data) {
     case 'cta-final':
       d.innerHTML =
         fg('Eyebrow', inp('eyebrow', data.eyebrow, '📅 RÉSERVATION EN LIGNE')) +
-        fg('Titre', inp('title', data.title, 'Prendre RDV en 2 min'));
+        fg('Titre', inp('title', data.title, 'Prendre RDV en 2 min')) +
+        fg('Téléphone', inp('phone', data.phone, '+32 (0)4 55 13 84 19'));
+      // cta-final is always blue — no bg selector
       break;
   }
 
