@@ -69,3 +69,9 @@
     initMobileNav();
   });
 }());
+
+// Dropdown & mega menu toggle
+document.querySelectorAll('.kn-nav__has-drop, .kn-nav__has-mega').forEach(function(el) {
+  el.addEventListener('mouseenter', function() { el.classList.add('open'); });
+  el.addEventListener('mouseleave', function() { el.classList.remove('open'); });
+});

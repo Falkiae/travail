@@ -12,10 +12,55 @@ class MenuController extends BaseController
         $this->requireLogin();
         $pdo   = $this->db();
         $menus = $pdo->query("SELECT * FROM kn_menus ORDER BY lang, location")->fetchAll();
-        $this->view->render('admin/menus/index', [
+        $this->view->render('admin/menus/index', array(
             'title' => 'Menus',
             'menus' => $menus,
-        ], 'admin');
+        ), 'admin');
+    }
+
+    public function create(): void
+    {
+        $this->requireLogin();
+        $csrfToken = Auth::generateCsrfToken();
+        $this->view->render('admin/menus/create', array(
+            'title'      => 'Nouveau menu',
+            'csrf_token' => $csrfToken,
+        ), 'admin');
+    }
+
+    public function store(): void
+    {
+        $this->requireLogin();
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
+            Auth::setFlash('error', 'Token CSRF invalide.');
+            $this->redirect('/' . ADMIN_PATH . '/menus/new');
+        }
+
+        $name     = trim(isset($_POST['name']) ? $_POST['name'] : '');
+        $location = isset($_POST['location']) ? $_POST['location'] : 'header';
+        $lang     = isset($_POST['lang']) ? $_POST['lang'] : 'fr';
+
+        if ($name === '') {
+            Auth::setFlash('error', 'Le nom est obligatoire.');
+            $this->redirect('/' . ADMIN_PATH . '/menus/new');
+        }
+
+        if (!in_array($location, array('header', 'footer'), true)) {
+            $location = 'header';
+        }
+        if (!in_array($lang, array('fr', 'nl'), true)) {
+            $lang = 'fr';
+        }
+
+        $pdo  = $this->db();
+        $stmt = $pdo->prepare(
+            "INSERT INTO kn_menus (name, location, lang, items) VALUES (?, ?, ?, '[]')"
+        );
+        $stmt->execute(array($name, $location, $lang));
+        $newId = $pdo->lastInsertId();
+
+        Auth::setFlash('success', 'Menu créé. Ajoutez des items ci-dessous.');
+        $this->redirect('/' . ADMIN_PATH . '/menus/' . (int)$newId . '/edit');
     }
 
     public function edit(string $id): void
@@ -23,23 +68,26 @@ class MenuController extends BaseController
         $this->requireLogin();
         $pdo  = $this->db();
         $stmt = $pdo->prepare("SELECT * FROM kn_menus WHERE id = ? LIMIT 1");
-        $stmt->execute([(int)$id]);
+        $stmt->execute(array((int)$id));
         $menu = $stmt->fetch();
         if (!$menu) {
             Auth::setFlash('error', 'Menu introuvable.');
             $this->redirect('/' . ADMIN_PATH . '/menus');
         }
-        $itemStmt = $pdo->prepare("SELECT * FROM kn_menu_items WHERE menu_id = ? ORDER BY sort_order");
-        $itemStmt->execute([(int)$id]);
-        $items = $itemStmt->fetchAll();
+
+        $raw   = isset($menu['items']) && $menu['items'] ? $menu['items'] : '[]';
+        $items = json_decode($raw, true);
+        if (!is_array($items)) {
+            $items = array();
+        }
 
         $csrfToken = Auth::generateCsrfToken();
-        $this->view->render('admin/menus/form', [
+        $this->view->render('admin/menus/edit', array(
             'title'      => 'Modifier le menu : ' . $menu['name'],
             'menu'       => $menu,
             'items'      => $items,
             'csrf_token' => $csrfToken,
-        ], 'admin');
+        ), 'admin');
     }
 
     public function update(string $id): void
@@ -50,28 +98,36 @@ class MenuController extends BaseController
             $this->redirect('/' . ADMIN_PATH . '/menus');
         }
 
-        $pdo = $this->db();
+        $pdo  = $this->db();
         $stmt = $pdo->prepare("SELECT id FROM kn_menus WHERE id = ? LIMIT 1");
-        $stmt->execute([(int)$id]);
+        $stmt->execute(array((int)$id));
         if (!$stmt->fetch()) {
             Auth::setFlash('error', 'Menu introuvable.');
             $this->redirect('/' . ADMIN_PATH . '/menus');
         }
 
-        $pdo->prepare("DELETE FROM kn_menu_items WHERE menu_id = ?")->execute([(int)$id]);
-
-        $items = isset($_POST['items']) ? $_POST['items'] : [];
-        foreach ($items as $i => $item) {
-            $label  = trim(isset($item['label']) ? $item['label'] : '');
-            $url    = trim(isset($item['url']) ? $item['url'] : '');
-            $target = in_array(isset($item['target']) ? $item['target'] : '_self', ['_self', '_blank']) ? $item['target'] : '_self';
-            $order  = (int)(isset($item['sort_order']) ? $item['sort_order'] : $i);
-            if ($label === '') continue;
-            $pdo->prepare("INSERT INTO kn_menu_items (menu_id, label, url, target, sort_order) VALUES (?, ?, ?, ?, ?)")
-                ->execute([(int)$id, $label, $url, $target, $order]);
+        $rawJson = isset($_POST['items_json']) ? $_POST['items_json'] : '[]';
+        $decoded = json_decode($rawJson, true);
+        if (!is_array($decoded)) {
+            $decoded = array();
         }
+        $itemsJson = json_encode($decoded);
+
+        $upd = $pdo->prepare("UPDATE kn_menus SET items = ? WHERE id = ?");
+        $upd->execute(array($itemsJson, (int)$id));
 
         Auth::setFlash('success', 'Menu mis à jour.');
+        $this->redirect('/' . ADMIN_PATH . '/menus/' . (int)$id . '/edit');
+    }
+
+    public function deleteMenu(string $id): void
+    {
+        $this->requireLogin();
+        $pdo  = $this->db();
+        $stmt = $pdo->prepare("DELETE FROM kn_menus WHERE id = ?");
+        $stmt->execute(array((int)$id));
+
+        Auth::setFlash('success', 'Menu supprimé.');
         $this->redirect('/' . ADMIN_PATH . '/menus');
     }
 }

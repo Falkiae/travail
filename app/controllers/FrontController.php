@@ -44,6 +44,9 @@ class FrontController extends BaseController
             }
         }
 
+        $lang      = isset($settings['lang']) ? $settings['lang'] : 'fr';
+        $nav_items = $this->fetchNavItems($pdo, $lang);
+
         $this->view->render('home', [
             'title'       => 'Nettoyage à domicile — Canapés, Matelas &amp; Voitures | Keepnew',
             'meta_title'  => 'Nettoyage de canapés, matelas &amp; voitures à domicile | Keepnew',
@@ -52,11 +55,33 @@ class FrontController extends BaseController
             'site_name'   => $site_name,
             'reviews'     => $reviews,
             'blocks'      => $blocks,
+            'nav_items'   => $nav_items,
             'gtm_id'       => isset($settings['gtm_id']) ? $settings['gtm_id'] : null,
             'noindex_all'  => isset($settings['noindex_all']) && $settings['noindex_all'] === '1',
             'robots_global' => isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',
             'block_styles'  => $block_styles,
         ], 'public');
+    }
+
+    /**
+     * Fetch nav items from kn_menus for the given location and lang.
+     */
+    private function fetchNavItems(\PDO $pdo, string $lang = 'fr'): array
+    {
+        try {
+            $stmt = $pdo->prepare(
+                "SELECT items FROM kn_menus WHERE location = 'header' AND lang = ? LIMIT 1"
+            );
+            $stmt->execute(array($lang));
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if (!$row || empty($row['items'])) {
+                return array();
+            }
+            $decoded = json_decode($row['items'], true);
+            return is_array($decoded) ? $decoded : array();
+        } catch (\Exception $e) {
+            return array();
+        }
     }
 
     /**
@@ -201,7 +226,30 @@ class FrontController extends BaseController
 
     public function page(string $slug): void
     {
-        $this->view->render('page', ['title' => $slug, 'slug' => $slug]);
+        $pdo      = $this->db();
+        $settings = $this->fetchSettings($pdo);
+
+        $booking_url = isset($settings['booking_url']) && $settings['booking_url']
+            ? $settings['booking_url']
+            : '#';
+
+        $site_name = isset($settings['site_name']) && $settings['site_name']
+            ? $settings['site_name']
+            : 'Keepnew';
+
+        $lang      = isset($settings['lang']) ? $settings['lang'] : 'fr';
+        $nav_items = $this->fetchNavItems($pdo, $lang);
+
+        $this->view->render('page', array(
+            'title'       => $slug,
+            'slug'        => $slug,
+            'booking_url' => $booking_url,
+            'site_name'   => $site_name,
+            'nav_items'   => $nav_items,
+            'gtm_id'      => isset($settings['gtm_id']) ? $settings['gtm_id'] : null,
+            'noindex_all' => isset($settings['noindex_all']) && $settings['noindex_all'] === '1',
+            'robots_global' => isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',
+        ), 'public');
     }
 
     public function notFound(): void
