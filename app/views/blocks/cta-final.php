@@ -5,27 +5,25 @@ $bg = isset($block['bg']) ? $block['bg'] : 'blue';
 if (!in_array($bg, ['white','alt','blue','night','cream','rose'], true)) {
     $bg = 'blue';
 }
-$bgClass  = 'kn-bg--' . $bg;
-$isDark   = ($bg === 'blue' || $bg === 'night');
-$arrowClass = $isDark ? 'kn-cta-pave__arrow kn-cta-pave__arrow--white' : 'kn-cta-pave__arrow kn-cta-pave__arrow--solid';
-$eyebrowColor = $isDark ? 'var(--kn-yellow)' : 'var(--kn-blue)';
-$titleColor   = $isDark ? 'var(--kn-white)' : 'var(--kn-night)';
+$bgClass   = 'kn-bg--' . $bg;
+$cardStyle = ($bg === 'night') ? 'kn-cta-card--night' : (($bg === 'blue') ? 'kn-cta-card--blue' : 'kn-cta-card--light');
+
+$eyebrow = isset($block['eyebrow']) ? $block['eyebrow'] : 'RÉSERVATION EN LIGNE';
+$title   = isset($block['title'])   ? $block['title']   : 'Prendre RDV en 2 min';
+$phone   = isset($block['phone'])   ? $block['phone']   : '+32 (0)4 55 13 84 19';
+$phoneHref = 'tel:' . preg_replace('/[^+0-9]/', '', $phone);
 ?>
 <section class="kn-section kn-cta-pave <?php echo $bgClass; ?>">
-  <div class="container" style="text-align:center;">
-    <span class="kn-eyebrow" style="color:<?php echo $eyebrowColor; ?>;">&#128197; <?php echo htmlspecialchars(isset($block['eyebrow']) ? $block['eyebrow'] : 'RÉSERVATION EN LIGNE'); ?></span>
-    <div class="kn-cta-pave__row">
-      <?php if (!empty($block['title'])): ?>
-      <p class="kn-cta-pave__title" style="color:<?php echo $titleColor; ?>;"><?php echo htmlspecialchars($block['title']); ?></p>
-      <?php else: ?>
-      <p class="kn-cta-pave__title" style="color:<?php echo $titleColor; ?>;">Prendre RDV en 2&nbsp;min</p>
-      <?php endif; ?>
-      <a href="<?php echo htmlspecialchars($booking_url); ?>" class="<?php echo $arrowClass; ?>" aria-label="Prendre rendez-vous">&#8594;</a>
-    </div>
-    <?php if (!empty($block['phone'])): ?>
-    <p class="kn-cta-pave__phone"><a href="tel:<?php echo preg_replace('/[^+0-9]/', '', $block['phone']); ?>"><?php echo htmlspecialchars($block['phone']); ?></a></p>
-    <?php else: ?>
-    <p class="kn-cta-pave__phone"><a href="tel:+32455138419">+32 (0)4 55 13 84 19</a></p>
-    <?php endif; ?>
+  <div class="container">
+    <a href="<?php echo htmlspecialchars($booking_url); ?>" class="kn-cta-card <?php echo $cardStyle; ?>">
+      <div class="kn-cta-card__content">
+        <span class="kn-eyebrow">&#128197; <?php echo htmlspecialchars($eyebrow); ?></span>
+        <p class="kn-cta-card__title"><?php echo htmlspecialchars($title); ?></p>
+      </div>
+      <span class="kn-cta-card__arrow" aria-hidden="true">&#8594;</span>
+    </a>
+    <p class="kn-cta-pave__phone">
+      <a href="<?php echo htmlspecialchars($phoneHref); ?>"><?php echo htmlspecialchars($phone); ?></a>
+    </p>
   </div>
 </section>
