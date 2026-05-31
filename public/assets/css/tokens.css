@@ -319,89 +319,122 @@ p {
   transform: translateY(-3px);
 }
 
-/* 10. CTA Pavé — Signature full-width block
+/* 10. CTA Pavé — Signature block
    ------------------------------------------------------------ */
+
+/* Section wrapper (cta-final block) */
 .kn-cta-pave {
-  background: var(--kn-blue);
-  color: var(--kn-white);
-  text-align: center;
   padding: 5rem 1.5rem;
 }
 
-.kn-cta-pave .kn-eyebrow {
-  color: var(--kn-yellow);
-}
-
-.kn-cta-pave__row {
-  display: inline-flex;
+/* The card itself — same everywhere */
+.kn-cta-card {
+  display: flex;
   align-items: center;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 1rem;
+  justify-content: space-between;
+  gap: 1.5rem;
+  border-radius: 20px;
+  padding: 1.75rem 2rem;
+  text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease;
+  cursor: pointer;
+}
+.kn-cta-card:hover {
+  transform: translateY(-2px);
 }
 
-.kn-cta-pave__title {
+/* Content: eyebrow + title stacked on the left */
+.kn-cta-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  min-width: 0;
+}
+.kn-cta-card__title {
   font-weight: 900;
   font-style: italic;
-  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
   line-height: .95;
   letter-spacing: -.02em;
-  color: var(--kn-white);
   margin: 0;
 }
 
-.kn-cta-pave__arrow {
+/* Circle arrow on the right */
+.kn-cta-card__arrow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 72px;
-  height: 72px;
+  width: 68px;
+  height: 68px;
+  min-width: 68px;
   border-radius: 50%;
-  border: 2.5px solid var(--kn-white);
-  font-size: 1.6rem;
-  color: var(--kn-white);
-  text-decoration: none;
-  transition: background .2s ease, color .2s ease, transform .2s ease;
-  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  transition: transform .2s ease;
+}
+.kn-cta-card:hover .kn-cta-card__arrow {
+  transform: translateX(4px);
 }
 
-.kn-cta-pave__arrow:hover {
-  background: var(--kn-white);
-  color: var(--kn-blue);
-  transform: translateX(4px) scale(1.08);
-}
-
-.kn-cta-pave__phone {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: rgba(255,255,255,.8);
-  margin-top: .75rem;
-}
-
-.kn-cta-pave__phone a {
-  color: var(--kn-yellow);
-  text-decoration: none;
-}
-
-/* Arrow button variants */
-.kn-cta-pave__arrow--white {
-  border-color: var(--kn-white);
-  color: var(--kn-white);
-}
-.kn-cta-pave__arrow--white:hover {
-  background: var(--kn-white);
-  color: var(--kn-blue);
-}
-/* On light bg: solid blue arrow */
-.kn-cta-pave__arrow--solid {
-  border-color: var(--kn-blue);
-  color: var(--kn-blue);
-  background: transparent;
-}
-.kn-cta-pave__arrow--solid:hover {
+/* — Blue card (dark bg) */
+.kn-cta-card--blue {
   background: var(--kn-blue);
-  color: var(--kn-white);
+  box-shadow: var(--shadow-cta);
+}
+.kn-cta-card--blue .kn-eyebrow       { color: var(--kn-yellow); }
+.kn-cta-card--blue .kn-cta-card__title { color: var(--kn-white); }
+.kn-cta-card--blue .kn-cta-card__arrow {
+  background: var(--kn-white);
+  color: var(--kn-blue);
+}
+.kn-cta-card--blue:hover .kn-cta-card__arrow {
+  background: var(--kn-yellow);
+  color: var(--kn-night);
+}
+
+/* — Night card */
+.kn-cta-card--night {
+  background: var(--kn-night);
+}
+.kn-cta-card--night .kn-eyebrow        { color: var(--kn-yellow); }
+.kn-cta-card--night .kn-cta-card__title { color: var(--kn-white); }
+.kn-cta-card--night .kn-cta-card__arrow {
+  background: var(--kn-yellow);
+  color: var(--kn-night);
+}
+
+/* — Light card (white / alt / cream / rose bg) */
+.kn-cta-card--light {
+  background: var(--kn-blue);
+  box-shadow: var(--shadow-cta);
+}
+.kn-cta-card--light .kn-eyebrow        { color: var(--kn-yellow); }
+.kn-cta-card--light .kn-cta-card__title { color: var(--kn-white); }
+.kn-cta-card--light .kn-cta-card__arrow {
+  background: var(--kn-white);
+  color: var(--kn-blue);
+}
+
+/* Phone line below card */
+.kn-cta-pave__phone {
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 1.25rem;
+  color: var(--kn-muted);
+}
+.kn-cta-pave__phone a {
+  color: var(--kn-blue);
+  text-decoration: none;
+}
+.kn-bg--blue .kn-cta-pave__phone,
+.kn-bg--night .kn-cta-pave__phone { color: rgba(255,255,255,.6); }
+.kn-bg--blue .kn-cta-pave__phone a,
+.kn-bg--night .kn-cta-pave__phone a { color: var(--kn-yellow); }
+
+/* Mobile */
+@media (max-width: 480px) {
+  .kn-cta-card { padding: 1.25rem 1.5rem; border-radius: 16px; }
+  .kn-cta-card__arrow { width: 56px; height: 56px; min-width: 56px; font-size: 1.2rem; }
 }
 
 /* 11. Misc Helpers
