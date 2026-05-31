@@ -139,9 +139,6 @@
 
 /* ── Hero Section ───────────────────────────────────────────── */
 .kn-hero {
-  background: var(--kn-blue);
-  color: var(--kn-white);
-  padding: 5rem 0 4rem;
   overflow: hidden;
 }
 
