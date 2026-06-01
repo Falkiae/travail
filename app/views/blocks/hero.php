@@ -49,7 +49,7 @@ $rawPills = isset($block['pills']) && is_array($block['pills']) ? $block['pills'
           <span class="kn-pill <?php echo $pillCls; ?>"><?php echo htmlspecialchars($pillText); ?></span>
           <?php endforeach; ?>
         </div>
-        <a href="<?php echo htmlspecialchars($booking_url); ?>" class="kn-cta-card kn-cta-card--blue">
+        <a href="<?php echo htmlspecialchars($booking_url); ?>" class="kn-cta-card <?php echo $isDark ? 'kn-cta-card--glass' : 'kn-cta-card--blue'; ?>">
           <div class="kn-cta-card__content">
             <span class="kn-eyebrow">&#128197; <?php echo htmlspecialchars(isset($block['cta_eyebrow']) ? $block['cta_eyebrow'] : 'RÉSERVATION EN LIGNE'); ?></span>
             <p class="kn-cta-card__title"><?php echo htmlspecialchars(isset($block['cta_title']) ? $block['cta_title'] : 'Prendre RDV en 2 min'); ?></p>
