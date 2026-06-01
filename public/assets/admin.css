@@ -219,7 +219,8 @@ textarea { min-height: 120px; resize: vertical; }
   padding: 0 .25rem;
 }
 .block-handle:active { cursor: grabbing; }
-.block-type-label { font-weight: 600; font-size: .8rem; color: var(--color-muted); flex: 1; }
+.block-type-label { font-weight: 600; font-size: .8rem; color: var(--color-muted); flex: 1; cursor: pointer; user-select: none; }
+.block-type-label:hover { color: var(--color-primary); }
 .block-controls { display: flex; gap: .25rem; }
 
 .block-body { padding: .75rem; }

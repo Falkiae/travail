@@ -486,15 +486,30 @@ function createBlockItem(type, data) {
     '<span class="block-type-label">' + (BLOCK_TYPES[type] || type) + '</span>' +
     '<div class="block-controls">' +
       '<button type="button" class="btn btn-danger btn-sm remove-block-btn" title="Supprimer">×</button>' +
+      '<button type="button" class="btn btn-secondary btn-sm toggle-block-btn" title="Ouvrir/Fermer">▾</button>' +
     '</div>';
 
   var form = buildBlockForm(type, data);
+  // Start collapsed
+  form.style.display = 'none';
+  item.classList.add('collapsed');
 
   item.appendChild(header);
   item.appendChild(form);
 
   header.querySelector('.remove-block-btn').addEventListener('click', function() {
     item.remove();
+  });
+
+  header.querySelector('.toggle-block-btn').addEventListener('click', function() {
+    var collapsed = item.classList.toggle('collapsed');
+    form.style.display = collapsed ? 'none' : '';
+    this.textContent = collapsed ? '▾' : '▴';
+  });
+
+  // Click on header label also toggles
+  header.querySelector('.block-type-label').addEventListener('click', function() {
+    header.querySelector('.toggle-block-btn').click();
   });
 
   // Drag & drop
