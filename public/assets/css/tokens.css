@@ -375,7 +375,27 @@ p {
   transform: translateX(4px);
 }
 
-/* — Blue card (dark bg) */
+/* — Glass card (on dark/blue bg) */
+.kn-cta-card--glass {
+  background: rgba(255,255,255,.15);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255,255,255,.3);
+}
+.kn-cta-card--glass .kn-eyebrow       { color: var(--kn-yellow); }
+.kn-cta-card--glass .kn-cta-card__title { color: var(--kn-white); }
+.kn-cta-card--glass .kn-cta-card__arrow {
+  background: var(--kn-white);
+  color: var(--kn-blue);
+}
+.kn-cta-card--glass:hover .kn-cta-card__arrow {
+  background: var(--kn-yellow);
+  color: var(--kn-night);
+}
+.kn-cta-card--glass:hover {
+  background: rgba(255,255,255,.22);
+}
+
+/* — Blue card (on light bg) */
 .kn-cta-card--blue {
   background: var(--kn-blue);
   box-shadow: var(--shadow-cta);
