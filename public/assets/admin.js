@@ -250,8 +250,8 @@ function buildBlockForm(type, data) {
         layoutField(data.layout || '1-1') +
         reverseFields(data) +
         visibilityField(data.visible) +
-        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'CANAPÉ · VOITURE · MATELAS — À DOMICILE')) +
-        fg('H1', inp('h1', data.h1, 'Nettoyage à domicile de canapé, matelas et voitures.')) +
+        fg('Eyebrow <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('eyebrow', data.eyebrow, 'CANAPÉ · VOITURE · MATELAS — À DOMICILE', 2)) +
+        fg('H1 <small style="font-weight:400;opacity:.6">(HTML autorisé — ex: Titre <span class="kn-tape">souligné</span>)</small>', ta('h1', data.h1, 'Nettoyage à domicile de canapé, matelas et voitures.', 3)) +
         fg('Corps de texte (HTML autorisé)', ta('body', data.body, 'Keepnew nettoie vos <strong>canapés</strong>...')) +
         fg('CTA — Eyebrow', inp('cta_eyebrow', data.cta_eyebrow, 'RÉSERVATION EN LIGNE')) +
         fg('CTA — Titre', inp('cta_title', data.cta_title, 'Prendre RDV en 2 min')) +
