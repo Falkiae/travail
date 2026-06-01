@@ -129,4 +129,22 @@ class MediaController extends BaseController
         echo json_encode($media);
         exit;
     }
+
+    public function serveFile(string $file): void
+    {
+        // Sanitize: no path traversal
+        $file = basename($file);
+        $path = UPLOAD_DIR . $file;
+        if (!$file || !file_exists($path) || !is_file($path)) {
+            http_response_code(404);
+            exit;
+        }
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mime  = $finfo->file($path);
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . filesize($path));
+        header('Cache-Control: public, max-age=31536000');
+        readfile($path);
+        exit;
+    }
 }
