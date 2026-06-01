@@ -454,7 +454,8 @@ p {
 /* Mobile */
 @media (max-width: 480px) {
   .kn-cta-card { padding: 1.25rem 1.5rem; border-radius: 16px; }
-  .kn-cta-card__arrow { width: 56px; height: 56px; min-width: 56px; font-size: 1.2rem; }
+  .kn-cta-card__title { font-size: 1.25rem; white-space: nowrap; }
+  .kn-cta-card__arrow { width: 48px; height: 48px; min-width: 48px; font-size: 1.1rem; }
 }
 
 /* 11. Misc Helpers
