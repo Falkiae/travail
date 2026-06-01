@@ -532,6 +532,10 @@
 }
 
 /* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .kn-hero__heading { font-size: 3.25rem; }
+}
+
 @media (min-width: 768px) {
   .kn-nav__menu {
     display: flex;
