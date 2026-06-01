@@ -33,6 +33,8 @@ return [
     'POST /admin/projects/{id}/edit'  => ['ProjectController', 'update'],
     'POST /admin/projects/{id}/delete'=> ['ProjectController', 'delete'],
 
+    'GET /uploads/{file}'                       => ['MediaController', 'serveFile'],
+
     'GET /admin/media'                          => ['MediaController', 'index'],
     'POST /admin/media/upload'                  => ['MediaController', 'upload'],
     'POST /admin/media/alt'                     => ['MediaController', 'updateAlt'],

@@ -118,8 +118,7 @@ function buildBlockForm(type, data) {
   }
   function mediaBtn(targetField, labelText) {
     return '<div class="input-row">'
-      + '<input type="text" data-field="' + targetField + '_display" value="" placeholder="Aucun fichier choisi" readonly>'
-      + '<input type="hidden" data-field="' + targetField + '" value="">'
+      + '<input type="text" data-field="' + targetField + '" value="" placeholder="/uploads/mon-image.jpg" style="flex:1">'
       + '<button type="button" class="btn btn-secondary btn-sm media-pick-btn" data-target="' + targetField + '">' + labelText + '</button>'
       + '</div>';
   }
@@ -259,12 +258,10 @@ function buildBlockForm(type, data) {
         fg('Preuve sociale', inp('social_proof', data.social_proof, '4,9/5 · +110 avis · +400 canapés · +250 voitures')) +
         fg('Image (depuis médiathèque)', mediaBtn('image_url', 'Choisir une image')) +
         fg('Alt texte image', inp('image_alt', data.image_alt, 'Description de l\'image'));
-      // Pre-fill media field if already set
+      // Pre-fill image field if already set
       if (data.image_url) {
-        var heroImgHidden = d.querySelector('[data-field="image_url"]');
-        var heroImgDisplay = d.querySelector('[data-field="image_url_display"]');
-        if (heroImgHidden) heroImgHidden.value = data.image_url;
-        if (heroImgDisplay) heroImgDisplay.value = data.image_url;
+        var heroImgField = d.querySelector('[data-field="image_url"]');
+        if (heroImgField) heroImgField.value = data.image_url;
       }
       break;
 
