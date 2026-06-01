@@ -629,8 +629,9 @@ function openMediaModal(callback) {
           : '<div class="media-icon">📄</div>';
         card.innerHTML += '<div class="media-info"><div class="media-name">' + esc(m.original_name) + '</div></div>';
         card.addEventListener('click', function() {
+          var cb = mediaModalCallback;
           closeMediaModal();
-          if (mediaModalCallback) mediaModalCallback(m);
+          if (cb) cb(m);
         });
         grid.appendChild(card);
       });
