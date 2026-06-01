@@ -159,7 +159,7 @@
   font-style: italic;
   line-height: .88;
   letter-spacing: -.03em;
-  font-size: clamp(2.5rem, 5.5vw, 4.75rem);
+  font-size: 4rem;
   margin: 0;
 }
 
