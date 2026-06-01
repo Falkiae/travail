@@ -32,10 +32,10 @@ $rawPills = isset($block['pills']) && is_array($block['pills']) ? $block['pills'
     <div class="<?php echo $gridClass; ?>">
       <div class="kn-hero__content">
         <span class="kn-eyebrow" style="color:<?php echo $eyebrowColor; ?>;">
-          <?php echo htmlspecialchars(isset($block['eyebrow']) ? $block['eyebrow'] : 'CANAPÉ · VOITURE · MATELAS — À DOMICILE'); ?>
+          <?php echo isset($block['eyebrow']) ? $block['eyebrow'] : 'CANAPÉ · VOITURE · MATELAS — À DOMICILE'; ?>
         </span>
         <h1 class="kn-hero__heading" style="color:<?php echo $h1Color; ?>;">
-          <?php echo isset($block['h1']) ? htmlspecialchars($block['h1']) : 'Nettoyage à domicile de canapé, matelas et voitures.'; ?>
+          <?php echo isset($block['h1']) ? $block['h1'] : 'Nettoyage à domicile de canapé, matelas et voitures.'; ?>
         </h1>
         <?php if (!empty($block['body'])): ?>
         <p class="kn-hero__body"><?php echo $block['body']; ?></p>
