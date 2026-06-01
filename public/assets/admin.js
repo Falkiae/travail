@@ -256,7 +256,16 @@ function buildBlockForm(type, data) {
         fg('Corps de texte (HTML autorisé)', ta('body', data.body, 'Keepnew nettoie vos <strong>canapés</strong>...')) +
         fg('CTA — Eyebrow', inp('cta_eyebrow', data.cta_eyebrow, 'RÉSERVATION EN LIGNE')) +
         fg('CTA — Titre', inp('cta_title', data.cta_title, 'Prendre RDV en 2 min')) +
-        fg('Preuve sociale', inp('social_proof', data.social_proof, '4,9/5 · +110 avis · +400 canapés · +250 voitures'));
+        fg('Preuve sociale', inp('social_proof', data.social_proof, '4,9/5 · +110 avis · +400 canapés · +250 voitures')) +
+        fg('Image (depuis médiathèque)', mediaBtn('image_url', 'Choisir une image')) +
+        fg('Alt texte image', inp('image_alt', data.image_alt, 'Description de l\'image'));
+      // Pre-fill media field if already set
+      if (data.image_url) {
+        var heroImgHidden = d.querySelector('[data-field="image_url"]');
+        var heroImgDisplay = d.querySelector('[data-field="image_url_display"]');
+        if (heroImgHidden) heroImgHidden.value = data.image_url;
+        if (heroImgDisplay) heroImgDisplay.value = data.image_url;
+      }
       break;
 
     case 'services':
