@@ -128,6 +128,22 @@ function s(array $settings, string $key, string $default = ''): string {
     </div>
   </div>
 
+  <!-- Avis Google -->
+  <div class="card">
+    <div class="card-title">Avis Google (My Business)</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="google_reviews_api_key">Clé API Google Places</label>
+        <input type="text" id="google_reviews_api_key" name="google_reviews_api_key" value="<?= s($settings, 'google_reviews_api_key') ?>" placeholder="AIzaSy…">
+      </div>
+      <div class="form-group">
+        <label for="google_place_id">Place ID (établissement)</label>
+        <input type="text" id="google_place_id" name="google_place_id" value="<?= s($settings, 'google_place_id') ?>" placeholder="ChIJ…">
+        <small style="color:var(--color-muted)">Trouvez votre Place ID sur <a href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener">developers.google.com</a></small>
+      </div>
+    </div>
+  </div>
+
   <!-- Maintenance -->
   <div class="card">
     <div class="card-title">Maintenance</div>
