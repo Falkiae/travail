@@ -482,10 +482,12 @@ function createBlockItem(type, data) {
   var header = document.createElement('div');
   header.className = 'block-header';
   header.innerHTML =
+    '<label class="block-checkbox-wrap" title="Sélectionner">' +
+      '<input type="checkbox" class="block-checkbox">' +
+    '</label>' +
     '<span class="block-handle" title="Déplacer">⠿</span>' +
     '<span class="block-type-label">' + (BLOCK_TYPES[type] || type) + '</span>' +
     '<div class="block-controls">' +
-      '<button type="button" class="btn btn-danger btn-sm remove-block-btn" title="Supprimer">×</button>' +
       '<button type="button" class="btn btn-secondary btn-sm toggle-block-btn" title="Ouvrir/Fermer">▾</button>' +
     '</div>';
 
@@ -497,10 +499,6 @@ function createBlockItem(type, data) {
   item.appendChild(header);
   item.appendChild(form);
 
-  header.querySelector('.remove-block-btn').addEventListener('click', function() {
-    item.remove();
-  });
-
   header.querySelector('.toggle-block-btn').addEventListener('click', function() {
     var collapsed = item.classList.toggle('collapsed');
     form.style.display = collapsed ? 'none' : '';
@@ -510,6 +508,12 @@ function createBlockItem(type, data) {
   // Click on header label also toggles
   header.querySelector('.block-type-label').addEventListener('click', function() {
     header.querySelector('.toggle-block-btn').click();
+  });
+
+  // Checkbox selection: update bulk bar and highlight
+  header.querySelector('.block-checkbox').addEventListener('change', function() {
+    item.classList.toggle('selected', this.checked);
+    updateBlockBulkBar();
   });
 
   // Drag & drop
@@ -592,6 +596,42 @@ function createBlockItem(type, data) {
       blockList.appendChild(item);
     });
   }
+
+  // Bulk delete bar
+  var bulkBar = document.createElement('div');
+  bulkBar.id = 'block-bulk-bar';
+  bulkBar.className = 'block-bulk-bar hidden';
+  bulkBar.innerHTML =
+    '<span class="block-bulk-count"></span>' +
+    '<div style="display:flex;gap:.5rem">' +
+      '<button type="button" class="btn btn-secondary btn-sm" id="block-deselect-btn">Désélectionner tout</button>' +
+      '<button type="button" class="btn btn-danger btn-sm" id="block-delete-selected-btn">Supprimer la sélection</button>' +
+    '</div>';
+  editor.appendChild(bulkBar);
+
+  window.updateBlockBulkBar = function() {
+    var checked = blockList.querySelectorAll('.block-checkbox:checked');
+    if (checked.length > 0) {
+      bulkBar.classList.remove('hidden');
+      bulkBar.querySelector('.block-bulk-count').textContent = checked.length + ' bloc' + (checked.length > 1 ? 's' : '') + ' sélectionné' + (checked.length > 1 ? 's' : '');
+    } else {
+      bulkBar.classList.add('hidden');
+    }
+  };
+
+  bulkBar.querySelector('#block-deselect-btn').addEventListener('click', function() {
+    blockList.querySelectorAll('.block-checkbox').forEach(function(cb) { cb.checked = false; });
+    window.updateBlockBulkBar();
+  });
+
+  bulkBar.querySelector('#block-delete-selected-btn').addEventListener('click', function() {
+    var checked = blockList.querySelectorAll('.block-checkbox:checked');
+    var n = checked.length;
+    if (!n) return;
+    if (!confirm('Supprimer ' + n + ' bloc' + (n > 1 ? 's' : '') + ' ? Cette action est irréversible.')) return;
+    checked.forEach(function(cb) { cb.closest('.block-item').remove(); });
+    window.updateBlockBulkBar();
+  });
 
   // Serialize on form submit
   if (parentForm) {
