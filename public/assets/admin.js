@@ -357,7 +357,9 @@ function buildBlockForm(type, data) {
         var target = btn.dataset.target;
         var hiddenField = d.querySelector('[data-field="' + target + '"]');
         var displayField = d.querySelector('[data-field="' + target + '_display"]');
-        if (hiddenField) hiddenField.value = media.id;
+        // For image_url fields store the path, for media_id fields store the id
+        var isUrlField = target.endsWith('_url') || target.endsWith('url');
+        if (hiddenField) hiddenField.value = isUrlField ? (media.webp_path || media.path) : media.id;
         if (displayField) displayField.value = media.original_name || media.filename;
       });
     });
