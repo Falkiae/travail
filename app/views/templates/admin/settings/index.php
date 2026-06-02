@@ -61,8 +61,11 @@ function s(array $settings, string $key, string $default = ''): string {
     <div class="card-title">Logo</div>
     <div class="form-row">
       <div class="form-group">
-        <label for="logo_url">Logo image (URL)</label>
-        <input type="text" id="logo_url" name="logo_url" value="<?= s($settings, 'logo_url') ?>" placeholder="/uploads/logo.svg">
+        <label for="logo_url">Logo image</label>
+        <div class="input-row">
+          <input type="text" id="logo_url" name="logo_url" value="<?= s($settings, 'logo_url') ?>" placeholder="/uploads/logo.svg" style="flex:1">
+          <button type="button" class="btn btn-secondary btn-sm" id="logo-media-btn">Médiathèque</button>
+        </div>
         <small style="color:var(--color-muted)">Laissez vide pour afficher le nom du site en texte.</small>
       </div>
       <div class="form-group">
@@ -188,3 +191,10 @@ function s(array $settings, string $key, string $default = ''): string {
     <button type="submit" class="btn">Enregistrer les réglages</button>
   </div>
 </form>
+<script>
+document.getElementById('logo-media-btn').addEventListener('click', function() {
+  openMediaModal(function(media) {
+    document.getElementById('logo_url').value = media.webp_path || media.path;
+  });
+});
+</script>
