@@ -56,6 +56,30 @@ function s(array $settings, string $key, string $default = ''): string {
     </div>
   </div>
 
+  <!-- Logo -->
+  <div class="card">
+    <div class="card-title">Logo</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="logo_url">Logo image (URL)</label>
+        <input type="text" id="logo_url" name="logo_url" value="<?= s($settings, 'logo_url') ?>" placeholder="/uploads/logo.svg">
+        <small style="color:var(--color-muted)">Laissez vide pour afficher le nom du site en texte.</small>
+      </div>
+      <div class="form-group">
+        <label for="logo_alt">Texte alternatif du logo</label>
+        <input type="text" id="logo_alt" name="logo_alt" value="<?= s($settings, 'logo_alt') ?>" placeholder="Keepnew — Nettoyage à domicile">
+      </div>
+    </div>
+    <?php if (!empty($settings['logo_url'])): ?>
+    <div class="form-group">
+      <label>Aperçu</label>
+      <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:var(--radius);padding:1rem;display:inline-block">
+        <img src="<?= htmlspecialchars($settings['logo_url']) ?>" alt="<?= htmlspecialchars($settings['logo_alt'] ?? '') ?>" style="max-height:60px;max-width:200px;object-fit:contain">
+      </div>
+    </div>
+    <?php endif; ?>
+  </div>
+
   <!-- Tracking -->
   <div class="card">
     <div class="card-title">Tracking</div>

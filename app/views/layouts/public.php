@@ -62,7 +62,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <nav class="kn-nav" aria-label="Navigation principale">
   <div class="container">
     <div class="kn-nav__inner">
-      <a class="kn-nav__logo" href="/">Keepnew</a>
+      <a class="kn-nav__logo" href="/">
+        <?php if (!empty($logo_url)): ?>
+          <img src="<?php echo htmlspecialchars($logo_url); ?>" alt="<?php echo htmlspecialchars(isset($logo_alt) ? $logo_alt : (isset($site_name) ? $site_name : 'Keepnew')); ?>" class="kn-nav__logo-img">
+        <?php else: ?>
+          <?php echo htmlspecialchars(isset($site_name) ? $site_name : 'Keepnew'); ?>
+        <?php endif; ?>
+      </a>
       <ul class="kn-nav__menu" role="list">
         <?php if (!empty($nav_items)): ?>
           <?php foreach ($nav_items as $item): ?>
