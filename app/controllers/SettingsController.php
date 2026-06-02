@@ -41,6 +41,8 @@ class SettingsController extends BaseController
             'cookie_banner_enabled', 'cookie_banner_text', 'cookie_policy_url',
             'social_linkedin', 'social_twitter', 'social_facebook', 'social_instagram',
             'booking_url', 'google_api_key', 'google_place_id',
+            'logo_url', 'logo_alt',
+            'google_reviews_api_key',
         ];
 
         // Champs checkbox : toujours sauvegardés (0 si absent du POST)
