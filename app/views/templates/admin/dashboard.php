@@ -10,6 +10,19 @@ $errors404     = $stats['errors404'] ?? 0;
   <h1>Dashboard</h1>
 </div>
 
+<!-- BOUTON TEMPORAIRE - À supprimer après usage -->
+<div style="margin-bottom:1.5rem;padding:1rem 1.25rem;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+  <div>
+    <strong>Initialisation des pages par défaut</strong>
+    <p style="margin:.25rem 0 0;font-size:.85rem;color:#666;">Crée ou met à jour les pages Home, Blog, Portfolio et la page service Canapé.</p>
+  </div>
+  <form method="POST" action="/<?= ADMIN_PATH ?>/pages/seed" style="margin:0">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+    <button type="submit" class="btn" onclick="return confirm('Mettre à jour les pages par défaut ?')">Lancer le seed</button>
+  </form>
+</div>
+<!-- /BOUTON TEMPORAIRE -->
+
 <div class="stats-grid">
   <div class="stat-card">
     <div class="stat-value"><?= (int)$pagesCount ?></div>
