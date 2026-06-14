@@ -9,18 +9,20 @@ class View
 
     public function render(string $template, array $data = [], string $layout = 'public'): void
     {
+        $__layout = $layout;
+        $__tplFile = APP_PATH . '/views/templates/' . $template . '.php';
+
         extract($data, EXTR_SKIP);
 
         ob_start();
-        $tplFile = APP_PATH . '/views/templates/' . $template . '.php';
-        if (file_exists($tplFile)) {
-            require $tplFile;
+        if (file_exists($__tplFile)) {
+            require $__tplFile;
         } else {
             echo '<p>Template introuvable : ' . htmlspecialchars($template) . '</p>';
         }
         $this->templateContent = ob_get_clean();
 
-        require APP_PATH . '/views/layouts/' . $layout . '.php';
+        require APP_PATH . '/views/layouts/' . $__layout . '.php';
     }
 
     public function content(): void
