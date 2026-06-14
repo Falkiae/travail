@@ -83,7 +83,11 @@ const BLOCK_TYPES = {
   'how':       'Comment ça marche',
   'reviews':   'Avis clients',
   'zone':      'Zone d\'intervention',
-  'cta-final': 'CTA final',
+  'cta-final':    'CTA final',
+  'pricing':      'Grille de tarifs',
+  'before-after': 'Avant / Apres',
+  'logos':        'Logos partenaires',
+  'seo-content':  'Contenu SEO',
 };
 
 let dragSrcEl = null;
@@ -344,6 +348,69 @@ function buildBlockForm(type, data) {
         fg('Téléphone', inp('phone', data.phone, '+32 (0)4 55 13 84 19')) +
         visibilityField(data.visible);
       // cta-final is always blue — no bg selector
+      break;
+
+    case 'pricing':
+      d.innerHTML =
+        fg('Eyebrow <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('eyebrow', data.eyebrow, 'NOS TARIFS', 1)) +
+        fg('H2 <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('h2', data.h2, 'Choisissez votre formule', 2)) +
+        bgField(data.bg) +
+        visibilityField(data.visible) +
+        '<div class="form-group"><label>Offres</label><div class="block-repeater" data-repeater="items"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter une offre</button></div>';
+      (data.items || []).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['label','price','cta_url','cta_text','image_url'], ['Label (ex: 1-3 places)','Prix (ex: 99€)','URL CTA','Texte CTA','Image (/uploads/…)'], item);
+      });
+      d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['label','price','cta_url','cta_text','image_url'], ['Label (ex: 1-3 places)','Prix (ex: 99€)','URL CTA','Texte CTA','Image (/uploads/…)'], {});
+      });
+      break;
+
+    case 'before-after':
+      d.innerHTML =
+        fg('Eyebrow <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('eyebrow', data.eyebrow, 'AVANT / APRES', 1)) +
+        fg('H2 <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('h2', data.h2, 'Voyez la différence', 2)) +
+        bgField(data.bg || 'alt') +
+        visibilityField(data.visible) +
+        '<div class="form-group"><label>Paires d\'images</label><div class="block-repeater" data-repeater="items"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter une paire</button></div>';
+      (data.items || []).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['image_before_url','image_after_url','caption'], ['Image Avant (/uploads/…)','Image Apres (/uploads/…)','Légende'], item);
+      });
+      d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['image_before_url','image_after_url','caption'], ['Image Avant (/uploads/…)','Image Apres (/uploads/…)','Légende'], {});
+      });
+      break;
+
+    case 'logos':
+      d.innerHTML =
+        fg('Eyebrow <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('eyebrow', data.eyebrow, 'ILS NOUS FONT CONFIANCE', 1)) +
+        fg('H2 <small style="font-weight:400;opacity:.6">(optionnel, HTML autorisé)</small>', ta('h2', data.h2, '', 2)) +
+        bgField(data.bg || 'alt') +
+        visibilityField(data.visible) +
+        '<div class="form-group"><label>Logos</label><div class="block-repeater" data-repeater="items"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter un logo</button></div>';
+      (data.items || []).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['image_url','alt','url'], ['Image (/uploads/…)','Texte alternatif','URL (optionnel)'], item);
+      });
+      d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['image_url','alt','url'], ['Image (/uploads/…)','Texte alternatif','URL (optionnel)'], {});
+      });
+      break;
+
+    case 'seo-content':
+      d.innerHTML =
+        fg('H2 <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('h2', data.h2, 'Titre de la section', 2)) +
+        fg('Contenu <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('body', data.body, '<p>Votre contenu…</p>', 8)) +
+        fg('Disposition', sel('layout', [['text-only','Texte seul (pleine largeur)'],['image-right','Image à droite'],['image-left','Image à gauche']], data.layout || 'text-only')) +
+        fg('Image', mediaBtn('image_url', 'Choisir une image')) +
+        fg('Alt texte image', inp('image_alt', data.image_alt, 'Description de l\'image')) +
+        bgField(data.bg) +
+        visibilityField(data.visible);
+      if (data.image_url) {
+        var scImgField = d.querySelector('[data-field="image_url"]');
+        if (scImgField) scImgField.value = data.image_url;
+      }
       break;
   }
 

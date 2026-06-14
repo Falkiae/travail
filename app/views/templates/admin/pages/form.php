@@ -41,7 +41,7 @@ $existingBlocks = $isEdit && !empty($page['content']) ? json_decode($page['conte
           <div class="form-group">
             <label for="template">Template</label>
             <select id="template" name="template">
-              <?php foreach (['home' => 'Accueil', 'page' => 'Page standard', 'blog-list' => 'Liste blog', 'portfolio' => 'Portfolio'] as $v => $l): ?>
+              <?php foreach (['home' => 'Accueil', 'page' => 'Page standard', 'service' => 'Page service', 'blog-list' => 'Liste blog', 'portfolio' => 'Portfolio'] as $v => $l): ?>
               <option value="<?= htmlspecialchars($v) ?>" <?= ($page['template'] ?? 'page') === $v ? 'selected' : '' ?>><?= htmlspecialchars($l) ?></option>
               <?php endforeach; ?>
             </select>
@@ -88,6 +88,10 @@ $existingBlocks = $isEdit && !empty($page['content']) ? json_decode($page['conte
                 <button type="button" data-type="reviews">Avis clients</button>
                 <button type="button" data-type="zone">Zone d'intervention</button>
                 <button type="button" data-type="cta-final">CTA final</button>
+                <button type="button" data-type="pricing">Grille de tarifs</button>
+                <button type="button" data-type="before-after">Avant / Apres</button>
+                <button type="button" data-type="logos">Logos partenaires</button>
+                <button type="button" data-type="seo-content">Contenu SEO</button>
               </div>
             </div>
           </div>

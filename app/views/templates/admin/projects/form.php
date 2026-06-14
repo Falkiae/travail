@@ -96,6 +96,10 @@ $existingBlocks = $isEdit && !empty($project['content']) ? json_decode($project[
                 <button type="button" data-type="file">Fichier</button>
                 <button type="button" data-type="accordion">Accordéon</button>
                 <button type="button" data-type="quote">Citation</button>
+                <button type="button" data-type="pricing">Grille de tarifs</button>
+                <button type="button" data-type="before-after">Avant / Apres</button>
+                <button type="button" data-type="logos">Logos partenaires</button>
+                <button type="button" data-type="seo-content">Contenu SEO</button>
               </div>
             </div>
           </div>
