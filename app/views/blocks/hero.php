@@ -7,7 +7,7 @@ if (!in_array($bg, ['white','alt','blue','night','cream','rose'], true)) $bg = '
 $isDark = ($bg === 'blue' || $bg === 'night');
 
 $sectionClass = blockClasses($block, 'cream', 'kn-hero');
-$gridClass    = gridClasses($block, '2-3');
+$gridClass    = gridClasses($block, '1-1');
 
 $eyebrowColor = $isDark ? 'var(--kn-yellow)' : 'var(--kn-blue)';
 $h1Color      = $isDark ? 'var(--kn-white)'  : 'var(--kn-night)';

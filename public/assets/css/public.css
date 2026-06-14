@@ -197,8 +197,8 @@
 .kn-hero__visual {
   border-radius: var(--r-card);
   overflow: hidden;
-  aspect-ratio: 4/3;
-  min-height: 420px;
+  aspect-ratio: 3/4;
+  min-height: 480px;
   box-shadow: 0 8px 40px rgba(0,0,0,.18);
 }
 .kn-hero__visual img {
