@@ -50,19 +50,163 @@ $pages = [
     ],
 ];
 
+$canapeBlocks = [
+    [
+        'type'         => 'hero',
+        'bg'           => 'cream',
+        'eyebrow'      => 'NETTOYAGE CANAPE · LIEGE · NAMUR · BRUXELLES',
+        'h1'           => 'Nettoyage de <span class="kn-tape">canapés</span> à domicile',
+        'body'         => '<p>Tissu, cuir, microfibre ou velours — on s\'occupe de votre canapé avec des produits écologiques et hypoallergéniques, directement chez vous.</p>',
+        'social_proof' => '4,9/5 · +90 avis · +400 canapés nettoyés',
+        'pills'        => [
+            ['text' => '✓ À domicile', 'style' => 'white'],
+            ['text' => '★ Résultat garanti', 'style' => 'yellow'],
+            ['text' => '⚡ RDV en 2 min', 'style' => 'night'],
+        ],
+        'cta_eyebrow'  => 'RESERVATION EN LIGNE',
+        'cta_title'    => 'Prendre RDV en 2 min',
+        'layout'       => '1-1',
+    ],
+    [
+        'type'   => 'heading',
+        'level'  => 'h2',
+        'text'   => 'Tissus, cuirs, velours ? Pas de souci, on s\'occupe de votre canapé !',
+        'style'  => 'highlight',
+        'bg'     => 'white',
+    ],
+    [
+        'type'    => 'pricing',
+        'bg'      => 'white',
+        'eyebrow' => 'NOS TARIFS',
+        'h2'      => 'Prix clairs et sans surprise',
+        'items'   => [
+            ['label' => 'Canapé 1 à 3 places', 'price' => '99 €', 'cta_url' => '#', 'cta_text' => 'Réserver'],
+            ['label' => 'Canapé 4 à 5 places', 'price' => '140 €', 'cta_url' => '#', 'cta_text' => 'Réserver'],
+            ['label' => 'Canapé 6 à 8 places', 'price' => '170 €', 'cta_url' => '#', 'cta_text' => 'Réserver'],
+            ['label' => 'Canapé 8 places et +', 'price' => '200 €', 'cta_url' => '#', 'cta_text' => 'Réserver'],
+        ],
+    ],
+    [
+        'type'    => 'logos',
+        'bg'      => 'alt',
+        'eyebrow' => 'ILS NOUS FONT CONFIANCE',
+        'items'   => [
+            ['alt' => 'Auto Lana',                'image_url' => '', 'url' => ''],
+            ['alt' => 'Delbecq BMW',              'image_url' => '', 'url' => ''],
+            ['alt' => 'Simplicicar Liège',        'image_url' => '', 'url' => ''],
+            ['alt' => 'Bipartner',                'image_url' => '', 'url' => ''],
+            ['alt' => 'EDF Renewables Belgium',   'image_url' => '', 'url' => ''],
+            ['alt' => 'Accardo',                  'image_url' => '', 'url' => ''],
+            ['alt' => 'Stoler Immo',              'image_url' => '', 'url' => ''],
+            ['alt' => 'MBS Solution',             'image_url' => '', 'url' => ''],
+            ['alt' => 'Meuse Condroz Logement',   'image_url' => '', 'url' => ''],
+        ],
+    ],
+    [
+        'type'   => 'seo-content',
+        'bg'     => 'white',
+        'layout' => 'text-only',
+        'h2'     => 'Société de nettoyage de canapé à domicile',
+        'body'   => '<p>Keepnew est spécialisé dans le nettoyage professionnel de canapés à domicile en Belgique. Nos techniciens interviennent directement chez vous avec du matériel professionnel et des produits écologiques, hypoallergéniques et sûrs pour les enfants et les animaux.</p><p>Que votre canapé soit en tissu, en cuir, en microfibre ou en velours, nous adaptons notre traitement à chaque matière pour un résultat optimal. Injection-extraction, vapeur sèche, traitement anti-taches et désinfection : chaque intervention est complète et documentée avec photos avant/après.</p><p>Nous recommandons un nettoyage professionnel tous les 12 à 18 mois pour un usage standard, et plus fréquemment si vous avez des animaux ou des enfants.</p>',
+    ],
+    [
+        'type'  => 'accordion',
+        'bg'    => 'cream',
+        'items' => [
+            [
+                'question' => 'Quels types de canapés peuvent être nettoyés ?',
+                'answer'   => 'Tous les types de canapés : tissu, cuir, microfibre, velours. Nos techniciens adaptent le traitement à chaque matière pour un résultat optimal sans risque d\'endommagement.',
+            ],
+            [
+                'question' => 'Le nettoyage élimine-t-il les mauvaises odeurs ?',
+                'answer'   => 'Oui. Nos produits neutralisent les bactéries responsables des odeurs. Les odeurs de cigarette peuvent nécessiter plusieurs passages selon l\'ancienneté.',
+            ],
+            [
+                'question' => 'Quels produits utilisez-vous pour le nettoyage ?',
+                'answer'   => 'Nous utilisons des produits professionnels écologiques et hypoallergéniques, sûrs pour les enfants et les animaux de compagnie.',
+            ],
+            [
+                'question' => 'Comment préparer mon canapé avant votre intervention ?',
+                'answer'   => 'Retirez simplement les objets et coussins amovibles. Nos techniciens s\'occupent du reste avec leur propre matériel.',
+            ],
+            [
+                'question' => 'À quelle fréquence devrais-je faire nettoyer mon canapé ?',
+                'answer'   => 'Un nettoyage professionnel tous les 12 à 18 mois est recommandé pour un usage standard. Plus fréquent si vous avez des animaux ou des enfants.',
+            ],
+            [
+                'question' => 'Quel est le temps de séchage après le nettoyage ?',
+                'answer'   => 'Entre 12 et 24 heures selon l\'humidité ambiante et la capacité d\'absorption du tissu. Nous vous le précisons lors de l\'intervention.',
+            ],
+        ],
+    ],
+    [
+        'type'    => 'before-after',
+        'bg'      => 'alt',
+        'eyebrow' => 'NOS RESULTATS',
+        'h2'      => 'Quelques avant/apres de nos nettoyages canapés',
+        'items'   => [
+            ['image_before_url' => '', 'image_after_url' => '', 'caption' => 'Elimination des poils d\'animaux'],
+            ['image_before_url' => '', 'image_after_url' => '', 'caption' => 'Traitement des taches tenaces'],
+            ['image_before_url' => '', 'image_after_url' => '', 'caption' => 'Nettoyage en profondeur'],
+        ],
+    ],
+    [
+        'type'    => 'seo-content',
+        'bg'      => 'blue',
+        'layout'  => 'text-only',
+        'h2'      => 'Nettoyez votre canapé et faites des économies !',
+        'body'    => '<p>Un canapé mal entretenu se dégrade rapidement. Un nettoyage professionnel régulier peut prolonger sa durée de vie de <strong>7 ans</strong>, vous faisant économiser jusqu\'à <strong>1 500 €</strong> en remplacement de mobilier.</p><p>En plus des économies, un canapé propre améliore la qualité de l\'air intérieur et réduit les risques d\'allergies et de problèmes respiratoires liés aux acariens et aux bactéries.</p>',
+    ],
+    [
+        'type'    => 'reviews',
+        'bg'      => 'white',
+        'eyebrow' => 'ILS NOUS FONT CONFIANCE',
+        'h2'      => '4,9/5 · +90 avis · +400 canapés nettoyés',
+    ],
+    [
+        'type'    => 'seo-content',
+        'bg'      => 'white',
+        'layout'  => 'text-only',
+        'h2'      => 'Nettoyage de canapé professionnel à domicile en Belgique',
+        'body'    => '<p>Keepnew intervient dans plus de 40 communes en Belgique. Nous couvrons la province de Liège (Liège, Visé, Seraing, Herstal, Huy, Waremme, Verviers), la province de Namur, la province de Luxembourg et la région de Bruxelles-Capitale.</p><p>Vous payez uniquement après l\'intervention — aucune avance requise. Règlement par carte, virement ou QR code. Les professionnels bénéficient de la facturation.</p>',
+    ],
+    [
+        'type'    => 'cta-final',
+        'eyebrow' => 'RESERVATION EN LIGNE',
+        'title'   => 'Prendre RDV en 2 min',
+        'phone'   => '+32 (0)4 55 13 84 19',
+    ],
+];
+
+$canapeContent = json_encode($canapeBlocks, JSON_UNESCAPED_UNICODE);
+
+$pages[] = [
+    'slug'             => 'nettoyage-canape-domicile',
+    'lang'             => 'fr',
+    'title'            => 'Nettoyage de canapés à domicile',
+    'template'         => 'service',
+    'status'           => 'published',
+    'meta_title'       => 'Nettoyage de canapé à domicile - Tissu, Cuir, Velours | Keepnew',
+    'meta_description' => 'Keepnew nettoie votre canapé à domicile en Belgique. Tissu, cuir, microfibre, velours. A partir de 99 €. Produits écologiques. Résultat garanti. Devis gratuit.',
+    'content'          => $canapeContent,
+    'sort_order'       => 10,
+];
+
 // Update home page content if it already exists
 $updateHome = $pdo->prepare(
     'UPDATE kn_pages SET content = :content WHERE slug = :slug AND lang = :lang'
 );
 $updateHome->execute(array('content' => $homeContent, 'slug' => 'home', 'lang' => 'fr'));
 
-$stmt = $pdo->prepare(
-    'INSERT IGNORE INTO kn_pages (slug, lang, title, template, status, meta_title, meta_description, content, sort_order)
-     VALUES (:slug, :lang, :title, :template, :status, :meta_title, :meta_description, :content, :sort_order)'
+$upsert = $pdo->prepare(
+    'INSERT INTO kn_pages (slug, lang, title, template, status, meta_title, meta_description, content, sort_order)
+     VALUES (:slug, :lang, :title, :template, :status, :meta_title, :meta_description, :content, :sort_order)
+     ON DUPLICATE KEY UPDATE title = VALUES(title), template = VALUES(template), status = VALUES(status),
+     meta_title = VALUES(meta_title), meta_description = VALUES(meta_description), content = VALUES(content)'
 );
 
 foreach ($pages as $page) {
-    $stmt->execute($page);
+    $upsert->execute($page);
     echo "Page créée/mise à jour : " . $page['title'] . " (" . $page['slug'] . ")\n";
 }
 
