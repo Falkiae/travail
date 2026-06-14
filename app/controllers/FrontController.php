@@ -35,7 +35,7 @@ class FrontController extends BaseController
             $blocks = array();
         }
 
-        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote'];
+        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content'];
         $block_styles = '';
         foreach ($block_types as $bt) {
             $css_key = 'block_css_' . $bt;
@@ -242,17 +242,56 @@ class FrontController extends BaseController
         $lang      = isset($settings['lang']) ? $settings['lang'] : 'fr';
         $nav_items = $this->fetchNavItems($pdo, $lang);
 
-        $this->view->render('page', array(
-            'title'       => $slug,
+        $blocks = array();
+        $page_row = null;
+        $template = 'page';
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM kn_pages WHERE slug = ? AND lang = ? LIMIT 1");
+            $stmt->execute([$slug, $lang]);
+            $page_row = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if ($page_row && isset($page_row['content']) && $page_row['content']) {
+                $decoded = json_decode($page_row['content'], true);
+                if (is_array($decoded)) {
+                    $blocks = $decoded;
+                }
+            }
+            if ($page_row && isset($page_row['template']) && $page_row['template']) {
+                $template = $page_row['template'];
+            }
+        } catch (\Exception $e) {
+            $blocks = array();
+        }
+
+        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content'];
+        $block_styles = '';
+        foreach ($block_types as $bt) {
+            $css_key = 'block_css_' . $bt;
+            if (!empty($settings[$css_key])) {
+                $block_styles .= '/* ' . $bt . " */\n" . $settings[$css_key] . "\n";
+            }
+        }
+
+        $reviews = $this->fetchGoogleReviews($pdo, $settings);
+
+        $this->view->render($template, array(
+            'title'       => isset($page_row['meta_title']) && $page_row['meta_title'] ? $page_row['meta_title'] : (isset($page_row['title']) ? $page_row['title'] : $slug),
+            'meta_title'  => isset($page_row['meta_title']) ? $page_row['meta_title'] : '',
+            'meta_description' => isset($page_row['meta_description']) ? $page_row['meta_description'] : '',
+            'og_image'    => isset($page_row['og_image']) ? $page_row['og_image'] : '',
+            'canonical_url' => isset($page_row['canonical_url']) ? $page_row['canonical_url'] : '',
+            'robots'      => isset($page_row['robots']) ? $page_row['robots'] : '',
             'slug'        => $slug,
             'booking_url' => $booking_url,
             'site_name'   => $site_name,
             'logo_url'    => isset($settings['logo_url']) ? $settings['logo_url'] : '',
             'logo_alt'    => isset($settings['logo_alt']) ? $settings['logo_alt'] : $site_name,
             'nav_items'   => $nav_items,
+            'blocks'      => $blocks,
+            'reviews'     => $reviews,
             'gtm_id'      => isset($settings['gtm_id']) ? $settings['gtm_id'] : null,
             'noindex_all' => isset($settings['noindex_all']) && $settings['noindex_all'] === '1',
             'robots_global' => isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',
+            'block_styles'  => $block_styles,
         ), 'public');
     }
 
