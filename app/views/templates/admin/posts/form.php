@@ -100,7 +100,7 @@ $existingBlocks = $isEdit && !empty($post['content']) ? json_decode($post['conte
                 <button type="button" data-type="html">HTML libre</button>
                 <button type="button" data-type="video">Vidéo</button>
                 <button type="button" data-type="file">Fichier</button>
-                <button type="button" data-type="accordion">Accordéon</button>
+                <button type="button" data-type="accordion">FAQ</button>
                 <button type="button" data-type="quote">Citation</button>
                 <button type="button" data-type="pricing">Grille de tarifs</button>
                 <button type="button" data-type="before-after">Avant / Apres</button>
