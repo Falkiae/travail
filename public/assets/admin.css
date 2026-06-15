@@ -334,7 +334,10 @@ textarea { min-height: 120px; resize: vertical; }
 
 /* ── Block Repeater ── */
 .block-repeater { margin-top: .75rem; }
-.block-repeater-row { display: flex; gap: .5rem; align-items: flex-start; margin-bottom: .5rem; }
+.block-repeater-row { display: flex; gap: .5rem; align-items: flex-start; margin-bottom: .75rem; padding: .6rem; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: var(--radius); }
+.block-repeater-row__fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .4rem; flex: 1; }
+.block-repeater-row__label { display: flex; flex-direction: column; gap: .2rem; font-size: .78rem; font-weight: 600; color: #555; }
+.block-repeater-row__label input { font-size: .85rem; padding: .3rem .5rem; }
 .block-repeater-row input, .block-repeater-row textarea { flex: 1; }
 .block-repeater-add { margin-top: .5rem; }
 

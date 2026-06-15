@@ -461,13 +461,13 @@ function addRepeaterRow(container, repeaterName, fields, labels, data) {
   data = data || {};
   var row = document.createElement('div');
   row.className = 'block-repeater-row';
-  var html = '';
+  var html = '<div class="block-repeater-row__fields">';
   for (var i = 0; i < fields.length; i++) {
     var f = fields[i];
     var l = labels[i] || f;
-    html += '<input type="text" data-rfield="' + esc(f) + '" placeholder="' + esc(l) + '" value="' + esc(data[f] || '') + '">';
+    html += '<label class="block-repeater-row__label">' + esc(l) + '<input type="text" data-rfield="' + esc(f) + '" placeholder="' + esc(l) + '" value="' + esc(data[f] || '') + '"></label>';
   }
-  html += '<button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
+  html += '</div><button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
   row.innerHTML = html;
   row.querySelector('.remove-repeater-row').addEventListener('click', function() {
     row.remove();
