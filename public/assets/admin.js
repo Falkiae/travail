@@ -188,11 +188,15 @@ function buildBlockForm(type, data) {
 
     case 'image':
       d.innerHTML =
-        fg('Image', mediaBtn('media_id', 'Médiathèque')) +
+        fg('Image', mediaBtn('image_url', 'Médiathèque')) +
         fg('Alt', inp('alt', data.alt, 'Description de l\'image')) +
         fg('Légende', inp('caption', data.caption, 'Légende optionnelle')) +
         bgField(data.bg) +
         visibilityField(data.visible);
+      if (data.image_url || data.src) {
+        var f = d.querySelector('[data-field="image_url"]');
+        if (f) f.value = data.image_url || data.src || '';
+      }
       break;
 
     case 'cta':
@@ -220,14 +224,19 @@ function buildBlockForm(type, data) {
 
     case 'file':
       d.innerHTML =
-        fg('Fichier', mediaBtn('media_id', 'Médiathèque')) +
+        fg('Fichier', mediaBtn('file_url', 'Médiathèque')) +
         fg('Label du lien', inp('label', data.label, 'Télécharger le document')) +
         visibilityField(data.visible);
+      if (data.file_url || data.url) {
+        var f = d.querySelector('[data-field="file_url"]');
+        if (f) f.value = data.file_url || data.url || '';
+      }
       break;
 
     case 'accordion':
       d.innerHTML = bgField(data.bg) +
         visibilityField(data.visible) +
+        fg('Eyebrow <small style="font-weight:400;opacity:.6">(optionnel)</small>', inp('eyebrow', data.eyebrow, 'FAQ')) +
         fg('Titre <small style="font-weight:400;opacity:.6">(optionnel)</small>', inp('h2', data.h2, 'Ex : Vos questions fréquentes')) +
         fg('Intro <small style="font-weight:400;opacity:.6">(optionnel)</small>', ta('intro', data.intro, 'Courte introduction avant les questions…', 2)) +
         '<div class="accordion-items" data-field="items"></div>'
@@ -297,8 +306,16 @@ function buildBlockForm(type, data) {
         fg('H2', inp('h2', data.h2, 'On vient chez vous — ou vous venez chez nous.')) +
         fg('Titre gauche', inp('left_title', data.left_title, 'À domicile')) +
         fg('Corps gauche', ta('left_body', data.left_body, 'Description…', 3)) +
+        fg('Label CTA gauche <small style="font-weight:400;opacity:.6">(optionnel)</small>', inp('left_cta_label', data.left_cta_label, 'En savoir plus')) +
+        fg('URL CTA gauche', inp('left_cta_url', data.left_cta_url, '/contact')) +
         fg('Titre droite', inp('right_title', data.right_title, 'Atelier à Visé')) +
-        fg('Corps droite', ta('right_body', data.right_body, 'Description…', 3));
+        fg('Corps droite', ta('right_body', data.right_body, 'Description…', 3)) +
+        fg('Image (colonne droite)', mediaBtn('image_url', 'Choisir une image')) +
+        fg('Alt texte image', inp('image_alt', data.image_alt, 'Description de l\'image'));
+      if (data.image_url) {
+        var f = d.querySelector('[data-field="image_url"]');
+        if (f) f.value = data.image_url;
+      }
       break;
 
     case 'how':

@@ -9,8 +9,9 @@ $steps = isset($block['steps']) && is_array($block['steps']) ? $block['steps'] :
 <section class="<?php echo blockClasses($block, 'alt'); ?>">
   <div class="container">
     <span class="kn-eyebrow"><?php echo htmlspecialchars(isset($block['eyebrow']) ? $block['eyebrow'] : 'COMMENT ÇA MARCHE'); ?></span>
-    <?php if (!empty($block['title'])): ?>
-    <h2 class="kn-section__title"><?php echo htmlspecialchars($block['title']); ?></h2>
+    <?php $howH2 = !empty($block['h2']) ? $block['h2'] : (!empty($block['title']) ? $block['title'] : ''); ?>
+    <?php if ($howH2): ?>
+    <h2 class="kn-section__title"><?php echo htmlspecialchars($howH2); ?></h2>
     <?php else: ?>
     <h2 class="kn-section__title">Trois étapes, <span class="kn-highlight">zéro stress</span>.</h2>
     <?php endif; ?>

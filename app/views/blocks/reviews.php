@@ -5,8 +5,9 @@ $reviews = isset($reviews) && is_array($reviews) ? $reviews : array();
 <section class="<?php echo blockClasses($block, 'white'); ?>">
   <div class="container">
     <span class="kn-eyebrow"><?php echo htmlspecialchars(isset($block['eyebrow']) ? $block['eyebrow'] : 'AVIS CLIENTS'); ?></span>
-    <?php if (!empty($block['title'])): ?>
-    <h2 class="kn-section__title"><?php echo htmlspecialchars($block['title']); ?></h2>
+    <?php $revH2 = !empty($block['h2']) ? $block['h2'] : (!empty($block['title']) ? $block['title'] : ''); ?>
+    <?php if ($revH2): ?>
+    <h2 class="kn-section__title"><?php echo htmlspecialchars($revH2); ?></h2>
     <?php else: ?>
     <h2 class="kn-section__title">Ils ont testé. <span class="kn-tape">Ils l'ont vu.</span></h2>
     <?php endif; ?>

@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/_block_helpers.php';
-$src = isset($block['url']) ? $block['url'] : (isset($block['path']) ? $block['path'] : '');
+$src = isset($block['url']) ? $block['url'] : (isset($block['file_url']) ? $block['file_url'] : (isset($block['path']) ? $block['path'] : ''));
 ?>
 <?php if (!empty($src)): ?>
 <section class="<?php echo blockClasses($block, 'white'); ?>">
