@@ -272,12 +272,21 @@ function buildBlockForm(type, data) {
         fg('CTA — Titre', inp('cta_title', data.cta_title, 'Prendre RDV en 2 min')) +
         fg('Preuve sociale', inp('social_proof', data.social_proof, '4,9/5 · +110 avis · +400 canapés · +250 voitures')) +
         fg('Image (depuis médiathèque)', mediaBtn('image_url', 'Choisir une image')) +
-        fg('Alt texte image', inp('image_alt', data.image_alt, 'Description de l\'image'));
+        fg('Alt texte image', inp('image_alt', data.image_alt, 'Description de l\'image')) +
+        '<div class="form-group"><label>Pills <small style="font-weight:400;opacity:.6">(badges sous le H1)</small></label><div class="block-repeater" data-repeater="pills"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="pills">+ Ajouter un badge</button></div>';
       // Pre-fill image field if already set
       if (data.image_url) {
         var heroImgField = d.querySelector('[data-field="image_url"]');
         if (heroImgField) heroImgField.value = data.image_url;
       }
+      // Load existing pills
+      (data.pills || []).forEach(function(pill) {
+        addRepeaterRow(d.querySelector('[data-repeater="pills"]'), 'pills', ['text','style'], ['Texte du badge','Style (white/yellow/night/blue/cream/rose)'], pill);
+      });
+      d.querySelector('[data-repeater-add="pills"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="pills"]'), 'pills', ['text','style'], ['Texte du badge','Style (white/yellow/night/blue/cream/rose)'], {});
+      });
       break;
 
     case 'services':
@@ -519,6 +528,7 @@ function serializeBlock(blockItem) {
     'services':     'items',
     'how':          'steps',
     'zone':         'pills',
+    'hero':         'pills',
     'pricing':      'items',
     'before-after': 'items',
     'logos':        'items',
