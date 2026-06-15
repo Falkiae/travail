@@ -571,10 +571,11 @@
 
 /* ── Before/After block ────────────────────────────────────── */
 .kn-ba-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  max-width: calc(3 * 380px + 2 * 1.5rem);
+  gap: 1.5rem;
+  margin: 2rem auto 0;
 }
 .kn-ba-item__caption { text-align: center; font-size: .875rem; color: var(--kn-muted); margin-top: .75rem; }
 
