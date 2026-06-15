@@ -79,7 +79,7 @@ $existingBlocks = $isEdit && !empty($page['content']) ? json_decode($page['conte
                 <button type="button" data-type="html">HTML libre</button>
                 <button type="button" data-type="video">Vidéo</button>
                 <button type="button" data-type="file">Fichier</button>
-                <button type="button" data-type="accordion">Accordéon</button>
+                <button type="button" data-type="accordion">FAQ</button>
                 <button type="button" data-type="quote">Citation</button>
                 <button type="button" data-type="hero">Hero</button>
                 <button type="button" data-type="services">Grille services</button>

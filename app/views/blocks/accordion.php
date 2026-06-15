@@ -14,11 +14,16 @@ foreach ($items as $item) {
 ?>
 <section class="<?php echo blockClasses($block, 'white'); ?>">
   <div class="container">
-    <span class="kn-eyebrow"><?php echo htmlspecialchars(isset($block['eyebrow']) ? $block['eyebrow'] : 'FAQ'); ?></span>
-    <?php if (!empty($block['title'])): ?>
+    <?php if (!empty($block['eyebrow'])): ?>
+    <span class="kn-eyebrow"><?php echo htmlspecialchars($block['eyebrow']); ?></span>
+    <?php endif; ?>
+    <?php if (!empty($block['h2'])): ?>
+    <h2 class="kn-section__title"><?php echo htmlspecialchars($block['h2']); ?></h2>
+    <?php elseif (!empty($block['title'])): ?>
     <h2 class="kn-section__title"><?php echo htmlspecialchars($block['title']); ?></h2>
-    <?php else: ?>
-    <h2 class="kn-section__title">Vous avez des <span class="kn-highlight">questions</span>&nbsp;?</h2>
+    <?php endif; ?>
+    <?php if (!empty($block['intro'])): ?>
+    <p class="kn-section__intro"><?php echo nl2br(htmlspecialchars($block['intro'])); ?></p>
     <?php endif; ?>
     <div class="kn-accordion">
       <?php foreach ($normalized as $faq): ?>

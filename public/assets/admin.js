@@ -75,7 +75,7 @@ const BLOCK_TYPES = {
   html:      'HTML libre',
   video:     'Vidéo',
   file:      'Fichier',
-  accordion: 'Accordéon',
+  accordion: 'FAQ',
   quote:     'Citation',
   'hero':      'Hero',
   'services':  'Grille services',
@@ -228,6 +228,8 @@ function buildBlockForm(type, data) {
     case 'accordion':
       d.innerHTML = bgField(data.bg) +
         visibilityField(data.visible) +
+        fg('Titre <small style="font-weight:400;opacity:.6">(optionnel)</small>', inp('h2', data.h2, 'Ex : Vos questions fréquentes')) +
+        fg('Intro <small style="font-weight:400;opacity:.6">(optionnel)</small>', ta('intro', data.intro, 'Courte introduction avant les questions…', 2)) +
         '<div class="accordion-items" data-field="items"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm add-accordion-item-btn" style="margin-top:.5rem">+ Ajouter un item</button>';
       // Add existing items
