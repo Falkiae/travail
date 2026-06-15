@@ -21,36 +21,76 @@ $items = isset($block['items']) && is_array($block['items']) && count($block['it
     <?php if (!empty($block['h2'])): ?>
     <h2 class="kn-section__title" style="color:<?php echo $headingColor; ?>;"><?php echo $block['h2']; ?></h2>
     <?php endif; ?>
-    <div class="kn-before-after__grid">
+    <div class="kn-ba-grid">
       <?php foreach ($items as $item):
         $before = isset($item['image_before_url']) ? $item['image_before_url'] : '';
         $after  = isset($item['image_after_url'])  ? $item['image_after_url']  : '';
         $cap    = isset($item['caption'])           ? $item['caption']           : '';
       ?>
-      <div class="kn-ba-pair">
-        <div class="kn-ba-pair__images">
-          <div class="kn-ba-pair__col">
-            <span class="kn-ba-pair__badge">Avant</span>
+      <div class="kn-ba-item">
+        <div class="kn-ba-slider" data-ba-slider>
+          <?php if ($after): ?>
+          <img class="kn-ba-slider__after" src="<?php echo htmlspecialchars($after); ?>" alt="Après" draggable="false">
+          <?php else: ?>
+          <div class="kn-ba-slider__after kn-placeholder">Après</div>
+          <?php endif; ?>
+          <div class="kn-ba-slider__before-wrap">
             <?php if ($before): ?>
-            <img src="<?php echo htmlspecialchars($before); ?>" alt="Avant" loading="lazy">
+            <img class="kn-ba-slider__before" src="<?php echo htmlspecialchars($before); ?>" alt="Avant" draggable="false">
             <?php else: ?>
-            <div class="kn-placeholder">Avant</div>
+            <div class="kn-ba-slider__before kn-placeholder">Avant</div>
             <?php endif; ?>
           </div>
-          <div class="kn-ba-pair__col">
-            <span class="kn-ba-pair__badge kn-ba-pair__badge--after">Apres</span>
-            <?php if ($after): ?>
-            <img src="<?php echo htmlspecialchars($after); ?>" alt="Apres" loading="lazy">
-            <?php else: ?>
-            <div class="kn-placeholder">Apres</div>
-            <?php endif; ?>
+          <div class="kn-ba-slider__handle" aria-label="Glisser pour comparer">
+            <div class="kn-ba-slider__line"></div>
+            <div class="kn-ba-slider__btn">
+              <span>&#8249;</span><span>&#8250;</span>
+            </div>
+            <div class="kn-ba-slider__line"></div>
           </div>
+          <span class="kn-ba-slider__badge kn-ba-slider__badge--before">Avant</span>
+          <span class="kn-ba-slider__badge kn-ba-slider__badge--after">Après</span>
         </div>
         <?php if ($cap): ?>
-        <p class="kn-ba-pair__caption"><?php echo htmlspecialchars($cap); ?></p>
+        <p class="kn-ba-item__caption"><?php echo htmlspecialchars($cap); ?></p>
         <?php endif; ?>
       </div>
       <?php endforeach; ?>
     </div>
   </div>
 </section>
+<script>
+(function() {
+  document.querySelectorAll('[data-ba-slider]').forEach(function(slider) {
+    var handle = slider.querySelector('.kn-ba-slider__handle');
+    var wrap   = slider.querySelector('.kn-ba-slider__before-wrap');
+    var pct = 50;
+
+    function setPos(x) {
+      var rect = slider.getBoundingClientRect();
+      pct = Math.min(100, Math.max(0, ((x - rect.left) / rect.width) * 100));
+      wrap.style.width = pct + '%';
+      handle.style.left = pct + '%';
+    }
+
+    handle.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      function onMove(e) { setPos(e.clientX); }
+      function onUp()   { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+
+    handle.addEventListener('touchstart', function(e) {
+      function onMove(e) { setPos(e.touches[0].clientX); }
+      function onEnd()   { document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onEnd); }
+      document.addEventListener('touchmove', onMove, { passive: true });
+      document.addEventListener('touchend', onEnd);
+    });
+
+    // Init
+    wrap.style.width = pct + '%';
+    handle.style.left = pct + '%';
+  });
+})();
+</script>
