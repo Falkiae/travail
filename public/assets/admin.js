@@ -502,8 +502,9 @@ function serializeBlock(blockItem) {
         answer:   item.querySelector('[data-subfield="answer"]')   ? item.querySelector('[data-subfield="answer"]').value   : '',
       });
     });
-    // also collect bg + visible for accordion
+    // also collect bg + visible for accordion (skip the items container div)
     body.querySelectorAll('[data-field]').forEach(function(el) {
+      if (el.dataset.field === 'items') return;
       if (el.type === 'checkbox') { if (el.checked) data[el.dataset.field] = true; return; }
       data[el.dataset.field] = el.value;
     });
