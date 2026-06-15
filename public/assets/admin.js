@@ -282,10 +282,10 @@ function buildBlockForm(type, data) {
       }
       // Load existing pills
       (data.pills || []).forEach(function(pill) {
-        addRepeaterRow(d.querySelector('[data-repeater="pills"]'), 'pills', ['text','style'], ['Texte du badge','Style (white/yellow/night/blue/cream/rose)'], pill);
+        addHeroPill(d.querySelector('[data-repeater="pills"]'), pill);
       });
       d.querySelector('[data-repeater-add="pills"]').addEventListener('click', function() {
-        addRepeaterRow(d.querySelector('[data-repeater="pills"]'), 'pills', ['text','style'], ['Texte du badge','Style (white/yellow/night/blue/cream/rose)'], {});
+        addHeroPill(d.querySelector('[data-repeater="pills"]'), {});
       });
       break;
 
@@ -481,6 +481,24 @@ function addRepeaterRow(container, repeaterName, fields, labels, data) {
   row.querySelector('.remove-repeater-row').addEventListener('click', function() {
     row.remove();
   });
+  container.appendChild(row);
+}
+
+function addHeroPill(container, data) {
+  data = data || {};
+  var styleOptions = [['white','⬜ Blanc'],['yellow','🟡 Jaune'],['night','⬛ Sombre'],['blue','🔵 Bleu'],['cream','🟤 Cream'],['rose','🌸 Rose']];
+  var selHtml = '<select data-rfield="style">';
+  styleOptions.forEach(function(o) {
+    selHtml += '<option value="' + o[0] + '"' + (data.style === o[0] ? ' selected' : '') + '>' + o[1] + '</option>';
+  });
+  selHtml += '</select>';
+  var row = document.createElement('div');
+  row.className = 'block-repeater-row';
+  row.innerHTML = '<div class="block-repeater-row__fields">'
+    + '<label class="block-repeater-row__label">Texte<input type="text" data-rfield="text" value="' + esc(data.text || '') + '" placeholder="✓ À domicile"></label>'
+    + '<label class="block-repeater-row__label">Style' + selHtml + '</label>'
+    + '</div><button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
+  row.querySelector('.remove-repeater-row').addEventListener('click', function() { row.remove(); });
   container.appendChild(row);
 }
 
