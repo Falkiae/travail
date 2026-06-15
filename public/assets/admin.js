@@ -516,9 +516,12 @@ function serializeBlock(blockItem) {
 
   // Types with repeater sub-items
   var repeaterTypes = {
-    'services': 'items',
-    'how':      'steps',
-    'zone':     'pills',
+    'services':     'items',
+    'how':          'steps',
+    'zone':         'pills',
+    'pricing':      'items',
+    'before-after': 'items',
+    'logos':        'items',
   };
 
   if (repeaterTypes[type]) {
