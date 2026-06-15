@@ -10,8 +10,9 @@ $isDark = ($bg === 'blue' || $bg === 'night');
     <?php if (!empty($block['eyebrow'])): ?>
     <span class="kn-eyebrow"><?php echo htmlspecialchars($block['eyebrow']); ?></span>
     <?php endif; ?>
-    <?php if (!empty($block['title'])): ?>
-    <h2 class="kn-section__title"><?php echo htmlspecialchars($block['title']); ?></h2>
+    <?php $twoH2 = !empty($block['h2']) ? $block['h2'] : (!empty($block['title']) ? $block['title'] : ''); ?>
+    <?php if ($twoH2): ?>
+    <h2 class="kn-section__title"><?php echo htmlspecialchars($twoH2); ?></h2>
     <?php endif; ?>
     <div class="<?php echo $gridClass; ?>">
       <div class="kn-two-col__content">

@@ -15,8 +15,9 @@ $items = isset($block['items']) && is_array($block['items']) ? $block['items'] :
     <?php else: ?>
     <span class="kn-eyebrow">NOS SERVICES</span>
     <?php endif; ?>
-    <?php if (!empty($block['title'])): ?>
-    <h2 class="kn-section__title"><?php echo htmlspecialchars($block['title']); ?></h2>
+    <?php $svcH2 = !empty($block['h2']) ? $block['h2'] : (!empty($block['title']) ? $block['title'] : ''); ?>
+    <?php if ($svcH2): ?>
+    <h2 class="kn-section__title"><?php echo htmlspecialchars($svcH2); ?></h2>
     <?php else: ?>
     <h2 class="kn-section__title">On s'occupe de <span class="kn-tape">tout</span>.</h2>
     <?php endif; ?>

@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/_block_helpers.php';
-$src = isset($block['src']) ? $block['src'] : (isset($block['path']) ? $block['path'] : '');
+$src = isset($block['src']) ? $block['src'] : (isset($block['image_url']) ? $block['image_url'] : (isset($block['path']) ? $block['path'] : ''));
 ?>
 <section class="<?php echo blockClasses($block, 'white'); ?>">
   <div class="container" style="text-align:center;">
