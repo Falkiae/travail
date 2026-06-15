@@ -463,8 +463,8 @@ function addAccordionItem(container, data) {
   var item = document.createElement('div');
   item.className = 'accordion-item';
   item.innerHTML =
-    '<div class="form-group"><label>Question</label><input type="text" data-subfield="question" value="' + esc(data.question || '') + '" placeholder="Question…"></div>' +
-    '<div class="form-group"><label>Réponse</label><textarea data-subfield="answer" rows="2" placeholder="Réponse…">' + esc(data.answer || '') + '</textarea></div>' +
+    '<div class="form-group"><label>Question</label><input type="text" data-subfield="question" value="' + esc(data.question || data.q || '') + '" placeholder="Question…"></div>' +
+    '<div class="form-group"><label>Réponse</label><textarea data-subfield="answer" rows="2" placeholder="Réponse…">' + esc(data.answer || data.a || '') + '</textarea></div>' +
     '<button type="button" class="remove-accordion-item" title="Supprimer">×</button>';
   item.querySelector('.remove-accordion-item').addEventListener('click', function() {
     item.remove();
@@ -481,8 +481,8 @@ function serializeBlock(blockItem) {
     data.items = [];
     body.querySelectorAll('.accordion-item').forEach(function(item) {
       data.items.push({
-        q: item.querySelector('[data-subfield="q"]') ? item.querySelector('[data-subfield="q"]').value : (item.querySelector('[data-subfield="question"]') ? item.querySelector('[data-subfield="question"]').value : ''),
-        a: item.querySelector('[data-subfield="a"]') ? item.querySelector('[data-subfield="a"]').value : (item.querySelector('[data-subfield="answer"]') ? item.querySelector('[data-subfield="answer"]').value : ''),
+        question: item.querySelector('[data-subfield="question"]') ? item.querySelector('[data-subfield="question"]').value : '',
+        answer:   item.querySelector('[data-subfield="answer"]')   ? item.querySelector('[data-subfield="answer"]').value   : '',
       });
     });
     // also collect bg + visible for accordion
