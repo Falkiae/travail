@@ -388,10 +388,10 @@ function buildBlockForm(type, data) {
         '<div class="form-group"><label>Offres</label><div class="block-repeater" data-repeater="items"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter une offre</button></div>';
       (data.items || []).forEach(function(item) {
-        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['label','price','cta_url','cta_text','image_url'], ['Label (ex: 1-3 places)','Prix (ex: 99€)','URL CTA','Texte CTA','Image (/uploads/…)'], item);
+        addPricingItem(d.querySelector('[data-repeater="items"]'), item);
       });
       d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
-        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['label','price','cta_url','cta_text','image_url'], ['Label (ex: 1-3 places)','Prix (ex: 99€)','URL CTA','Texte CTA','Image (/uploads/…)'], {});
+        addPricingItem(d.querySelector('[data-repeater="items"]'), {});
       });
       break;
 
@@ -481,6 +481,34 @@ function addRepeaterRow(container, repeaterName, fields, labels, data) {
   row.innerHTML = html;
   row.querySelector('.remove-repeater-row').addEventListener('click', function() {
     row.remove();
+  });
+  container.appendChild(row);
+}
+
+function addPricingItem(container, data) {
+  data = data || {};
+  var row = document.createElement('div');
+  row.className = 'block-repeater-row';
+  row.innerHTML =
+    '<div class="block-repeater-row__fields">'
+    + '<label class="block-repeater-row__label">Label<input type="text" data-rfield="label" value="' + esc(data.label || '') + '" placeholder="Ex: 1 à 3 places"></label>'
+    + '<label class="block-repeater-row__label">Prix<input type="text" data-rfield="price" value="' + esc(data.price || '') + '" placeholder="99 €"></label>'
+    + '<label class="block-repeater-row__label">URL CTA<input type="text" data-rfield="cta_url" value="' + esc(data.cta_url || '') + '" placeholder="#"></label>'
+    + '<label class="block-repeater-row__label">Texte CTA<input type="text" data-rfield="cta_text" value="' + esc(data.cta_text || '') + '" placeholder="Réserver"></label>'
+    + '<label class="block-repeater-row__label">Image'
+    +   '<div class="input-row" style="gap:.35rem">'
+    +     '<input type="text" data-rfield="image_url" value="' + esc(data.image_url || '') + '" placeholder="/uploads/…" style="flex:1;min-width:0">'
+    +     '<button type="button" class="btn btn-secondary btn-sm pricing-media-btn">Médiathèque</button>'
+    +   '</div>'
+    + '</label>'
+    + '</div>'
+    + '<button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
+  row.querySelector('.remove-repeater-row').addEventListener('click', function() { row.remove(); });
+  row.querySelector('.pricing-media-btn').addEventListener('click', function() {
+    var imgField = row.querySelector('[data-rfield="image_url"]');
+    openMediaModal(function(media) {
+      imgField.value = media.webp_path || media.path || '';
+    });
   });
   container.appendChild(row);
 }
