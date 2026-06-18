@@ -546,6 +546,7 @@
 /* ── Responsive ─────────────────────────────────────────────── */
 /* ── Pricing block ─────────────────────────────────────────── */
 .kn-pricing__intro { margin: .75rem 0 0; color: var(--kn-muted); line-height: 1.65; }
+.kn-pricing__note { margin: 1.25rem 0 0; font-size: .8rem; color: var(--kn-muted); line-height: 1.6; opacity: .75; }
 .kn-pricing__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
