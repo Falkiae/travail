@@ -771,12 +771,26 @@
 .kn-section__intro { max-width: 640px; margin: .75rem auto 0; text-align: center; color: var(--kn-muted); line-height: 1.6; }
 .kn-heading__body { margin: 1rem 0 0; color: var(--kn-muted); line-height: 1.65; }
 .kn-accordion { display: flex; flex-direction: column; gap: .5rem; margin-top: 2rem; max-width: 720px; margin-left: auto; margin-right: auto; }
-.kn-accordion__item { border: 1px solid var(--kn-border); border-radius: 10px; overflow: hidden; }
-.kn-accordion__q { padding: 1.1rem 1.25rem; font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+.kn-accordion__item { border: 1px solid var(--kn-border); border-radius: 10px; overflow: hidden; background: var(--kn-white); }
+.kn-accordion__q { padding: 1.1rem 1.25rem; font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; color: var(--kn-night); }
 .kn-accordion__q::-webkit-details-marker { display: none; }
 .kn-accordion__q::after { content: '+'; font-size: 1.3rem; font-weight: 400; color: var(--kn-blue); transition: transform .2s; }
 details[open] .kn-accordion__q::after { transform: rotate(45deg); }
 .kn-accordion__a { padding: 0 1.25rem 1.1rem; color: var(--kn-muted); line-height: 1.7; }
+
+/* Accordion sur fonds sombres (blue/night) */
+.kn-bg--blue .kn-accordion__item,
+.kn-bg--night .kn-accordion__item { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.15); }
+.kn-bg--blue .kn-accordion__q,
+.kn-bg--night .kn-accordion__q { color: var(--kn-white); }
+.kn-bg--blue .kn-accordion__q::after,
+.kn-bg--night .kn-accordion__q::after { color: var(--kn-yellow); }
+.kn-bg--blue .kn-accordion__a,
+.kn-bg--night .kn-accordion__a { color: rgba(255,255,255,.75); }
+
+/* Accordion sur fond rose */
+.kn-bg--rose .kn-accordion__item { background: var(--kn-white); }
+.kn-bg--rose .kn-accordion__q::after { color: var(--kn-blue); }
 
 /* ── Two-col (design charter) ───────────────── */
 /* .kn-two-col__inner grid is now handled by .kn-grid--* classes */
