@@ -691,7 +691,7 @@
 @media (max-width: 767px) {
   .kn-hero__heading { font-size: 3.25rem; }
   .kn-ba-pair__col img, .kn-ba-pair__col .kn-placeholder { height: 160px; }
-  .kn-pricing__grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .kn-pricing__grid { grid-template-columns: 1fr; gap: 1rem; }
 }
 
 @media (min-width: 768px) {
