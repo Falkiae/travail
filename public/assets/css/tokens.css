@@ -353,10 +353,11 @@ p {
 .kn-cta-card__title {
   font-weight: 900;
   font-style: italic;
-  font-size: clamp(1.3rem, 2.2vw, 1.9rem);
+  font-size: clamp(1.1rem, 1.8vw, 1.6rem);
   line-height: .95;
   letter-spacing: -.02em;
   margin: 0;
+  white-space: nowrap;
 }
 
 /* Circle arrow on the right */
