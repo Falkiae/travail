@@ -173,8 +173,15 @@ function buildBlockForm(type, data) {
     case 'heading':
       d.innerHTML =
         fg('Niveau', sel('level', [['h2','H2'],['h3','H3'],['h4','H4']], data.level)) +
-        fg('Texte', inp('text', data.text, 'Titre…')) +
-        fg('Style', sel('style', [['plain','Plain'],['tape','Tape (jaune)'],['highlight','Highlight (bleu)'],['marker','Marker']], data.style)) +
+        fg('Texte <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>',
+          ta('text', data.text, 'Ex : Nettoyage de <span class="kn-tape">canapés</span> à domicile', 2) +
+          '<p style="font-size:.75rem;color:#888;margin:.35rem 0 0;line-height:1.5">'
+          + 'Classes disponibles : '
+          + '<code style="background:#f3f4f6;padding:.1em .35em;border-radius:4px">kn-tape</code> souligné jaune · '
+          + '<code style="background:#f3f4f6;padding:.1em .35em;border-radius:4px">kn-highlight</code> fond bleu · '
+          + '<code style="background:#f3f4f6;padding:.1em .35em;border-radius:4px">kn-marker</code> surligné'
+          + '</p>') +
+        fg('Paragraphe <small style="font-weight:400;opacity:.6">(optionnel)</small>', ta('body', data.body, 'Description courte sous le titre…', 3)) +
         bgField(data.bg) +
         visibilityField(data.visible);
       break;
