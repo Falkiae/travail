@@ -353,7 +353,7 @@ p {
 .kn-cta-card__title {
   font-weight: 900;
   font-style: italic;
-  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  font-size: clamp(1.3rem, 2.2vw, 1.9rem);
   line-height: .95;
   letter-spacing: -.02em;
   margin: 0;
