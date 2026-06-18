@@ -24,6 +24,9 @@ $items = isset($block['items']) && is_array($block['items']) && count($block['it
     <?php if (!empty($block['h2'])): ?>
     <h2 class="kn-section__title" style="color:<?php echo $headingColor; ?>;"><?php echo $block['h2']; ?></h2>
     <?php endif; ?>
+    <?php if (!empty($block['intro'])): ?>
+    <p class="kn-section__intro" style="<?php echo $isDark ? 'color:rgba(255,255,255,.75);' : ''; ?>"><?php echo nl2br(htmlspecialchars($block['intro'])); ?></p>
+    <?php endif; ?>
     <div class="kn-pricing__grid">
       <?php foreach ($items as $item): ?>
       <div class="kn-pricing-card <?php echo $isDark ? 'kn-pricing-card--dark' : ''; ?>">
