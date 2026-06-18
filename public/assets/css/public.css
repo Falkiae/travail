@@ -148,6 +148,7 @@
 /* ── Hero Section ───────────────────────────────────────────── */
 .kn-hero {
   overflow: hidden;
+  padding-top: 2rem;
 }
 
 /* .kn-hero__inner grid is now handled by .kn-grid--* classes */
