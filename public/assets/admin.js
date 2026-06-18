@@ -175,12 +175,12 @@ function buildBlockForm(type, data) {
         fg('Niveau', sel('level', [['h2','H2'],['h3','H3'],['h4','H4']], data.level)) +
         fg('Texte <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>',
           ta('text', data.text, 'Ex : Nettoyage de <span class="kn-tape">canapés</span> à domicile', 2) +
-          '<p style="font-size:.75rem;color:#888;margin:.35rem 0 0;line-height:1.5">'
-          + 'Classes disponibles : '
-          + '<code style="background:#f3f4f6;padding:.1em .35em;border-radius:4px">kn-tape</code> souligné jaune · '
-          + '<code style="background:#f3f4f6;padding:.1em .35em;border-radius:4px">kn-highlight</code> fond bleu · '
-          + '<code style="background:#f3f4f6;padding:.1em .35em;border-radius:4px">kn-marker</code> surligné'
-          + '</p>') +
+          '<div style="font-size:.75rem;color:#888;margin:.5rem 0 0;display:flex;flex-wrap:wrap;gap:.4rem;align-items:center">'
+          + '<span>Copier :</span>'
+          + '<button type="button" class="kn-copy-snippet btn btn-secondary btn-sm" data-snippet=\'&lt;span class=&quot;kn-tape&quot;&gt;mot&lt;/span&gt;\' style="font-size:.72rem;padding:.2em .55em">kn-tape <small>souligné jaune</small></button>'
+          + '<button type="button" class="kn-copy-snippet btn btn-secondary btn-sm" data-snippet=\'&lt;span class=&quot;kn-highlight&quot;&gt;mot&lt;/span&gt;\' style="font-size:.72rem;padding:.2em .55em">kn-highlight <small>fond bleu</small></button>'
+          + '<button type="button" class="kn-copy-snippet btn btn-secondary btn-sm" data-snippet=\'&lt;span class=&quot;kn-marker&quot;&gt;mot&lt;/span&gt;\' style="font-size:.72rem;padding:.2em .55em">kn-marker <small>surligné</small></button>'
+          + '</div>') +
         fg('Paragraphe <small style="font-weight:400;opacity:.6">(optionnel)</small>', ta('body', data.body, 'Description courte sous le titre…', 3)) +
         bgField(data.bg) +
         visibilityField(data.visible);
@@ -449,6 +449,18 @@ function buildBlockForm(type, data) {
       }
       break;
   }
+
+  // Copy snippet buttons (heading block)
+  d.querySelectorAll('.kn-copy-snippet').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var snippet = btn.dataset.snippet;
+      navigator.clipboard.writeText(snippet).then(function() {
+        var orig = btn.innerHTML;
+        btn.textContent = '✓ Copié !';
+        setTimeout(function() { btn.innerHTML = orig; }, 1500);
+      });
+    });
+  });
 
   // Init media pick buttons
   d.querySelectorAll('.media-pick-btn').forEach(function(btn) {
