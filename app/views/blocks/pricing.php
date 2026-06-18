@@ -47,5 +47,8 @@ $items = isset($block['items']) && is_array($block['items']) && count($block['it
       </div>
       <?php endforeach; ?>
     </div>
+    <?php if (!empty($block['note'])): ?>
+    <p class="kn-pricing__note" style="<?php echo $isDark ? 'color:rgba(255,255,255,.5);' : ''; ?>"><?php echo nl2br(htmlspecialchars($block['note'])); ?></p>
+    <?php endif; ?>
   </div>
 </section>

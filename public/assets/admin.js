@@ -390,6 +390,7 @@ function buildBlockForm(type, data) {
         fg('Eyebrow <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('eyebrow', data.eyebrow, 'NOS TARIFS', 1)) +
         fg('H2 <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('h2', data.h2, 'Choisissez votre formule', 2)) +
         fg('Paragraphe intro <small style="font-weight:400;opacity:.6">(optionnel)</small>', ta('intro', data.intro, 'Courte description sous le titre…', 2)) +
+        fg('Mention <small style="font-weight:400;opacity:.6">(optionnel — sous la grille)</small>', ta('note', data.note, 'Ex : * Prix HTVA. Déplacement inclus dans un rayon de 30 km.', 2)) +
         bgField(data.bg) +
         visibilityField(data.visible) +
         '<div class="form-group"><label>Offres</label><div class="block-repeater" data-repeater="items"></div>'
