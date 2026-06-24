@@ -4,10 +4,9 @@ $booking_url = isset($booking_url) ? $booking_url : '#';
 
 $bg = isset($block['bg']) ? $block['bg'] : 'cream';
 if (!in_array($bg, ['white','alt','blue','night','cream','rose'], true)) $bg = 'cream';
-$isDark = ($bg === 'blue' || $bg === 'night' || $isVideoBg);
-
 $visualType   = isset($block['visual_type']) ? $block['visual_type'] : 'photo';
 $isVideoBg    = ($visualType === 'video_bg');
+$isDark = ($bg === 'blue' || $bg === 'night' || $isVideoBg);
 $heroExtra    = 'kn-hero' . ($isVideoBg ? ' kn-hero--video-bg' : '');
 $sectionClass = blockClasses($block, 'cream', $heroExtra);
 $gridClass    = gridClasses($block, '1-1');
