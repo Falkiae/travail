@@ -4,9 +4,12 @@ $booking_url = isset($booking_url) ? $booking_url : '#';
 
 $bg = isset($block['bg']) ? $block['bg'] : 'cream';
 if (!in_array($bg, ['white','alt','blue','night','cream','rose'], true)) $bg = 'cream';
-$isDark = ($bg === 'blue' || $bg === 'night');
+$isDark = ($bg === 'blue' || $bg === 'night' || $isVideoBg);
 
-$sectionClass = blockClasses($block, 'cream', 'kn-hero');
+$visualType   = isset($block['visual_type']) ? $block['visual_type'] : 'photo';
+$isVideoBg    = ($visualType === 'video_bg');
+$heroExtra    = 'kn-hero' . ($isVideoBg ? ' kn-hero--video-bg' : '');
+$sectionClass = blockClasses($block, 'cream', $heroExtra);
 $gridClass    = gridClasses($block, '1-1');
 
 $eyebrowColor = $isDark ? 'var(--kn-yellow)' : 'var(--kn-blue)';
@@ -28,6 +31,11 @@ $defaultPills = [
 $rawPills = isset($block['pills']) && is_array($block['pills']) ? $block['pills'] : $defaultPills;
 ?>
 <section class="<?php echo $sectionClass; ?>">
+  <?php if ($isVideoBg && !empty($block['video_bg_url'])): ?>
+  <video class="kn-hero__bg-video" autoplay muted loop playsinline aria-hidden="true">
+    <source src="<?php echo htmlspecialchars($block['video_bg_url']); ?>">
+  </video>
+  <?php endif; ?>
   <div class="container">
     <div class="<?php echo $gridClass; ?>">
       <div class="kn-hero__content">
@@ -62,13 +70,24 @@ $rawPills = isset($block['pills']) && is_array($block['pills']) ? $block['pills'
         </p>
         <?php endif; ?>
       </div>
+      <?php if (!$isVideoBg): ?>
       <div class="kn-hero__visual">
-        <?php if (!empty($block['image_url'])): ?>
+        <?php if ($visualType === 'video' && !empty($block['video_url'])): ?>
+          <video
+            src="<?php echo htmlspecialchars($block['video_url']); ?>"
+            <?php echo !empty($block['video_autoplay']) ? 'autoplay' : ''; ?>
+            <?php echo !empty($block['video_loop'])     ? 'loop'     : ''; ?>
+            <?php echo !empty($block['video_muted'])    ? 'muted'    : ''; ?>
+            <?php echo !empty($block['video_controls']) ? 'controls' : ''; ?>
+            playsinline
+          ></video>
+        <?php elseif (!empty($block['image_url'])): ?>
           <img src="<?php echo htmlspecialchars($block['image_url']); ?>" alt="<?php echo htmlspecialchars(isset($block['image_alt']) ? $block['image_alt'] : ''); ?>" loading="eager">
         <?php else: ?>
           <div class="kn-placeholder kn-placeholder--hero">Photo / illustration héro</div>
         <?php endif; ?>
       </div>
+      <?php endif; ?>
     </div>
   </div>
 </section>

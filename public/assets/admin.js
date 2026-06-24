@@ -123,7 +123,14 @@ function buildBlockForm(type, data) {
   function mediaBtn(targetField, labelText) {
     return '<div class="input-row">'
       + '<input type="text" data-field="' + targetField + '" value="" placeholder="/uploads/mon-image.jpg" style="flex:1">'
-      + '<button type="button" class="btn btn-secondary btn-sm media-pick-btn" data-target="' + targetField + '">' + labelText + '</button>'
+      + '<button type="button" class="btn btn-secondary btn-sm media-pick-btn" data-target="' + targetField + '" data-filter="image">' + labelText + '</button>'
+      + '</div>';
+  }
+
+  function mediaBtnVideo(targetField, labelText) {
+    return '<div class="input-row">'
+      + '<input type="text" data-field="' + targetField + '" value="" placeholder="/uploads/ma-video.mp4" style="flex:1">'
+      + '<button type="button" class="btn btn-secondary btn-sm media-pick-btn" data-target="' + targetField + '" data-filter="video">' + labelText + '</button>'
       + '</div>';
   }
 
@@ -278,8 +285,22 @@ function buildBlockForm(type, data) {
         fg('CTA — Eyebrow', inp('cta_eyebrow', data.cta_eyebrow, 'RÉSERVATION EN LIGNE')) +
         fg('CTA — Titre', inp('cta_title', data.cta_title, 'Prendre RDV en 2 min')) +
         fg('Preuve sociale', inp('social_proof', data.social_proof, '4,9/5 · +110 avis · +400 canapés · +250 voitures')) +
-        fg('Image (depuis médiathèque)', mediaBtn('image_url', 'Choisir une image')) +
-        fg('Alt texte image', inp('image_alt', data.image_alt, 'Description de l\'image')) +
+        fg('Visuel — Type', sel('visual_type', [['photo','Photo (image)'],['video','Video depuis médiathèque'],['video_bg','Video en arrière-plan']], data.visual_type || 'photo')) +
+        '<div data-visual-section="photo">' +
+          fg('Image (depuis médiathèque)', mediaBtn('image_url', 'Choisir une image')) +
+          fg('Alt texte image', inp('image_alt', data.image_alt, 'Description de l\'image')) +
+        '</div>' +
+        '<div data-visual-section="video">' +
+          fg('Vidéo (depuis médiathèque)', mediaBtnVideo('video_url', 'Choisir une vidéo')) +
+          fg('', '<label style="display:flex;align-items:center;gap:.4rem;font-weight:400"><input type="checkbox" data-field="video_autoplay"> Lecture auto</label>' +
+             '<label style="display:flex;align-items:center;gap:.4rem;font-weight:400;margin-top:.25rem"><input type="checkbox" data-field="video_loop" checked> Boucle</label>' +
+             '<label style="display:flex;align-items:center;gap:.4rem;font-weight:400;margin-top:.25rem"><input type="checkbox" data-field="video_muted" checked> Muet</label>' +
+             '<label style="display:flex;align-items:center;gap:.4rem;font-weight:400;margin-top:.25rem"><input type="checkbox" data-field="video_controls"> Contrôles</label>') +
+        '</div>' +
+        '<div data-visual-section="video_bg">' +
+          fg('Vidéo arrière-plan (depuis médiathèque)', mediaBtnVideo('video_bg_url', 'Choisir une vidéo')) +
+          '<p style="margin:.25rem 0 0;font-size:.8rem;color:var(--color-muted)">La vidéo jouera en boucle, muette, en plein fond de section.</p>' +
+        '</div>' +
         '<div class="form-group"><label>Pills <small style="font-weight:400;opacity:.6">(badges sous le H1)</small></label><div class="block-repeater" data-repeater="pills"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="pills">+ Ajouter un badge</button></div>';
       // Pre-fill image field if already set
@@ -287,6 +308,28 @@ function buildBlockForm(type, data) {
         var heroImgField = d.querySelector('[data-field="image_url"]');
         if (heroImgField) heroImgField.value = data.image_url;
       }
+      if (data.video_url) {
+        var heroVidField = d.querySelector('[data-field="video_url"]');
+        if (heroVidField) heroVidField.value = data.video_url;
+      }
+      if (data.video_bg_url) {
+        var heroVidBgField = d.querySelector('[data-field="video_bg_url"]');
+        if (heroVidBgField) heroVidBgField.value = data.video_bg_url;
+      }
+      // Restore checkboxes
+      ['video_autoplay','video_loop','video_muted','video_controls'].forEach(function(f) {
+        var cb = d.querySelector('[data-field="' + f + '"]');
+        if (cb && data[f] !== undefined) cb.checked = !!data[f];
+      });
+      // Show/hide visual sections based on visual_type
+      function updateHeroVisualSections() {
+        var vt = d.querySelector('[data-field="visual_type"]').value;
+        d.querySelectorAll('[data-visual-section]').forEach(function(sec) {
+          sec.style.display = (sec.dataset.visualSection === vt) ? '' : 'none';
+        });
+      }
+      updateHeroVisualSections();
+      d.querySelector('[data-field="visual_type"]').addEventListener('change', updateHeroVisualSections);
       // Load existing pills
       (data.pills || []).forEach(function(pill) {
         addHeroPill(d.querySelector('[data-repeater="pills"]'), pill);
@@ -466,15 +509,15 @@ function buildBlockForm(type, data) {
   // Init media pick buttons
   d.querySelectorAll('.media-pick-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
+      var mediaFilter = btn.dataset.filter || null;
       openMediaModal(function(media) {
         var target = btn.dataset.target;
         var hiddenField = d.querySelector('[data-field="' + target + '"]');
         var displayField = d.querySelector('[data-field="' + target + '_display"]');
-        // For image_url fields store the path, for media_id fields store the id
         var isUrlField = target.endsWith('_url') || target.endsWith('url');
         if (hiddenField) hiddenField.value = isUrlField ? (media.webp_path || media.path) : media.id;
         if (displayField) displayField.value = media.original_name || media.filename;
-      });
+      }, mediaFilter);
     });
   });
 
@@ -825,7 +868,7 @@ function createBlockItem(type, data) {
 
 var mediaModalCallback = null;
 
-function openMediaModal(callback) {
+function openMediaModal(callback, filter) {
   mediaModalCallback = callback;
   var overlay = document.getElementById('media-modal');
   if (!overlay) return;
@@ -838,17 +881,25 @@ function openMediaModal(callback) {
     .then(function(r) { return r.json(); })
     .then(function(media) {
       grid.innerHTML = '';
-      if (!media.length) {
+      var filtered = media;
+      if (filter === 'image') filtered = media.filter(function(m) { return m.mime_type && m.mime_type.startsWith('image/'); });
+      else if (filter === 'video') filtered = media.filter(function(m) { return m.mime_type && m.mime_type.startsWith('video/'); });
+      if (!filtered.length) {
         grid.innerHTML = '<p style="color:var(--color-muted)">Aucun fichier dans la médiathèque.</p>';
         return;
       }
-      media.forEach(function(m) {
+      filtered.forEach(function(m) {
         var card = document.createElement('div');
         card.className = 'media-card';
         var isImage = m.mime_type && m.mime_type.startsWith('image/');
-        card.innerHTML = isImage
-          ? '<img src="' + esc(m.path) + '" alt="' + esc(m.alt || '') + '" loading="lazy">'
-          : '<div class="media-icon">📄</div>';
+        var isVideo = m.mime_type && m.mime_type.startsWith('video/');
+        if (isImage) {
+          card.innerHTML = '<img src="' + esc(m.path) + '" alt="' + esc(m.alt || '') + '" loading="lazy">';
+        } else if (isVideo) {
+          card.innerHTML = '<div class="media-video-thumb"><video src="' + esc(m.path) + '" preload="metadata" muted playsinline></video><div class="media-video-play">&#9654;</div></div>';
+        } else {
+          card.innerHTML = '<div class="media-icon">📄</div>';
+        }
         card.innerHTML += '<div class="media-info"><div class="media-name">' + esc(m.original_name) + '</div></div>';
         card.addEventListener('click', function() {
           var cb = mediaModalCallback;

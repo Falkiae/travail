@@ -28,24 +28,30 @@ class MediaController extends BaseController
             Auth::setFlash('error', 'Erreur upload.');
             $this->redirect('/' . ADMIN_PATH . '/media');
         }
-        if ($file['size'] > MAX_UPLOAD_SIZE) {
-            Auth::setFlash('error', 'Fichier trop lourd (max 5 Mo).');
-            $this->redirect('/' . ADMIN_PATH . '/media');
-        }
         $finfo   = new \finfo(FILEINFO_MIME_TYPE);
         $mime    = $finfo->file($file['tmp_name']);
-        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+        $isVideo = (strncmp($mime, 'video/', 6) === 0);
+        $maxSize = $isVideo ? 100 * 1024 * 1024 : MAX_UPLOAD_SIZE;
+        if ($file['size'] > $maxSize) {
+            $maxLabel = $isVideo ? '100 Mo' : '5 Mo';
+            Auth::setFlash('error', 'Fichier trop lourd (max ' . $maxLabel . ').');
+            $this->redirect('/' . ADMIN_PATH . '/media');
+        }
+        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf', 'video/mp4', 'video/webm', 'video/ogg'];
         if (!in_array($mime, $allowed, true)) {
             Auth::setFlash('error', 'Type de fichier non autorisé.');
             $this->redirect('/' . ADMIN_PATH . '/media');
         }
         switch ($mime) {
-            case 'image/jpeg':      $ext = 'jpg'; break;
-            case 'image/png':       $ext = 'png'; break;
-            case 'image/gif':       $ext = 'gif'; break;
+            case 'image/jpeg':      $ext = 'jpg';  break;
+            case 'image/png':       $ext = 'png';  break;
+            case 'image/gif':       $ext = 'gif';  break;
             case 'image/webp':      $ext = 'webp'; break;
-            case 'application/pdf': $ext = 'pdf'; break;
-            default:                $ext = 'bin'; break;
+            case 'application/pdf': $ext = 'pdf';  break;
+            case 'video/mp4':       $ext = 'mp4';  break;
+            case 'video/webm':      $ext = 'webm'; break;
+            case 'video/ogg':       $ext = 'ogv';  break;
+            default:                $ext = 'bin';  break;
         }
         $filename = bin2hex(random_bytes(16)) . '.' . $ext;
         $dest     = UPLOAD_DIR . $filename;
@@ -54,13 +60,13 @@ class MediaController extends BaseController
             $this->redirect('/' . ADMIN_PATH . '/media');
         }
         $width = null; $height = null;
-        if (strncmp($mime, 'image/', 6) === 0 && $mime !== 'image/webp') {
+        if (!$isVideo && strncmp($mime, 'image/', 6) === 0 && $mime !== 'image/webp') {
             $size   = getimagesize($dest);
             $width  = $size ? $size[0] : null;
             $height = $size ? $size[1] : null;
         }
         $webpPath = null;
-        if (in_array($mime, ['image/jpeg', 'image/png', 'image/gif'], true) && function_exists('imagewebp')) {
+        if (!$isVideo && in_array($mime, ['image/jpeg', 'image/png', 'image/gif'], true) && function_exists('imagewebp')) {
             switch ($mime) {
                 case 'image/jpeg': $img = imagecreatefromjpeg($dest); break;
                 case 'image/png':  $img = imagecreatefrompng($dest); break;
