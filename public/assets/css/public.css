@@ -236,40 +236,6 @@
   z-index: 2;
 }
 
-/* ── Media library video thumbs ─────────────────────────────── */
-.media-video-thumb {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: #111;
-  overflow: hidden;
-}
-.media-video-thumb video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.media-video-play {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  color: #fff;
-  background: rgba(0,0,0,.3);
-}
-.media-type-badge {
-  display: inline-block;
-  font-size: .65rem;
-  font-weight: 700;
-  letter-spacing: .05em;
-  padding: .1rem .35rem;
-  border-radius: 3px;
-  background: var(--color-primary, #1a56db);
-  color: #fff;
-  margin: .25rem 0 0;
-}
 
 /* ── Services Section ───────────────────────────────────────── */
 .kn-services {
