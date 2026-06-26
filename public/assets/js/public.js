@@ -62,11 +62,27 @@
     });
   }
 
+  /* ── Transparent Nav Scroll ──────────────────────────────── */
+  function initNavScroll() {
+    var nav = document.querySelector('.kn-nav--transparent');
+    if (!nav) return;
+    function onScroll() {
+      if (window.scrollY > 40) {
+        nav.classList.add('kn-nav--scrolled');
+      } else {
+        nav.classList.remove('kn-nav--scrolled');
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
   /* ── Init ──────────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', function () {
     initFaq();
     initSmoothScroll();
     initMobileNav();
+    initNavScroll();
   });
 }());
 

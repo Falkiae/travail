@@ -26,6 +26,63 @@
   height: 68px;
   display: flex;
   align-items: center;
+  transition: background .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+
+/* Transparent nav overlaying the hero */
+.kn-nav--transparent {
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: transparent;
+  border-bottom-color: transparent;
+}
+.kn-nav--transparent.kn-nav--scrolled {
+  background: var(--kn-white);
+  border-bottom-color: var(--kn-border);
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+}
+
+/* Light variant: white text on dark hero */
+.kn-nav--transparent.kn-nav--light .kn-nav__menu a,
+.kn-nav--transparent.kn-nav--light .kn-nav__logo {
+  color: var(--kn-white);
+}
+.kn-nav--transparent.kn-nav--light .kn-nav__menu a:hover {
+  color: var(--kn-yellow);
+}
+.kn-nav--transparent.kn-nav--light .kn-nav__toggle span {
+  background: var(--kn-white);
+}
+.kn-nav--transparent.kn-nav--light .kn-nav__arrow {
+  color: rgba(255,255,255,.6);
+}
+.kn-nav--transparent.kn-nav--light .kn-nav__logo-img {
+  filter: brightness(0) invert(1);
+}
+.kn-nav--transparent.kn-nav--light.kn-nav--scrolled .kn-nav__logo-img {
+  filter: none;
+}
+/* Reset to default colors on scroll */
+.kn-nav--transparent.kn-nav--light.kn-nav--scrolled .kn-nav__menu a,
+.kn-nav--transparent.kn-nav--light.kn-nav--scrolled .kn-nav__logo {
+  color: var(--kn-night);
+}
+.kn-nav--transparent.kn-nav--light.kn-nav--scrolled .kn-nav__menu a:hover {
+  color: var(--kn-blue);
+}
+.kn-nav--transparent.kn-nav--light.kn-nav--scrolled .kn-nav__toggle span {
+  background: var(--kn-night);
+}
+
+/* Dark text variant (light hero backgrounds) */
+.kn-nav--transparent:not(.kn-nav--light) .kn-nav__menu a {
+  color: var(--kn-night);
+}
+
+/* Push hero content down when nav overlays it */
+.kn-hero--under-nav {
+  padding-top: calc(68px + 2rem);
 }
 
 .kn-nav__inner {

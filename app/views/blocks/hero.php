@@ -7,7 +7,8 @@ if (!in_array($bg, ['white','alt','blue','night','cream','rose'], true)) $bg = '
 $visualType   = isset($block['visual_type']) ? $block['visual_type'] : 'photo';
 $isVideoBg    = ($visualType === 'video_bg');
 $isDark = ($bg === 'blue' || $bg === 'night' || $isVideoBg);
-$heroExtra    = 'kn-hero' . ($isVideoBg ? ' kn-hero--video-bg' : '');
+$isFirstBlock = (isset($__block_index) && $__block_index === 0);
+$heroExtra    = 'kn-hero' . ($isVideoBg ? ' kn-hero--video-bg' : '') . ($isFirstBlock ? ' kn-hero--under-nav' : '');
 $sectionClass = blockClasses($block, 'cream', $heroExtra);
 $gridClass    = gridClasses($block, '1-1');
 

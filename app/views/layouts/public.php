@@ -59,7 +59,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <?php endif; ?>
 
 <!-- ── Navigation ──────────────────────────────────────────── -->
-<nav class="kn-nav" aria-label="Navigation principale">
+<?php
+$__navClass = 'kn-nav';
+if (!empty($blocks) && is_array($blocks)) {
+    $__firstBlock = $blocks[0];
+    if (isset($__firstBlock['type']) && $__firstBlock['type'] === 'hero') {
+        $__navClass .= ' kn-nav--transparent';
+        $__heroBg = isset($__firstBlock['bg']) ? $__firstBlock['bg'] : 'cream';
+        $__heroVideoBg = (isset($__firstBlock['visual_type']) && $__firstBlock['visual_type'] === 'video_bg');
+        if ($__heroBg === 'blue' || $__heroBg === 'night' || $__heroVideoBg) {
+            $__navClass .= ' kn-nav--light';
+        }
+    }
+}
+?>
+<nav class="<?php echo $__navClass; ?>" aria-label="Navigation principale">
   <div class="container">
     <div class="kn-nav__inner">
       <a class="kn-nav__logo" href="/">
