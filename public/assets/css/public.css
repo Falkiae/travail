@@ -23,7 +23,7 @@
   z-index: 100;
   background: var(--kn-white);
   border-bottom: 1px solid var(--kn-border);
-  height: 68px;
+  height: 80px;
   display: flex;
   align-items: center;
   transition: background .3s ease, border-color .3s ease, box-shadow .3s ease;
@@ -96,7 +96,7 @@
   align-items: center;
 }
 .kn-nav__logo-img {
-  max-height: 44px;
+  max-height: 55px;
   width: auto;
   object-fit: contain;
   display: block;
@@ -199,7 +199,7 @@
   padding-top: 2rem;
 }
 .kn-hero.kn-hero--under-nav {
-  padding-top: calc(68px + 2rem);
+  padding-top: calc(80px + 2rem);
 }
 
 /* .kn-hero__inner grid is now handled by .kn-grid--* classes */
