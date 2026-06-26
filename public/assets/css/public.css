@@ -80,10 +80,7 @@
   color: var(--kn-night);
 }
 
-/* Push hero content down when nav overlays it */
-.kn-hero--under-nav {
-  padding-top: calc(68px + 2rem);
-}
+
 
 .kn-nav__inner {
   display: flex;
@@ -206,6 +203,9 @@
 .kn-hero {
   overflow: hidden;
   padding-top: 2rem;
+}
+.kn-hero.kn-hero--under-nav {
+  padding-top: calc(68px + 2rem);
 }
 
 /* .kn-hero__inner grid is now handled by .kn-grid--* classes */
