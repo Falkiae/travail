@@ -57,12 +57,6 @@
 .kn-nav--transparent.kn-nav--light .kn-nav__arrow {
   color: rgba(255,255,255,.6);
 }
-.kn-nav--transparent.kn-nav--light .kn-nav__logo-img {
-  filter: brightness(0) invert(1);
-}
-.kn-nav--transparent.kn-nav--light.kn-nav--scrolled .kn-nav__logo-img {
-  filter: none;
-}
 /* Reset to default colors on scroll */
 .kn-nav--transparent.kn-nav--light.kn-nav--scrolled .kn-nav__menu a,
 .kn-nav--transparent.kn-nav--light.kn-nav--scrolled .kn-nav__logo {
