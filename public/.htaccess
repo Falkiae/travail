@@ -1,4 +1,6 @@
 Options -Indexes
+ServerSignature Off
+
 RewriteEngine On
 
 # HTTPS redirect (décommenter en prod)

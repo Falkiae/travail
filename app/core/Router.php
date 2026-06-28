@@ -16,12 +16,21 @@ class Router
     {
         Auth::start();
 
+        header('X-Content-Type-Options: nosniff');
+        header('X-Frame-Options: DENY');
+        header('Referrer-Policy: strict-origin-when-cross-origin');
+        header('X-XSS-Protection: 1; mode=block');
+
         $uri = parse_url($uri, PHP_URL_PATH);
         $uri = rtrim($uri, '/');
         if ($uri === '') $uri = '/';
 
-        // Mode maintenance (hors /admin)
         $adminPrefix = '/' . ADMIN_PATH;
+
+        if (strncmp($uri, $adminPrefix, strlen($adminPrefix)) === 0) {
+            header('X-Robots-Tag: noindex, nofollow');
+        }
+
         if (strncmp($uri, $adminPrefix, strlen($adminPrefix)) !== 0) {
             $this->checkMaintenanceMode();
             $this->checkRedirections($uri);

@@ -6,7 +6,8 @@
 <title><?php echo isset($title) ? htmlspecialchars($title) . ' — Admin Keepnew' : 'Admin Keepnew'; ?></title>
 <link rel="stylesheet" href="/public/assets/admin.css">
 </head>
-<body class="admin-layout">
+<body class="admin-layout<?php if (!\App\Core\Auth::isLoggedIn()) echo ' admin-layout--login'; ?>">
+<?php if (\App\Core\Auth::isLoggedIn()): ?>
 <aside class="sidebar">
   <div class="sidebar-logo">Keepnew</div>
   <nav>
@@ -22,6 +23,7 @@
   </nav>
   <div class="sidebar-footer"><a href="/admin/logout">Déconnexion</a></div>
 </aside>
+<?php endif; ?>
 <main class="admin-main">
 <?php
 $flash = \App\Core\Auth::getFlash();
@@ -31,6 +33,7 @@ if ($flash): ?>
 <?php $this->content(); ?>
 </main>
 <script src="/public/assets/admin.js"></script>
+<?php if (\App\Core\Auth::isLoggedIn()): ?>
 <div id="media-modal" class="modal-overlay hidden">
   <div class="modal-box">
     <div class="modal-header">
@@ -42,5 +45,6 @@ if ($flash): ?>
     </div>
   </div>
 </div>
+<?php endif; ?>
 </body>
 </html>
