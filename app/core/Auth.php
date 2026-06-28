@@ -11,7 +11,14 @@ class Auth
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_name(SESSION_NAME);
-            session_set_cookie_params(0, '/', '', APP_ENV === 'production', true);
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path'     => '/',
+                'domain'   => '',
+                'secure'   => APP_ENV === 'production',
+                'httponly'  => true,
+                'samesite'  => 'Strict',
+            ]);
             session_start();
         }
     }

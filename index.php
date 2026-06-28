@@ -7,6 +7,11 @@ define('CONFIG_PATH', ROOT_PATH . '/config');
 
 require_once CONFIG_PATH . '/config.php';
 
+if (APP_ENV === 'production') {
+    error_reporting(0);
+    ini_set('display_errors', '0');
+}
+
 spl_autoload_register(function (string $class): void {
     $appPath = ROOT_PATH . '/app';
     $map = [
