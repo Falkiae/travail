@@ -33,8 +33,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,700;0,800;0,900;1,900&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="/public/assets/css/tokens.css">
-    <link rel="stylesheet" href="/public/assets/css/public.css">
+    <?php $__cv = isset($cache_version) && $cache_version ? '?v=' . htmlspecialchars($cache_version) : ''; ?>
+    <link rel="stylesheet" href="/public/assets/css/tokens.css<?php echo $__cv; ?>">
+    <link rel="stylesheet" href="/public/assets/css/public.css<?php echo $__cv; ?>">
     <?php if (isset($block_styles) && $block_styles): ?>
     <style id="kn-block-styles"><?php echo $block_styles; ?></style>
     <?php endif; ?>
@@ -242,6 +243,6 @@ if (!empty($blocks) && is_array($blocks)) {
     </div>
 </footer>
 
-<script src="/public/assets/js/public.js"></script>
+<script src="/public/assets/js/public.js<?php echo isset($__cv) ? $__cv : ''; ?>"></script>
 </body>
 </html>

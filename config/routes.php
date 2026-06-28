@@ -55,6 +55,7 @@ return [
 
     'GET /admin/settings'                       => ['SettingsController', 'index'],
     'POST /admin/settings'                      => ['SettingsController', 'update'],
+    'POST /admin/settings/clear-cache'          => ['SettingsController', 'clearCache'],
 
     'GET /admin/redirections'                   => ['RedirectionController', 'index'],
     'POST /admin/redirections'                  => ['RedirectionController', 'store'],

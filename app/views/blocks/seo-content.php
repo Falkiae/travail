@@ -20,7 +20,7 @@ $hasImage = $imageUrl && $layout !== 'text-only';
     <div class="kn-grid kn-grid--<?php echo $layout === 'image-left' ? '1-2' : '2-1'; ?>">
       <?php if ($layout === 'image-left'): ?>
       <div class="kn-seo-content__visual">
-        <img src="<?php echo htmlspecialchars($imageUrl); ?>" alt="<?php echo htmlspecialchars($imageAlt); ?>" loading="lazy">
+        <?php echo knImage($imageUrl, $imageAlt, ['imgSizes' => '(max-width:768px) 100vw, 50vw']); ?>
       </div>
       <?php endif; ?>
       <div class="kn-seo-content__text">
@@ -33,7 +33,7 @@ $hasImage = $imageUrl && $layout !== 'text-only';
       </div>
       <?php if ($layout === 'image-right'): ?>
       <div class="kn-seo-content__visual">
-        <img src="<?php echo htmlspecialchars($imageUrl); ?>" alt="<?php echo htmlspecialchars($imageAlt); ?>" loading="lazy">
+        <?php echo knImage($imageUrl, $imageAlt, ['imgSizes' => '(max-width:768px) 100vw, 50vw']); ?>
       </div>
       <?php endif; ?>
     </div>

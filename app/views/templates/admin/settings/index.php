@@ -187,9 +187,28 @@ function s(array $settings, string $key, string $default = ''): string {
     </div>
   </div>
 
+  <!-- Performance / Cache -->
+  <div class="card">
+    <div class="card-title">Performance / Cache</div>
+    <div class="form-group">
+      <label style="display:flex; align-items:center; gap:.75rem; cursor:pointer;">
+        <input type="hidden" name="cache_enabled" value="0">
+        <input type="checkbox" name="cache_enabled" value="1" <?= ($settings['cache_enabled'] ?? '0') === '1' ? 'checked' : '' ?> style="width:1.25rem;height:1.25rem;">
+        Activer le cache navigateur (versionning des assets CSS/JS)
+      </label>
+      <p class="help-text">Ajoute un <code>?v=xxx</code> aux fichiers CSS et JS pour forcer le rechargement après une mise à jour.</p>
+    </div>
+  </div>
+
   <div class="form-actions">
     <button type="submit" class="btn">Enregistrer les réglages</button>
   </div>
+</form>
+
+<form method="POST" action="/admin/settings/clear-cache" style="margin-top:1rem;">
+  <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+  <button type="submit" class="btn btn-secondary">Vider le cache navigateur</button>
+  <span class="help-text" style="margin-left:.75rem;">Force les navigateurs à re-télécharger les fichiers CSS et JS.</span>
 </form>
 <script>
 document.getElementById('logo-media-btn').addEventListener('click', function() {

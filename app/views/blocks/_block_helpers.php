@@ -1,4 +1,80 @@
 <?php
+
+function knGetMediaByPath(string $path): ?array
+{
+    static $cache = [];
+    if (isset($cache[$path])) return $cache[$path];
+    try {
+        $pdo = \App\Core\Database::getInstance();
+        $stmt = $pdo->prepare('SELECT webp_path, sizes, width, height FROM kn_media WHERE path = ? OR webp_path = ? LIMIT 1');
+        $stmt->execute([$path, $path]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+        $cache[$path] = $row;
+        return $row;
+    } catch (\Exception $e) {
+        $cache[$path] = null;
+        return null;
+    }
+}
+
+function knImage(string $src, string $alt = '', array $opts = []): string
+{
+    if (!$src) return '';
+    $loading  = isset($opts['loading']) ? $opts['loading'] : 'lazy';
+    $class    = isset($opts['class']) ? $opts['class'] : '';
+    $imgSizes = isset($opts['imgSizes']) ? $opts['imgSizes'] : '100vw';
+    $style    = isset($opts['style']) ? $opts['style'] : '';
+
+    $media = knGetMediaByPath($src);
+    $webp  = $media && !empty($media['webp_path']) ? $media['webp_path'] : null;
+    $w     = $media && !empty($media['width']) ? (int) $media['width'] : null;
+    $h     = $media && !empty($media['height']) ? (int) $media['height'] : null;
+    $sizes = $media && !empty($media['sizes']) ? json_decode($media['sizes'], true) : null;
+
+    $dimAttr = '';
+    if ($w && $h) $dimAttr = ' width="' . $w . '" height="' . $h . '"';
+
+    $classAttr = $class ? ' class="' . htmlspecialchars($class) . '"' : '';
+    $styleAttr = $style ? ' style="' . htmlspecialchars($style) . '"' : '';
+
+    $escapedSrc = htmlspecialchars($src);
+    $escapedAlt = htmlspecialchars($alt);
+
+    if ($sizes && is_array($sizes)) {
+        $webpSrcset = [];
+        $origSrcset = [];
+        $widths = ['thumb' => 400, 'medium' => 800, 'large' => 1400];
+        foreach ($widths as $label => $px) {
+            if (isset($sizes[$label . '_webp'])) {
+                $webpSrcset[] = htmlspecialchars($sizes[$label . '_webp']) . ' ' . $px . 'w';
+            }
+            if (isset($sizes[$label])) {
+                $origSrcset[] = htmlspecialchars($sizes[$label]) . ' ' . $px . 'w';
+            }
+        }
+        if ($webp) $webpSrcset[] = htmlspecialchars($webp) . ' ' . ($w ?: 1920) . 'w';
+        $origSrcset[] = $escapedSrc . ' ' . ($w ?: 1920) . 'w';
+
+        $html = '<picture>';
+        if ($webpSrcset) {
+            $html .= '<source type="image/webp" srcset="' . implode(', ', $webpSrcset) . '" sizes="' . htmlspecialchars($imgSizes) . '">';
+        }
+        $html .= '<img src="' . $escapedSrc . '" srcset="' . implode(', ', $origSrcset) . '" sizes="' . htmlspecialchars($imgSizes) . '" alt="' . $escapedAlt . '" loading="' . $loading . '"' . $dimAttr . $classAttr . $styleAttr . '>';
+        $html .= '</picture>';
+        return $html;
+    }
+
+    if ($webp) {
+        $html = '<picture>';
+        $html .= '<source type="image/webp" srcset="' . htmlspecialchars($webp) . '">';
+        $html .= '<img src="' . $escapedSrc . '" alt="' . $escapedAlt . '" loading="' . $loading . '"' . $dimAttr . $classAttr . $styleAttr . '>';
+        $html .= '</picture>';
+        return $html;
+    }
+
+    return '<img src="' . $escapedSrc . '" alt="' . $escapedAlt . '" loading="' . $loading . '"' . $dimAttr . $classAttr . $styleAttr . '>';
+}
+
 /**
  * Returns CSS classes for a block's <section> element.
  * Handles: bg ambiance + responsive visibility.

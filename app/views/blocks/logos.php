@@ -31,7 +31,7 @@ $items = isset($block['items']) && is_array($block['items']) ? $block['items'] :
       <div class="kn-logos__item">
       <?php endif; ?>
         <?php if ($img): ?>
-        <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($alt); ?>" loading="lazy">
+        <?php echo knImage($img, $alt, ['imgSizes' => '120px']); ?>
         <?php else: ?>
         <span class="kn-logos__placeholder"><?php echo htmlspecialchars($alt); ?></span>
         <?php endif; ?>

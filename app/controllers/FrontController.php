@@ -62,6 +62,7 @@ class FrontController extends BaseController
             'noindex_all'  => isset($settings['noindex_all']) && $settings['noindex_all'] === '1',
             'robots_global' => isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',
             'block_styles'  => $block_styles,
+            'cache_version' => (isset($settings['cache_enabled']) && $settings['cache_enabled'] === '1' && isset($settings['cache_version'])) ? $settings['cache_version'] : '',
         ], 'public');
     }
 
@@ -292,6 +293,7 @@ class FrontController extends BaseController
             'noindex_all' => isset($settings['noindex_all']) && $settings['noindex_all'] === '1',
             'robots_global' => isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',
             'block_styles'  => $block_styles,
+            'cache_version' => (isset($settings['cache_enabled']) && $settings['cache_enabled'] === '1' && isset($settings['cache_version'])) ? $settings['cache_version'] : '',
         ), 'public');
     }
 

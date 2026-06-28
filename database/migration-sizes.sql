@@ -1,0 +1,1 @@
+ALTER TABLE kn_media ADD COLUMN sizes TEXT DEFAULT NULL AFTER webp_path;

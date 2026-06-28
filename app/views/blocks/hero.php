@@ -82,7 +82,7 @@ $rawPills = isset($block['pills']) && is_array($block['pills']) ? $block['pills'
             playsinline
           ></video>
         <?php elseif (!empty($block['image_url'])): ?>
-          <img src="<?php echo htmlspecialchars($block['image_url']); ?>" alt="<?php echo htmlspecialchars(isset($block['image_alt']) ? $block['image_alt'] : ''); ?>" loading="eager">
+          <?php echo knImage($block['image_url'], isset($block['image_alt']) ? $block['image_alt'] : '', ['loading' => 'eager', 'imgSizes' => '50vw']); ?>
         <?php else: ?>
           <div class="kn-placeholder kn-placeholder--hero">Photo / illustration héro</div>
         <?php endif; ?>

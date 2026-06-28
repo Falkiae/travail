@@ -28,7 +28,7 @@ $isDark = ($bg === 'blue' || $bg === 'night');
       </div>
       <div class="kn-two-col__visual">
         <?php if (!empty($block['image_url'])): ?>
-        <img src="<?php echo htmlspecialchars($block['image_url']); ?>" alt="<?php echo htmlspecialchars(isset($block['image_alt']) ? $block['image_alt'] : ''); ?>" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:var(--r-card);">
+        <?php echo knImage($block['image_url'], isset($block['image_alt']) ? $block['image_alt'] : '', ['imgSizes' => '(max-width:768px) 100vw, 50vw', 'style' => 'width:100%;height:100%;object-fit:cover;border-radius:var(--r-card)']); ?>
         <?php else: ?>
         <div class="kn-placeholder" style="min-height:300px;">Image</div>
         <?php endif; ?>

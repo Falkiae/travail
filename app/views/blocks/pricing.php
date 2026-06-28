@@ -32,7 +32,7 @@ $items = isset($block['items']) && is_array($block['items']) && count($block['it
       <div class="kn-pricing-card <?php echo $isDark ? 'kn-pricing-card--dark' : ''; ?>">
         <?php if (!empty($item['image_url'])): ?>
         <div class="kn-pricing-card__img">
-          <img src="<?php echo htmlspecialchars($item['image_url']); ?>" alt="<?php echo htmlspecialchars(isset($item['label']) ? $item['label'] : ''); ?>" loading="lazy">
+          <?php echo knImage($item['image_url'], isset($item['label']) ? $item['label'] : '', ['imgSizes' => '(max-width:768px) 100vw, 33vw']); ?>
         </div>
         <?php endif; ?>
         <div class="kn-pricing-card__body">

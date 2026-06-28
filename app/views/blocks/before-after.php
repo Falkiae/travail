@@ -30,13 +30,13 @@ $items = isset($block['items']) && is_array($block['items']) && count($block['it
       <div class="kn-ba-item">
         <div class="kn-ba-slider" data-ba-slider>
           <?php if ($after): ?>
-          <img class="kn-ba-slider__after" src="<?php echo htmlspecialchars($after); ?>" alt="Après" draggable="false">
+          <?php echo knImage($after, 'Après', ['class' => 'kn-ba-slider__after', 'imgSizes' => '(max-width:768px) 100vw, 50vw']); ?>
           <?php else: ?>
           <div class="kn-ba-slider__after kn-placeholder">Après</div>
           <?php endif; ?>
           <div class="kn-ba-slider__before-wrap">
             <?php if ($before): ?>
-            <img class="kn-ba-slider__before" src="<?php echo htmlspecialchars($before); ?>" alt="Avant" draggable="false">
+            <?php echo knImage($before, 'Avant', ['class' => 'kn-ba-slider__before', 'imgSizes' => '(max-width:768px) 100vw, 50vw']); ?>
             <?php else: ?>
             <div class="kn-ba-slider__before kn-placeholder">Avant</div>
             <?php endif; ?>

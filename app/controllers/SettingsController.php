@@ -43,10 +43,10 @@ class SettingsController extends BaseController
             'booking_url', 'google_api_key', 'google_place_id',
             'logo_url', 'logo_alt',
             'google_reviews_api_key',
+            'cache_enabled',
         ];
 
-        // Champs checkbox : toujours sauvegardés (0 si absent du POST)
-        $checkboxes = ['noindex_all', 'maintenance_mode', 'cookie_banner_enabled'];
+        $checkboxes = ['noindex_all', 'maintenance_mode', 'cookie_banner_enabled', 'cache_enabled'];
 
         $upsert = $pdo->prepare(
             "INSERT INTO kn_settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = ?"
@@ -68,6 +68,21 @@ class SettingsController extends BaseController
         }
 
         Auth::setFlash('success', 'Réglages enregistrés.');
+        $this->redirect('/' . ADMIN_PATH . '/settings');
+    }
+
+    public function clearCache(): void
+    {
+        $this->requireLogin();
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
+            Auth::setFlash('error', 'Token CSRF invalide.');
+            $this->redirect('/' . ADMIN_PATH . '/settings');
+        }
+        $pdo = $this->db();
+        $version = (string) time();
+        $pdo->prepare("INSERT INTO kn_settings (`key`, `value`) VALUES ('cache_version', ?) ON DUPLICATE KEY UPDATE `value` = ?")
+            ->execute([$version, $version]);
+        Auth::setFlash('success', 'Cache vidé — les navigateurs re-téléchargeront les fichiers.');
         $this->redirect('/' . ADMIN_PATH . '/settings');
     }
 }

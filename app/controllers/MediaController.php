@@ -60,34 +60,55 @@ class MediaController extends BaseController
             $this->redirect('/' . ADMIN_PATH . '/media');
         }
         $width = null; $height = null;
-        if (!$isVideo && strncmp($mime, 'image/', 6) === 0 && $mime !== 'image/webp') {
+        $webpPath = null;
+        $sizesJson = null;
+        $isImage = !$isVideo && strncmp($mime, 'image/', 6) === 0;
+        $canProcess = $isImage && in_array($mime, ['image/jpeg', 'image/png', 'image/gif'], true);
+
+        if ($canProcess) {
+            $img = $this->loadImage($dest, $mime);
+            if ($img) {
+                $width  = imagesx($img);
+                $height = imagesy($img);
+
+                if ($width > 1920) {
+                    $newH = (int) round($height * (1920 / $width));
+                    $resized = imagecreatetruecolor(1920, $newH);
+                    $this->preserveTransparency($resized, $mime);
+                    imagecopyresampled($resized, $img, 0, 0, 0, 0, 1920, $newH, $width, $height);
+                    imagedestroy($img);
+                    $img = $resized;
+                    $width = 1920;
+                    $height = $newH;
+                }
+
+                $this->saveImage($img, $dest, $mime);
+
+                if (function_exists('imagewebp')) {
+                    $webpFilename = pathinfo($filename, PATHINFO_FILENAME) . '.webp';
+                    imagewebp($img, UPLOAD_DIR . $webpFilename, 82);
+                    $webpPath = '/uploads/' . $webpFilename;
+                }
+
+                $sizesJson = $this->generateSizes($img, $filename, $mime, $width, $height);
+
+                imagedestroy($img);
+            }
+        } elseif ($isImage && $mime !== 'image/webp') {
             $size   = getimagesize($dest);
             $width  = $size ? $size[0] : null;
             $height = $size ? $size[1] : null;
         }
-        $webpPath = null;
-        if (!$isVideo && in_array($mime, ['image/jpeg', 'image/png', 'image/gif'], true) && function_exists('imagewebp')) {
-            switch ($mime) {
-                case 'image/jpeg': $img = imagecreatefromjpeg($dest); break;
-                case 'image/png':  $img = imagecreatefrompng($dest); break;
-                case 'image/gif':  $img = imagecreatefromgif($dest); break;
-                default:           $img = null; break;
-            }
-            if ($img) {
-                $webpFilename = pathinfo($filename, PATHINFO_FILENAME) . '.webp';
-                imagewebp($img, UPLOAD_DIR . $webpFilename, 85);
-                imagedestroy($img);
-                $webpPath = '/uploads/' . $webpFilename;
-            }
-        }
+
         (new Media())->create([
             'filename'      => $filename,
             'original_name' => basename($file['name']),
             'path'          => '/uploads/' . $filename,
             'webp_path'     => $webpPath,
+            'sizes'         => $sizesJson,
             'alt'           => '',
             'mime_type'     => $mime,
-            'size'          => $file['size'],
+            'size'          => filesize($dest),
             'width'         => $width,
             'height'        => $height,
         ]);
@@ -121,6 +142,14 @@ class MediaController extends BaseController
             if (!empty($media['webp_path'])) {
                 @unlink(UPLOAD_DIR . basename($media['webp_path']));
             }
+            if (!empty($media['sizes'])) {
+                $sizes = json_decode($media['sizes'], true);
+                if (is_array($sizes)) {
+                    foreach ($sizes as $path) {
+                        @unlink(UPLOAD_DIR . basename($path));
+                    }
+                }
+            }
             (new Media())->delete($id);
         }
         Auth::setFlash('success', 'Fichier supprimé.');
@@ -134,6 +163,67 @@ class MediaController extends BaseController
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($media);
         exit;
+    }
+
+    private function loadImage(string $path, string $mime)
+    {
+        switch ($mime) {
+            case 'image/jpeg': return imagecreatefromjpeg($path);
+            case 'image/png':  return imagecreatefrompng($path);
+            case 'image/gif':  return imagecreatefromgif($path);
+            default: return null;
+        }
+    }
+
+    private function saveImage($img, string $path, string $mime): void
+    {
+        switch ($mime) {
+            case 'image/jpeg': imagejpeg($img, $path, 82); break;
+            case 'image/png':  imagepng($img, $path, 6); break;
+            case 'image/gif':  imagegif($img, $path); break;
+        }
+    }
+
+    private function preserveTransparency($img, string $mime): void
+    {
+        if ($mime === 'image/png' || $mime === 'image/gif') {
+            imagealphablending($img, false);
+            imagesavealpha($img, true);
+            $transparent = imagecolorallocatealpha($img, 0, 0, 0, 127);
+            imagefilledrectangle($img, 0, 0, imagesx($img), imagesy($img), $transparent);
+        }
+    }
+
+    private function generateSizes($img, string $filename, string $mime, int $origW, int $origH): ?string
+    {
+        $breakpoints = ['thumb' => 400, 'medium' => 800, 'large' => 1400];
+        $baseName = pathinfo($filename, PATHINFO_FILENAME);
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        $sizes = [];
+
+        foreach ($breakpoints as $label => $maxW) {
+            if ($origW <= $maxW) {
+                continue;
+            }
+            $newH = (int) round($origH * ($maxW / $origW));
+            $resized = imagecreatetruecolor($maxW, $newH);
+            $this->preserveTransparency($resized, $mime);
+            imagecopyresampled($resized, $img, 0, 0, 0, 0, $maxW, $newH, $origW, $origH);
+
+            $sizedFilename = $baseName . '-' . $label . '.' . $ext;
+            $this->saveImage($resized, UPLOAD_DIR . $sizedFilename, $mime);
+            $sizes[$label] = '/uploads/' . $sizedFilename;
+
+            if (function_exists('imagewebp')) {
+                $webpFilename = $baseName . '-' . $label . '.webp';
+                imagewebp($resized, UPLOAD_DIR . $webpFilename, 82);
+                $sizes[$label . '_webp'] = '/uploads/' . $webpFilename;
+            }
+
+            imagedestroy($resized);
+        }
+
+        return $sizes ? json_encode($sizes) : null;
     }
 
     public function serveFile(string $file): void
