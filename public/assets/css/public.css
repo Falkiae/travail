@@ -759,7 +759,29 @@
   color: var(--kn-muted);
 }
 
-.kn-dva-card__cta { margin-top: auto; }
+.kn-dva-card__cta {
+  margin-top: auto;
+  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  gap: 1rem;
+}
+.kn-dva-card__cta .kn-cta-card__title {
+  font-size: 1.05rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: normal;
+  letter-spacing: 0;
+}
+.kn-dva-card__cta .kn-eyebrow {
+  font-size: .7rem;
+}
+.kn-dva-card__cta .kn-cta-card__arrow {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  font-size: .95rem;
+}
 
 /* Dark ambiance */
 .kn-bg--blue .kn-dva-card,
