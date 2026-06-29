@@ -120,8 +120,18 @@ class MenuController extends BaseController
         }
         $itemsJson = json_encode($decoded);
 
-        $upd = $pdo->prepare("UPDATE kn_menus SET items = ? WHERE id = ?");
-        $upd->execute(array($itemsJson, (int)$id));
+        $name     = trim(isset($_POST['name']) ? $_POST['name'] : '');
+        $location = isset($_POST['location']) ? $_POST['location'] : 'header';
+        if (!in_array($location, array('header', 'footer'), true)) {
+            $location = 'header';
+        }
+        if ($name === '') {
+            Auth::setFlash('error', 'Le nom du menu est obligatoire.');
+            $this->redirect('/' . ADMIN_PATH . '/menus/' . (int)$id . '/edit');
+        }
+
+        $upd = $pdo->prepare("UPDATE kn_menus SET items = ?, name = ?, location = ? WHERE id = ?");
+        $upd->execute(array($itemsJson, $name, $location, (int)$id));
 
         Auth::setFlash('success', 'Menu mis à jour.');
         $this->redirect('/' . ADMIN_PATH . '/menus/' . (int)$id . '/edit');

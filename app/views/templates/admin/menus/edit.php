@@ -26,6 +26,23 @@
   <textarea name="items_json" id="items_json" style="display:none;"></textarea>
 
   <div class="card">
+    <div class="card-title">Informations du menu</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="menu_name">Nom (affiché en haut de colonne dans le footer)</label>
+        <input type="text" id="menu_name" name="name" value="<?= htmlspecialchars($menu['name']) ?>" required>
+      </div>
+      <div class="form-group">
+        <label for="menu_location">Emplacement</label>
+        <select id="menu_location" name="location">
+          <option value="header" <?= $menu['location'] === 'header' ? 'selected' : '' ?>>Header</option>
+          <option value="footer" <?= $menu['location'] === 'footer' ? 'selected' : '' ?>>Footer</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
       <span>Items du menu</span>
       <small class="text-muted">Si des sous-items ont une colonne &rarr; mega menu. Sinon &rarr; dropdown.</small>
