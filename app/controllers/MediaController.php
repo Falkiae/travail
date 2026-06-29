@@ -165,6 +165,76 @@ class MediaController extends BaseController
         exit;
     }
 
+    public function reprocessAll(): void
+    {
+        $this->requireLogin();
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
+            Auth::setFlash('error', 'Token invalide.');
+            $this->redirect('/' . ADMIN_PATH . '/media');
+        }
+
+        set_time_limit(300);
+
+        $pdo = $this->db();
+        $stmt = $pdo->prepare(
+            "SELECT * FROM kn_media WHERE mime_type IN ('image/jpeg','image/png','image/gif') AND (sizes IS NULL OR sizes = '')"
+        );
+        $stmt->execute();
+        $images = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $count = 0;
+        $mediaModel = new Media();
+
+        foreach ($images as $row) {
+            $dest = UPLOAD_DIR . $row['filename'];
+            if (!file_exists($dest)) continue;
+
+            $mime = $row['mime_type'];
+            $img = $this->loadImage($dest, $mime);
+            if (!$img) continue;
+
+            $width  = imagesx($img);
+            $height = imagesy($img);
+
+            if ($width > 1920) {
+                $newH = (int) round($height * (1920 / $width));
+                $resized = imagecreatetruecolor(1920, $newH);
+                $this->preserveTransparency($resized, $mime);
+                imagecopyresampled($resized, $img, 0, 0, 0, 0, 1920, $newH, $width, $height);
+                imagedestroy($img);
+                $img = $resized;
+                $width = 1920;
+                $height = $newH;
+            }
+
+            $this->saveImage($img, $dest, $mime);
+
+            $webpPath = $row['webp_path'];
+            if (function_exists('imagewebp')) {
+                $webpFilename = pathinfo($row['filename'], PATHINFO_FILENAME) . '.webp';
+                imagewebp($img, UPLOAD_DIR . $webpFilename, 82);
+                $webpPath = '/uploads/' . $webpFilename;
+            }
+
+            $sizesJson = $this->generateSizes($img, $row['filename'], $mime, $width, $height);
+
+            imagedestroy($img);
+
+            $mediaModel->update((int) $row['id'], [
+                'webp_path' => $webpPath,
+                'sizes'     => $sizesJson,
+                'width'     => $width,
+                'height'    => $height,
+                'size'      => filesize($dest),
+            ]);
+
+            $count++;
+        }
+
+        Auth::setFlash('success', $count . ' image(s) retraitée(s) avec succès.');
+        $this->redirect('/' . ADMIN_PATH . '/media');
+    }
+
     private function loadImage(string $path, string $mime)
     {
         switch ($mime) {

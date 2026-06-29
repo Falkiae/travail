@@ -1,5 +1,9 @@
 <div class="page-header">
   <h1>Médiathèque</h1>
+  <form method="POST" action="/admin/media/reprocess" style="margin:0;">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+    <button type="submit" class="btn btn-secondary" onclick="return confirm('Retraiter toutes les images sans variantes ? Cela peut prendre quelques minutes.');">Retraiter les images</button>
+  </form>
 </div>
 
 <!-- Upload zone -->

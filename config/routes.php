@@ -39,6 +39,7 @@ return [
     'POST /admin/media/upload'                  => ['MediaController', 'upload'],
     'POST /admin/media/alt'                     => ['MediaController', 'updateAlt'],
     'POST /admin/media/delete'                  => ['MediaController', 'deleteMedia'],
+    'POST /admin/media/reprocess'               => ['MediaController', 'reprocessAll'],
     'GET /admin/media/json'                     => ['MediaController', 'jsonList'],
 
     'GET /admin/menus'                          => ['MenuController', 'index'],
