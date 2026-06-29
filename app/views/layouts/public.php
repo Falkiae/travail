@@ -4,6 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Consent Mode v2 — défaut refusé (DOIT être avant tout autre script) -->
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    (function(){
+      var stored = null;
+      try { stored = localStorage.getItem('kn_consent'); } catch(e){}
+      var granted = stored === 'granted';
+      gtag('consent', 'default', {
+        'ad_storage':            granted ? 'granted' : 'denied',
+        'analytics_storage':     granted ? 'granted' : 'denied',
+        'ad_user_data':          granted ? 'granted' : 'denied',
+        'ad_personalization':    granted ? 'granted' : 'denied',
+        'functionality_storage': 'granted',
+        'security_storage':      'granted',
+        'wait_for_update':       500
+      });
+      gtag('set', 'ads_data_redaction', !granted);
+      gtag('set', 'url_passthrough', true);
+    })();
+    </script>
+
     <title><?php echo isset($meta_title) && $meta_title ? htmlspecialchars($meta_title) . ' — Keepnew' : (isset($title) && $title ? htmlspecialchars($title) . ' — Keepnew' : 'Keepnew — Nettoyage à domicile'); ?></title>
 
     <?php if (isset($meta_description) && $meta_description): ?>
@@ -39,25 +61,6 @@
     <?php if (isset($block_styles) && $block_styles): ?>
     <style id="kn-block-styles"><?php echo $block_styles; ?></style>
     <?php endif; ?>
-
-    <!-- Consent Mode v2 — défaut refusé -->
-    <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    (function(){
-      var stored = null;
-      try { stored = localStorage.getItem('kn_consent'); } catch(e){}
-      var granted = stored === 'granted';
-      gtag('consent', 'default', {
-        'ad_storage':            granted ? 'granted' : 'denied',
-        'analytics_storage':     granted ? 'granted' : 'denied',
-        'ad_user_data':          granted ? 'granted' : 'denied',
-        'ad_personalization':    granted ? 'granted' : 'denied',
-        'functionality_storage': 'granted',
-        'security_storage':      'granted'
-      });
-    })();
-    </script>
 
     <?php if (isset($gtm_id) && $gtm_id): ?>
     <!-- Google Tag Manager -->
