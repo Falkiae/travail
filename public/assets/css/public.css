@@ -759,23 +759,7 @@
   color: var(--kn-muted);
 }
 
-.kn-dva__ctas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .75rem;
-  justify-content: center;
-  margin-top: 2.25rem;
-}
-
-.kn-btn--outline {
-  background: transparent;
-  color: var(--kn-blue);
-  border: 1.5px solid var(--kn-blue);
-}
-.kn-btn--outline:hover {
-  background: var(--kn-blue);
-  color: var(--kn-white);
-}
+.kn-dva-card__cta { margin-top: auto; }
 
 /* Dark ambiance */
 .kn-bg--blue .kn-dva-card,
@@ -807,16 +791,6 @@
 }
 .kn-bg--blue .kn-dva-card__bullet,
 .kn-bg--night .kn-dva-card__bullet { color: var(--kn-yellow); }
-.kn-bg--blue .kn-btn--outline,
-.kn-bg--night .kn-btn--outline {
-  color: var(--kn-white);
-  border-color: rgba(255,255,255,.4);
-}
-.kn-bg--blue .kn-btn--outline:hover,
-.kn-bg--night .kn-btn--outline:hover {
-  background: var(--kn-white);
-  color: var(--kn-night);
-}
 
 @media (min-width: 768px) {
   .kn-dva__grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }

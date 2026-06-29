@@ -496,6 +496,9 @@ function buildBlockForm(type, data) {
         '<div class="form-group"><label>Prestations</label><div class="block-repeater" data-repeater="home_items"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="home_items">+ Ajouter une prestation</button></div>' +
         fg('Note bas de carte', inp('home_note', data.home_note, 'RDV en ligne disponible.')) +
+        fg('CTA — Eyebrow', inp('home_cta_eyebrow', data.home_cta_eyebrow, '📅 RÉSERVATION EN LIGNE')) +
+        fg('CTA — Titre', inp('home_cta_title', data.home_cta_title, 'Prendre RDV en 2 min')) +
+        fg('CTA — URL', inp('home_cta_url', data.home_cta_url, '/reservation')) +
         '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
         '<h4 style="margin:.5rem 0 1rem">Carte « En atelier »</h4>' +
         fg('Icône (emoji)', inp('workshop_icon', data.workshop_icon, '🏭')) +
@@ -505,12 +508,9 @@ function buildBlockForm(type, data) {
         '<div class="form-group"><label>Prestations</label><div class="block-repeater" data-repeater="workshop_items"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="workshop_items">+ Ajouter une prestation</button></div>' +
         fg('Note bas de carte', inp('workshop_note', data.workshop_note, 'RDV en ligne disponible…')) +
-        '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
-        '<h4 style="margin:.5rem 0 1rem">CTAs (bas du bloc)</h4>' +
-        fg('CTA principal — label', inp('cta_primary_label', data.cta_primary_label, 'Prenez RDV en ligne')) +
-        fg('CTA principal — URL', inp('cta_primary_url', data.cta_primary_url, '/reservation')) +
-        fg('CTA secondaire — label', inp('cta_secondary_label', data.cta_secondary_label, 'Demander un devis')) +
-        fg('CTA secondaire — URL', inp('cta_secondary_url', data.cta_secondary_url, '/contact'));
+        fg('CTA — Eyebrow', inp('workshop_cta_eyebrow', data.workshop_cta_eyebrow, '📅 RÉSERVATION EN LIGNE')) +
+        fg('CTA — Titre', inp('workshop_cta_title', data.workshop_cta_title, 'Prendre RDV à l\'atelier')) +
+        fg('CTA — URL', inp('workshop_cta_url', data.workshop_cta_url, '/atelier'));
       (data.steps || []).forEach(function(item) {
         addRepeaterRow(d.querySelector('[data-repeater="steps"]'), 'steps', ['icon','label'], ['Icône (emoji)','Libellé'], item);
       });

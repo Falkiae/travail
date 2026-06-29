@@ -24,10 +24,15 @@ $wsDesc       = isset($block['workshop_desc']) ? $block['workshop_desc'] : '';
 $wsAddress    = isset($block['workshop_address']) ? $block['workshop_address'] : '';
 $wsNote       = isset($block['workshop_note']) ? $block['workshop_note'] : '';
 
-$ctaPrimaryLabel = isset($block['cta_primary_label']) ? $block['cta_primary_label'] : '';
-$ctaPrimaryUrl   = isset($block['cta_primary_url']) ? $block['cta_primary_url'] : '';
-$ctaSecondLabel  = isset($block['cta_secondary_label']) ? $block['cta_secondary_label'] : '';
-$ctaSecondUrl    = isset($block['cta_secondary_url']) ? $block['cta_secondary_url'] : '';
+$homeCtaEyebrow = isset($block['home_cta_eyebrow']) ? $block['home_cta_eyebrow'] : '';
+$homeCtaTitle   = isset($block['home_cta_title']) ? $block['home_cta_title'] : '';
+$homeCtaUrl     = isset($block['home_cta_url']) ? $block['home_cta_url'] : '';
+
+$wsCtaEyebrow   = isset($block['workshop_cta_eyebrow']) ? $block['workshop_cta_eyebrow'] : '';
+$wsCtaTitle     = isset($block['workshop_cta_title']) ? $block['workshop_cta_title'] : '';
+$wsCtaUrl       = isset($block['workshop_cta_url']) ? $block['workshop_cta_url'] : '';
+
+$ctaCardClass   = $isDark ? 'kn-cta-card kn-cta-card--glass' : 'kn-cta-card kn-cta-card--blue';
 ?>
 <section class="<?php echo $sectionClass; ?>">
   <div class="container">
@@ -82,6 +87,17 @@ $ctaSecondUrl    = isset($block['cta_secondary_url']) ? $block['cta_secondary_ur
         <?php if ($homeNote !== ''): ?>
         <p class="kn-dva-card__note"><?php echo htmlspecialchars($homeNote); ?></p>
         <?php endif; ?>
+        <?php if ($homeCtaTitle !== ''): ?>
+        <a href="<?php echo htmlspecialchars($homeCtaUrl !== '' ? $homeCtaUrl : '#'); ?>" class="<?php echo $ctaCardClass; ?> kn-dva-card__cta">
+          <div class="kn-cta-card__content">
+            <?php if ($homeCtaEyebrow !== ''): ?>
+            <span class="kn-eyebrow"><?php echo htmlspecialchars($homeCtaEyebrow); ?></span>
+            <?php endif; ?>
+            <p class="kn-cta-card__title"><?php echo htmlspecialchars($homeCtaTitle); ?></p>
+          </div>
+          <span class="kn-cta-card__arrow" aria-hidden="true">&#8594;</span>
+        </a>
+        <?php endif; ?>
       </article>
 
       <article class="kn-dva-card">
@@ -111,18 +127,18 @@ $ctaSecondUrl    = isset($block['cta_secondary_url']) ? $block['cta_secondary_ur
         <?php if ($wsNote !== ''): ?>
         <p class="kn-dva-card__note"><?php echo htmlspecialchars($wsNote); ?></p>
         <?php endif; ?>
+        <?php if ($wsCtaTitle !== ''): ?>
+        <a href="<?php echo htmlspecialchars($wsCtaUrl !== '' ? $wsCtaUrl : '#'); ?>" class="<?php echo $ctaCardClass; ?> kn-dva-card__cta">
+          <div class="kn-cta-card__content">
+            <?php if ($wsCtaEyebrow !== ''): ?>
+            <span class="kn-eyebrow"><?php echo htmlspecialchars($wsCtaEyebrow); ?></span>
+            <?php endif; ?>
+            <p class="kn-cta-card__title"><?php echo htmlspecialchars($wsCtaTitle); ?></p>
+          </div>
+          <span class="kn-cta-card__arrow" aria-hidden="true">&#8594;</span>
+        </a>
+        <?php endif; ?>
       </article>
     </div>
-
-    <?php if ($ctaPrimaryLabel !== '' || $ctaSecondLabel !== ''): ?>
-    <div class="kn-dva__ctas">
-      <?php if ($ctaPrimaryLabel !== ''): ?>
-      <a href="<?php echo htmlspecialchars($ctaPrimaryUrl !== '' ? $ctaPrimaryUrl : '#'); ?>" class="kn-btn"><?php echo htmlspecialchars($ctaPrimaryLabel); ?></a>
-      <?php endif; ?>
-      <?php if ($ctaSecondLabel !== ''): ?>
-      <a href="<?php echo htmlspecialchars($ctaSecondUrl !== '' ? $ctaSecondUrl : '#'); ?>" class="kn-btn kn-btn--outline"><?php echo htmlspecialchars($ctaSecondLabel); ?></a>
-      <?php endif; ?>
-    </div>
-    <?php endif; ?>
   </div>
 </section>
