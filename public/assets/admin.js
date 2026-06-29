@@ -88,6 +88,7 @@ const BLOCK_TYPES = {
   'before-after': 'Avant / Apres',
   'logos':        'Logos partenaires',
   'seo-content':  'Contenu SEO',
+  'domicile-vs-atelier': 'Domicile vs Atelier',
 };
 
 let dragSrcEl = null;
@@ -478,6 +479,58 @@ function buildBlockForm(type, data) {
       });
       break;
 
+    case 'domicile-vs-atelier':
+      d.innerHTML =
+        fg('Eyebrow <small style="font-weight:400;opacity:.6">(optionnel)</small>', inp('eyebrow', data.eyebrow, 'KEEPNEW')) +
+        fg('H2 <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('h2', data.h2, 'Réservez rapidement en ligne…', 2)) +
+        fg('Intro <small style="font-weight:400;opacity:.6">(optionnel)</small>', ta('intro', data.intro, 'Courte intro sous le titre…', 2)) +
+        bgField(data.bg) +
+        visibilityField(data.visible) +
+        '<div class="form-group"><label>Étapes (pills)</label><div class="block-repeater" data-repeater="steps"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="steps">+ Ajouter une étape</button></div>' +
+        '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
+        '<h4 style="margin:.5rem 0 1rem">Carte « À domicile »</h4>' +
+        fg('Icône (emoji)', inp('home_icon', data.home_icon, '🏠')) +
+        fg('Titre', inp('home_title', data.home_title, 'À domicile')) +
+        fg('Description', ta('home_desc', data.home_desc, 'Pour un service pratique…', 2)) +
+        '<div class="form-group"><label>Prestations</label><div class="block-repeater" data-repeater="home_items"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="home_items">+ Ajouter une prestation</button></div>' +
+        fg('Note bas de carte', inp('home_note', data.home_note, 'RDV en ligne disponible.')) +
+        '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
+        '<h4 style="margin:.5rem 0 1rem">Carte « En atelier »</h4>' +
+        fg('Icône (emoji)', inp('workshop_icon', data.workshop_icon, '🏭')) +
+        fg('Titre', inp('workshop_title', data.workshop_title, 'En atelier Keepnew')) +
+        fg('Description', ta('workshop_desc', data.workshop_desc, 'Idéal si vous n\'avez pas d\'espace…', 2)) +
+        fg('Adresse', inp('workshop_address', data.workshop_address, 'Rue des Cyclistes Frontières 24, 4600 Visé')) +
+        '<div class="form-group"><label>Prestations</label><div class="block-repeater" data-repeater="workshop_items"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="workshop_items">+ Ajouter une prestation</button></div>' +
+        fg('Note bas de carte', inp('workshop_note', data.workshop_note, 'RDV en ligne disponible…')) +
+        '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
+        '<h4 style="margin:.5rem 0 1rem">CTAs (bas du bloc)</h4>' +
+        fg('CTA principal — label', inp('cta_primary_label', data.cta_primary_label, 'Prenez RDV en ligne')) +
+        fg('CTA principal — URL', inp('cta_primary_url', data.cta_primary_url, '/reservation')) +
+        fg('CTA secondaire — label', inp('cta_secondary_label', data.cta_secondary_label, 'Demander un devis')) +
+        fg('CTA secondaire — URL', inp('cta_secondary_url', data.cta_secondary_url, '/contact'));
+      (data.steps || []).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="steps"]'), 'steps', ['icon','label'], ['Icône (emoji)','Libellé'], item);
+      });
+      d.querySelector('[data-repeater-add="steps"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="steps"]'), 'steps', ['icon','label'], ['Icône (emoji)','Libellé'], {});
+      });
+      (data.home_items || []).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="home_items"]'), 'home_items', ['icon','label'], ['Icône (optionnel)','Libellé'], item);
+      });
+      d.querySelector('[data-repeater-add="home_items"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="home_items"]'), 'home_items', ['icon','label'], ['Icône (optionnel)','Libellé'], {});
+      });
+      (data.workshop_items || []).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="workshop_items"]'), 'workshop_items', ['icon','label'], ['Icône (optionnel)','Libellé'], item);
+      });
+      d.querySelector('[data-repeater-add="workshop_items"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="workshop_items"]'), 'workshop_items', ['icon','label'], ['Icône (optionnel)','Libellé'], {});
+      });
+      break;
+
     case 'seo-content':
       d.innerHTML =
         fg('H2 <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('h2', data.h2, 'Titre de la section', 2)) +
@@ -633,7 +686,7 @@ function serializeBlock(blockItem) {
     return data;
   }
 
-  // Types with repeater sub-items
+  // Types with repeater sub-items (string or array of keys)
   var repeaterTypes = {
     'services':     'items',
     'how':          'steps',
@@ -642,26 +695,30 @@ function serializeBlock(blockItem) {
     'pricing':      'items',
     'before-after': 'items',
     'logos':        'items',
+    'domicile-vs-atelier': ['steps','home_items','workshop_items'],
   };
 
   if (repeaterTypes[type]) {
-    var repeaterKey = repeaterTypes[type];
+    var keys = repeaterTypes[type];
+    if (typeof keys === 'string') keys = [keys];
     // Collect regular fields first
     body.querySelectorAll('[data-field]').forEach(function(el) {
       if (el.dataset.field.endsWith('_display')) return;
       if (el.type === 'checkbox') { data[el.dataset.field] = el.checked; return; }
       data[el.dataset.field] = el.value;
     });
-    // Collect repeater rows
-    var rows = [];
-    body.querySelectorAll('[data-repeater="' + repeaterKey + '"] .block-repeater-row').forEach(function(row) {
-      var obj = {};
-      row.querySelectorAll('[data-rfield]').forEach(function(inp) {
-        obj[inp.dataset.rfield] = inp.value;
+    // Collect each repeater
+    keys.forEach(function(repeaterKey) {
+      var rows = [];
+      body.querySelectorAll('[data-repeater="' + repeaterKey + '"] .block-repeater-row').forEach(function(row) {
+        var obj = {};
+        row.querySelectorAll('[data-rfield]').forEach(function(inp) {
+          obj[inp.dataset.rfield] = inp.value;
+        });
+        rows.push(obj);
       });
-      rows.push(obj);
+      data[repeaterKey] = rows;
     });
-    data[repeaterKey] = rows;
     var vis2 = [];
     body.querySelectorAll('.vis-checks input[data-vis]').forEach(function(cb) { if (cb.checked) vis2.push(cb.dataset.vis); });
     if (vis2.length) data.visible = vis2;
