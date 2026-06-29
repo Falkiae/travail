@@ -67,6 +67,9 @@ class FrontController extends BaseController
             'footer_tagline'    => isset($settings['footer_tagline']) ? $settings['footer_tagline'] : '',
             'footer_phone'      => isset($settings['footer_phone']) ? $settings['footer_phone'] : '',
             'footer_legal_text' => isset($settings['footer_legal_text']) ? $settings['footer_legal_text'] : '',
+            'cookie_banner_enabled' => ($settings['cookie_banner_enabled'] ?? '1') === '1',
+            'cookie_banner_text'    => $settings['cookie_banner_text'] ?? 'Nous utilisons des cookies pour améliorer votre expérience. Vous pouvez accepter ou refuser les cookies analytiques et publicitaires.',
+            'cookie_policy_url'     => $settings['cookie_policy_url'] ?? '/politique-cookies',
         ], 'public');
     }
 
@@ -329,6 +332,9 @@ class FrontController extends BaseController
             'footer_tagline'    => isset($settings['footer_tagline']) ? $settings['footer_tagline'] : '',
             'footer_phone'      => isset($settings['footer_phone']) ? $settings['footer_phone'] : '',
             'footer_legal_text' => isset($settings['footer_legal_text']) ? $settings['footer_legal_text'] : '',
+            'cookie_banner_enabled' => ($settings['cookie_banner_enabled'] ?? '1') === '1',
+            'cookie_banner_text'    => $settings['cookie_banner_text'] ?? 'Nous utilisons des cookies pour améliorer votre expérience. Vous pouvez accepter ou refuser les cookies analytiques et publicitaires.',
+            'cookie_policy_url'     => $settings['cookie_policy_url'] ?? '/politique-cookies',
         ), 'public');
     }
 

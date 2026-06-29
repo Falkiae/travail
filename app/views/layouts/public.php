@@ -40,6 +40,25 @@
     <style id="kn-block-styles"><?php echo $block_styles; ?></style>
     <?php endif; ?>
 
+    <!-- Consent Mode v2 — défaut refusé -->
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    (function(){
+      var stored = null;
+      try { stored = localStorage.getItem('kn_consent'); } catch(e){}
+      var granted = stored === 'granted';
+      gtag('consent', 'default', {
+        'ad_storage':            granted ? 'granted' : 'denied',
+        'analytics_storage':     granted ? 'granted' : 'denied',
+        'ad_user_data':          granted ? 'granted' : 'denied',
+        'ad_personalization':    granted ? 'granted' : 'denied',
+        'functionality_storage': 'granted',
+        'security_storage':      'granted'
+      });
+    })();
+    </script>
+
     <?php if (isset($gtm_id) && $gtm_id): ?>
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -271,6 +290,45 @@ $__siteName      = isset($site_name) && $site_name ? $site_name : 'Keepnew';
         </div>
     </div>
 </footer>
+
+<?php if (!empty($cookie_banner_enabled)): ?>
+<div id="kn-cookie-banner" class="kn-cookie" role="dialog" aria-live="polite" aria-label="Consentement cookies" hidden>
+    <div class="kn-cookie__inner">
+        <p class="kn-cookie__text"><?php echo htmlspecialchars($cookie_banner_text ?? ''); ?>
+            <?php if (!empty($cookie_policy_url)): ?>
+            <a class="kn-cookie__link" href="<?php echo htmlspecialchars($cookie_policy_url); ?>">En savoir plus</a>
+            <?php endif; ?>
+        </p>
+        <div class="kn-cookie__actions">
+            <button type="button" class="kn-cookie__btn kn-cookie__btn--reject" data-kn-cookie="reject">Refuser</button>
+            <button type="button" class="kn-cookie__btn kn-cookie__btn--accept" data-kn-cookie="accept">Accepter</button>
+        </div>
+    </div>
+</div>
+<script>
+(function(){
+  var banner = document.getElementById('kn-cookie-banner');
+  if (!banner) return;
+  var stored = null;
+  try { stored = localStorage.getItem('kn_consent'); } catch(e){}
+  if (!stored) banner.hidden = false;
+  function setConsent(state) {
+    try { localStorage.setItem('kn_consent', state); } catch(e){}
+    if (typeof gtag === 'function') {
+      gtag('consent', 'update', {
+        'ad_storage':         state === 'granted' ? 'granted' : 'denied',
+        'analytics_storage':  state === 'granted' ? 'granted' : 'denied',
+        'ad_user_data':       state === 'granted' ? 'granted' : 'denied',
+        'ad_personalization': state === 'granted' ? 'granted' : 'denied'
+      });
+    }
+    banner.hidden = true;
+  }
+  banner.querySelector('[data-kn-cookie="accept"]').addEventListener('click', function(){ setConsent('granted'); });
+  banner.querySelector('[data-kn-cookie="reject"]').addEventListener('click', function(){ setConsent('denied'); });
+})();
+</script>
+<?php endif; ?>
 
 <script src="/public/assets/js/public.js<?php echo isset($__cv) ? $__cv : ''; ?>"></script>
 </body>

@@ -623,6 +623,39 @@
   font-size: .8125rem;
 }
 
+/* ── Cookie Banner ─────────────────────────────────────────── */
+.kn-cookie {
+  position: fixed;
+  left: 1rem; right: 1rem; bottom: 1rem;
+  z-index: 9999;
+  background: var(--kn-night);
+  color: var(--kn-white);
+  border-radius: var(--r-card);
+  box-shadow: 0 12px 32px rgba(0,0,0,.25);
+  padding: 1rem 1.25rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.kn-cookie[hidden] { display: none; }
+.kn-cookie__inner { display: flex; flex-direction: column; gap: .875rem; }
+.kn-cookie__text { margin: 0; font-size: .9rem; line-height: 1.5; color: rgba(255,255,255,.9); }
+.kn-cookie__link { color: var(--kn-yellow); text-decoration: underline; text-underline-offset: 2px; margin-left: .25rem; }
+.kn-cookie__actions { display: flex; gap: .625rem; justify-content: flex-end; flex-wrap: wrap; }
+.kn-cookie__btn {
+  font-family: inherit; font-weight: 700; font-size: .875rem;
+  padding: .55rem 1.1rem; border-radius: 999px;
+  border: none; cursor: pointer;
+  transition: opacity .15s ease, background .15s ease;
+}
+.kn-cookie__btn--reject { background: transparent; color: var(--kn-white); border: 1px solid rgba(255,255,255,.3); }
+.kn-cookie__btn--reject:hover { background: rgba(255,255,255,.1); }
+.kn-cookie__btn--accept { background: var(--kn-yellow); color: var(--kn-night); }
+.kn-cookie__btn--accept:hover { opacity: .9; }
+@media (min-width: 640px) {
+  .kn-cookie__inner { flex-direction: row; align-items: center; justify-content: space-between; }
+  .kn-cookie__text { flex: 1; }
+}
+
 /* ── Responsive ─────────────────────────────────────────────── */
 /* ── Pricing block ─────────────────────────────────────────── */
 .kn-pricing__intro { margin: .75rem 0 0; color: var(--kn-muted); line-height: 1.65; }
