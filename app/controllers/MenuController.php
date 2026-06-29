@@ -81,11 +81,18 @@ class MenuController extends BaseController
             $items = array();
         }
 
+        $pagesStmt = $pdo->prepare(
+            "SELECT slug, title, lang FROM kn_pages WHERE status = 'published' AND lang = ? ORDER BY title"
+        );
+        $pagesStmt->execute(array($menu['lang']));
+        $pages = $pagesStmt->fetchAll(\PDO::FETCH_ASSOC);
+
         $csrfToken = Auth::generateCsrfToken();
         $this->view->render('admin/menus/edit', array(
             'title'      => 'Modifier le menu : ' . $menu['name'],
             'menu'       => $menu,
             'items'      => $items,
+            'pages'      => $pages,
             'csrf_token' => $csrfToken,
         ), 'admin');
     }

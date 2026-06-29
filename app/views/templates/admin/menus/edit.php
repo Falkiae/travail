@@ -13,6 +13,14 @@
   <?php unset($_SESSION['flash']); ?>
 <?php endif; ?>
 
+<datalist id="kn-pages-list">
+  <option value="/"></option>
+  <?php foreach ($pages as $p): ?>
+    <?php $url = $p['slug'] === 'home' ? '/' : '/' . $p['slug']; ?>
+    <option value="<?= htmlspecialchars($url) ?>"><?= htmlspecialchars($p['title']) ?></option>
+  <?php endforeach; ?>
+</datalist>
+
 <form method="post" action="/admin/menus/<?= (int)$menu['id'] ?>/edit" id="menu-form">
   <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
   <textarea name="items_json" id="items_json" style="display:none;"></textarea>
@@ -83,7 +91,8 @@
     var urlIn = document.createElement('input');
     urlIn.type = 'text';
     urlIn.className = 'form-control url-input';
-    urlIn.placeholder = 'URL (ex: /services)';
+    urlIn.placeholder = 'URL ou choisir une page';
+    urlIn.setAttribute('list', 'kn-pages-list');
     urlIn.value = item.url || '';
     urlIn.addEventListener('input', function () { ITEMS[idx].url = urlIn.value; });
 
@@ -218,7 +227,8 @@
     var urlIn = document.createElement('input');
     urlIn.type = 'text';
     urlIn.className = 'form-control';
-    urlIn.placeholder = 'URL';
+    urlIn.placeholder = 'URL ou choisir une page';
+    urlIn.setAttribute('list', 'kn-pages-list');
     urlIn.value = child.url || '';
     urlIn.addEventListener('input', function () { ITEMS[parentIdx].children[childIdx].url = urlIn.value; });
 
