@@ -76,13 +76,15 @@ class FrontController extends BaseController
     private function fetchFooterMenus(\PDO $pdo, string $lang = 'fr'): array
     {
         try {
-            $stmt = $pdo->prepare("SELECT name, items FROM kn_menus WHERE location = 'footer' AND lang = ?");
+            $stmt = $pdo->prepare("SELECT name, items FROM kn_menus WHERE location = 'footer' AND lang = ? ORDER BY id");
             $stmt->execute([$lang]);
             $out = [];
             while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-                $key = $this->slugifyMenuName($row['name']);
                 $items = json_decode($row['items'] ?? '[]', true);
-                $out[$key] = is_array($items) ? $items : [];
+                $out[] = [
+                    'name'  => $row['name'],
+                    'items' => is_array($items) ? $items : [],
+                ];
             }
             return $out;
         } catch (\Exception $e) {
