@@ -44,6 +44,7 @@ class SettingsController extends BaseController
             'logo_url', 'logo_alt',
             'google_reviews_api_key',
             'cache_enabled',
+            'footer_tagline', 'footer_phone', 'footer_legal_text',
         ];
 
         $checkboxes = ['noindex_all', 'maintenance_mode', 'cookie_banner_enabled', 'cache_enabled'];

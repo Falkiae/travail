@@ -171,6 +171,26 @@ function s(array $settings, string $key, string $default = ''): string {
     </div>
   </div>
 
+  <!-- Footer -->
+  <div class="card">
+    <div class="card-title">Footer</div>
+    <div class="form-group">
+      <label for="footer_tagline">Tagline (sous le logo)</label>
+      <textarea id="footer_tagline" name="footer_tagline" rows="2"><?= s($settings, 'footer_tagline') ?></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="footer_phone">Téléphone affiché</label>
+        <input type="text" id="footer_phone" name="footer_phone" value="<?= s($settings, 'footer_phone') ?>" placeholder="+32 (0)4 55 13 84 19">
+      </div>
+      <div class="form-group">
+        <label for="footer_legal_text">Texte légal (bas de footer)</label>
+        <input type="text" id="footer_legal_text" name="footer_legal_text" value="<?= s($settings, 'footer_legal_text') ?>" placeholder="Tous droits réservés.">
+      </div>
+    </div>
+    <p class="help-text">Les listes de liens (Services, Zones, etc.) se gèrent dans <a href="/admin/menus">Menus</a> en créant des menus avec l'emplacement « Footer ». Nommez-les <code>Services</code>, <code>Zones</code>, ou <code>Légal</code>.</p>
+  </div>
+
   <!-- Maintenance -->
   <div class="card">
     <div class="card-title">Maintenance</div>

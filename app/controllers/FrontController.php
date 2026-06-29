@@ -63,7 +63,38 @@ class FrontController extends BaseController
             'robots_global' => isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',
             'block_styles'  => $block_styles,
             'cache_version' => (isset($settings['cache_enabled']) && $settings['cache_enabled'] === '1' && isset($settings['cache_version'])) ? $settings['cache_version'] : '',
+            'footer_menus'      => $this->fetchFooterMenus($pdo, $lang),
+            'footer_tagline'    => isset($settings['footer_tagline']) ? $settings['footer_tagline'] : '',
+            'footer_phone'      => isset($settings['footer_phone']) ? $settings['footer_phone'] : '',
+            'footer_legal_text' => isset($settings['footer_legal_text']) ? $settings['footer_legal_text'] : '',
         ], 'public');
+    }
+
+    private function fetchFooterMenus(\PDO $pdo, string $lang = 'fr'): array
+    {
+        try {
+            $stmt = $pdo->prepare("SELECT name, items FROM kn_menus WHERE location = 'footer' AND lang = ?");
+            $stmt->execute([$lang]);
+            $out = [];
+            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                $key = $this->slugifyMenuName($row['name']);
+                $items = json_decode($row['items'] ?? '[]', true);
+                $out[$key] = is_array($items) ? $items : [];
+            }
+            return $out;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    private function slugifyMenuName(string $name): string
+    {
+        $name = mb_strtolower($name, 'UTF-8');
+        if (function_exists('transliterator_transliterate')) {
+            $name = transliterator_transliterate('Any-Latin; Latin-ASCII', $name);
+        }
+        $name = preg_replace('/[^a-z0-9]+/', '-', $name);
+        return trim($name, '-');
     }
 
     /**
@@ -294,6 +325,10 @@ class FrontController extends BaseController
             'robots_global' => isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',
             'block_styles'  => $block_styles,
             'cache_version' => (isset($settings['cache_enabled']) && $settings['cache_enabled'] === '1' && isset($settings['cache_version'])) ? $settings['cache_version'] : '',
+            'footer_menus'      => $this->fetchFooterMenus($pdo, $lang),
+            'footer_tagline'    => isset($settings['footer_tagline']) ? $settings['footer_tagline'] : '',
+            'footer_phone'      => isset($settings['footer_phone']) ? $settings['footer_phone'] : '',
+            'footer_legal_text' => isset($settings['footer_legal_text']) ? $settings['footer_legal_text'] : '',
         ), 'public');
     }
 

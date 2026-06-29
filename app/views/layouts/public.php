@@ -203,41 +203,70 @@ if (!empty($blocks) && is_array($blocks)) {
 <?php $this->content(); ?>
 
 <!-- ── Footer ───────────────────────────────────────────────── -->
+<?php
+$__footerMenus   = isset($footer_menus) && is_array($footer_menus) ? $footer_menus : [];
+$__footerSvcs    = isset($__footerMenus['services']) ? $__footerMenus['services'] : [];
+$__footerZones   = isset($__footerMenus['zones']) ? $__footerMenus['zones'] : [];
+$__footerLegal   = isset($__footerMenus['legal']) ? $__footerMenus['legal'] : (isset($__footerMenus['legal-links']) ? $__footerMenus['legal-links'] : []);
+$__footerTag     = isset($footer_tagline) && $footer_tagline ? $footer_tagline : 'Service de nettoyage professionnel à domicile ou en atelier. Liège · Namur · Bruxelles · Luxembourg.';
+$__footerPhone   = isset($footer_phone) && $footer_phone ? $footer_phone : '+32 (0)4 55 13 84 19';
+$__footerLegalTx = isset($footer_legal_text) && $footer_legal_text ? $footer_legal_text : 'Tous droits réservés.';
+$__siteName      = isset($site_name) && $site_name ? $site_name : 'Keepnew';
+?>
 <footer class="kn-footer" aria-label="Pied de page">
     <div class="container">
         <div class="kn-footer__grid">
             <div>
-                <a class="kn-footer__logo" href="/">Keepnew</a>
-                <p class="kn-footer__tagline">Service de nettoyage professionnel à domicile ou en atelier. Liège · Namur · Bruxelles · Luxembourg.</p>
+                <a class="kn-footer__logo" href="/"><?php echo htmlspecialchars($__siteName); ?></a>
+                <p class="kn-footer__tagline"><?php echo htmlspecialchars($__footerTag); ?></p>
             </div>
             <div>
                 <p class="kn-footer__heading">Services</p>
                 <nav class="kn-footer__links" aria-label="Services">
-                    <a href="/services/canape">Canapé</a>
-                    <a href="/services/matelas">Matelas</a>
-                    <a href="/services/voiture">Voiture</a>
-                    <a href="/services/terrasse">Terrasse</a>
-                    <a href="/services/polissage">Polissage &amp; Céramique</a>
-                    <a href="/atelier">Atelier à Visé</a>
+                    <?php if (!empty($__footerSvcs)): ?>
+                        <?php foreach ($__footerSvcs as $item): ?>
+                        <a href="<?php echo htmlspecialchars(isset($item['url']) ? $item['url'] : '#'); ?>"><?php echo htmlspecialchars(isset($item['label']) ? $item['label'] : ''); ?></a>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <a href="/services/canape">Canapé</a>
+                        <a href="/services/matelas">Matelas</a>
+                        <a href="/services/voiture">Voiture</a>
+                        <a href="/services/terrasse">Terrasse</a>
+                        <a href="/services/polissage">Polissage &amp; Céramique</a>
+                        <a href="/atelier">Atelier à Visé</a>
+                    <?php endif; ?>
                 </nav>
             </div>
             <div>
                 <p class="kn-footer__heading">Contact</p>
-                <a class="kn-footer__phone" href="tel:+3245513841 9">+32 (0)4 55 13 84 19</a>
+                <a class="kn-footer__phone" href="tel:<?php echo htmlspecialchars(preg_replace('/[^+0-9]/', '', $__footerPhone)); ?>"><?php echo htmlspecialchars($__footerPhone); ?></a>
                 <nav class="kn-footer__links" aria-label="Zones">
-                    <a href="/zones/liege">Liège</a>
-                    <a href="/zones/namur">Namur</a>
-                    <a href="/zones/bruxelles">Bruxelles</a>
-                    <a href="/zones/luxembourg">Luxembourg</a>
+                    <?php if (!empty($__footerZones)): ?>
+                        <?php foreach ($__footerZones as $item): ?>
+                        <a href="<?php echo htmlspecialchars(isset($item['url']) ? $item['url'] : '#'); ?>"><?php echo htmlspecialchars(isset($item['label']) ? $item['label'] : ''); ?></a>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <a href="/zones/liege">Liège</a>
+                        <a href="/zones/namur">Namur</a>
+                        <a href="/zones/bruxelles">Bruxelles</a>
+                        <a href="/zones/luxembourg">Luxembourg</a>
+                    <?php endif; ?>
                 </nav>
             </div>
         </div>
         <div class="kn-footer__bottom">
-            <span>&copy; <?php echo date('Y'); ?> <?php echo isset($site_name) && $site_name ? htmlspecialchars($site_name) : 'Keepnew'; ?> &mdash; Tous droits réservés.</span>
+            <span>&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($__siteName); ?> &mdash; <?php echo htmlspecialchars($__footerLegalTx); ?></span>
             <span>
-                <a href="/mentions-legales" style="color:rgba(255,255,255,.5);transition:color .15s;">Mentions légales</a>
-                &nbsp;&middot;&nbsp;
-                <a href="/politique-de-confidentialite" style="color:rgba(255,255,255,.5);transition:color .15s;">Confidentialité</a>
+                <?php if (!empty($__footerLegal)): ?>
+                    <?php foreach ($__footerLegal as $i => $item): ?>
+                        <?php if ($i > 0): ?>&nbsp;&middot;&nbsp;<?php endif; ?>
+                        <a href="<?php echo htmlspecialchars(isset($item['url']) ? $item['url'] : '#'); ?>" style="color:rgba(255,255,255,.5);transition:color .15s;"><?php echo htmlspecialchars(isset($item['label']) ? $item['label'] : ''); ?></a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <a href="/mentions-legales" style="color:rgba(255,255,255,.5);transition:color .15s;">Mentions légales</a>
+                    &nbsp;&middot;&nbsp;
+                    <a href="/politique-de-confidentialite" style="color:rgba(255,255,255,.5);transition:color .15s;">Confidentialité</a>
+                <?php endif; ?>
             </span>
         </div>
     </div>
