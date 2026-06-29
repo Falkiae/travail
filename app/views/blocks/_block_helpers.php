@@ -6,7 +6,7 @@ function knGetMediaByPath(string $path): ?array
     if (isset($cache[$path])) return $cache[$path];
     try {
         $pdo = \App\Core\Database::getInstance();
-        $stmt = $pdo->prepare('SELECT webp_path, sizes, width, height FROM kn_media WHERE path = ? OR webp_path = ? LIMIT 1');
+        $stmt = $pdo->prepare('SELECT path, webp_path, sizes, width, height FROM kn_media WHERE path = ? OR webp_path = ? LIMIT 1');
         $stmt->execute([$path, $path]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
         $cache[$path] = $row;
@@ -26,6 +26,8 @@ function knImage(string $src, string $alt = '', array $opts = []): string
     $style    = isset($opts['style']) ? $opts['style'] : '';
 
     $media = knGetMediaByPath($src);
+
+    $origPath = $media && !empty($media['path']) ? $media['path'] : $src;
     $webp  = $media && !empty($media['webp_path']) ? $media['webp_path'] : null;
     $w     = $media && !empty($media['width']) ? (int) $media['width'] : null;
     $h     = $media && !empty($media['height']) ? (int) $media['height'] : null;
@@ -35,10 +37,13 @@ function knImage(string $src, string $alt = '', array $opts = []): string
     if ($w && $h) $dimAttr = ' width="' . $w . '" height="' . $h . '"';
 
     $classAttr = $class ? ' class="' . htmlspecialchars($class) . '"' : '';
-    $styleAttr = $style ? ' style="' . htmlspecialchars($style) . '"' : '';
 
-    $escapedSrc = htmlspecialchars($src);
-    $escapedAlt = htmlspecialchars($alt);
+    $baseStyle = 'max-width:100%;height:auto';
+    if ($style) $baseStyle .= ';' . $style;
+    $styleAttr = ' style="' . htmlspecialchars($baseStyle) . '"';
+
+    $escapedOrig = htmlspecialchars($origPath);
+    $escapedAlt  = htmlspecialchars($alt);
 
     if ($sizes && is_array($sizes)) {
         $webpSrcset = [];
@@ -53,13 +58,13 @@ function knImage(string $src, string $alt = '', array $opts = []): string
             }
         }
         if ($webp) $webpSrcset[] = htmlspecialchars($webp) . ' ' . ($w ?: 1920) . 'w';
-        $origSrcset[] = $escapedSrc . ' ' . ($w ?: 1920) . 'w';
+        $origSrcset[] = $escapedOrig . ' ' . ($w ?: 1920) . 'w';
 
         $html = '<picture>';
         if ($webpSrcset) {
             $html .= '<source type="image/webp" srcset="' . implode(', ', $webpSrcset) . '" sizes="' . htmlspecialchars($imgSizes) . '">';
         }
-        $html .= '<img src="' . $escapedSrc . '" srcset="' . implode(', ', $origSrcset) . '" sizes="' . htmlspecialchars($imgSizes) . '" alt="' . $escapedAlt . '" loading="' . $loading . '"' . $dimAttr . $classAttr . $styleAttr . '>';
+        $html .= '<img src="' . $escapedOrig . '" srcset="' . implode(', ', $origSrcset) . '" sizes="' . htmlspecialchars($imgSizes) . '" alt="' . $escapedAlt . '" loading="' . $loading . '"' . $dimAttr . $classAttr . $styleAttr . '>';
         $html .= '</picture>';
         return $html;
     }
@@ -67,12 +72,12 @@ function knImage(string $src, string $alt = '', array $opts = []): string
     if ($webp) {
         $html = '<picture>';
         $html .= '<source type="image/webp" srcset="' . htmlspecialchars($webp) . '">';
-        $html .= '<img src="' . $escapedSrc . '" alt="' . $escapedAlt . '" loading="' . $loading . '"' . $dimAttr . $classAttr . $styleAttr . '>';
+        $html .= '<img src="' . $escapedOrig . '" alt="' . $escapedAlt . '" loading="' . $loading . '"' . $dimAttr . $classAttr . $styleAttr . '>';
         $html .= '</picture>';
         return $html;
     }
 
-    return '<img src="' . $escapedSrc . '" alt="' . $escapedAlt . '" loading="' . $loading . '"' . $dimAttr . $classAttr . $styleAttr . '>';
+    return '<img src="' . $escapedOrig . '" alt="' . $escapedAlt . '" loading="' . $loading . '"' . $dimAttr . $classAttr . $styleAttr . '>';
 }
 
 /**
