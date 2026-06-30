@@ -132,6 +132,16 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+  position: relative;
+  z-index: 2;
+}
+
+.kn-nav--transparent .kn-nav__toggle {
+  background: rgba(255,255,255,.12);
+  border-radius: 8px;
+}
+.kn-nav--transparent.kn-nav--scrolled .kn-nav__toggle {
+  background: transparent;
 }
 
 .kn-nav__toggle span {
@@ -152,6 +162,20 @@
 
 .kn-nav__mobile.is-open {
   display: block;
+}
+
+.kn-nav--transparent ~ .kn-nav__mobile {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+@media (max-width: 767px) {
+  .kn-mega-overlay { display: none !important; }
 }
 
 .kn-nav__mobile a {
