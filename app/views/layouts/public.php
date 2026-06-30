@@ -55,9 +55,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,700;0,800;0,900;1,900&display=swap" rel="stylesheet">
 
-    <?php $__cv = isset($cache_version) && $cache_version ? '?v=' . htmlspecialchars($cache_version) : ''; ?>
-    <link rel="stylesheet" href="/public/assets/css/tokens.css<?php echo $__cv; ?>">
-    <link rel="stylesheet" href="/public/assets/css/public.css<?php echo $__cv; ?>">
+    <?php
+    $__cssMtimeT = @filemtime(ROOT_PATH . '/public/assets/css/tokens.css');
+    $__cssMtimeP = @filemtime(ROOT_PATH . '/public/assets/css/public.css');
+    $__jsMtime   = @filemtime(ROOT_PATH . '/public/assets/js/public.js');
+    $__cvBase    = isset($cache_version) && $cache_version ? $cache_version : '';
+    $__cvT = '?v=' . htmlspecialchars((string)($__cvBase . ($__cssMtimeT ?: '')));
+    $__cvP = '?v=' . htmlspecialchars((string)($__cvBase . ($__cssMtimeP ?: '')));
+    $__cv  = $__cvP;
+    ?>
+    <link rel="stylesheet" href="/public/assets/css/tokens.css<?php echo $__cvT; ?>">
+    <link rel="stylesheet" href="/public/assets/css/public.css<?php echo $__cvP; ?>">
     <?php if (isset($block_styles) && $block_styles): ?>
     <style id="kn-block-styles"><?php echo $block_styles; ?></style>
     <?php endif; ?>
@@ -324,6 +332,6 @@ $__siteName      = isset($site_name) && $site_name ? $site_name : 'Keepnew';
 </script>
 <?php endif; ?>
 
-<script src="/public/assets/js/public.js<?php echo isset($__cv) ? $__cv : ''; ?>"></script>
+<script src="/public/assets/js/public.js<?php echo '?v=' . htmlspecialchars((string)(($__cvBase ?? '') . ($__jsMtime ?? ''))); ?>"></script>
 </body>
 </html>
