@@ -43,7 +43,7 @@ $firstShape     = $shapes[0];
 $firstBasePrice = $firstShape['base_price'];
 $firstBaseSeats = $firstShape['base_seats'];
 
-$configJson = htmlspecialchars(json_encode($sofaConfig, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
+$configJson = json_encode($sofaConfig, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
 
 $svgShapes = [
     'droit' => '<svg viewBox="0 0 88 54" fill="currentColor" aria-hidden="true" class="kn-sofa-svg__icon">

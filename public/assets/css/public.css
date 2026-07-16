@@ -1410,8 +1410,25 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); }
 .kn-sofa-widget--dark .kn-sofa-result__note { color: rgba(255,255,255,.35); }
 
 .kn-sofa-result__cta {
-  flex: 0 0 auto;
-  max-width: 260px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* Override kn-cta-card defaults for compact inline use */
+.kn-sofa-result__cta.kn-cta-card {
+  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  gap: .75rem;
+}
+.kn-sofa-result__cta .kn-cta-card__title {
+  font-size: 1.05rem;
+  white-space: normal;
+  line-height: 1.2;
+}
+.kn-sofa-result__cta .kn-cta-card__arrow {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  font-size: 1rem;
 }
 @media (max-width: 640px) {
   .kn-sofa-widget { padding: 1.5rem; gap: 1.5rem; }
@@ -1419,5 +1436,5 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); }
     flex-direction: column;
     align-items: flex-start;
   }
-  .kn-sofa-result__cta { max-width: 100%; width: 100%; }
+  .kn-sofa-result__cta { width: 100%; }
 }
