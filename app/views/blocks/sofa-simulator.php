@@ -99,6 +99,12 @@ $blockId = 'sofa-sim-' . substr(md5(serialize($block)), 0, 8);
 
     <div class="kn-sofa-widget<?php echo $isDark ? ' kn-sofa-widget--dark' : ''; ?>">
 
+      <!-- Live preview -->
+      <div class="kn-sofa-preview" aria-hidden="true">
+        <svg class="kn-sofa-preview__svg" id="<?php echo $blockId; ?>-svg" viewBox="0 0 300 130" preserveAspectRatio="xMidYMid meet"></svg>
+        <p class="kn-sofa-preview__caption" id="<?php echo $blockId; ?>-caption"></p>
+      </div>
+
       <!-- Step 1: Shape -->
       <div class="kn-sofa-step">
         <p class="kn-sofa-step__label"><?php echo $isDark ? '<span style="color:var(--kn-yellow)">①</span>' : '<span style="color:var(--kn-blue)">①</span>'; ?> Choisissez la forme</p>
@@ -164,8 +170,9 @@ $blockId = 'sofa-sim-' . substr(md5(serialize($block)), 0, 8);
 
 <script>
 (function() {
-  var cfg    = <?php echo $configJson; ?>;
-  var root   = document.getElementById(<?php echo json_encode($blockId); ?>);
+  var cfg   = <?php echo $configJson; ?>;
+  var BID   = <?php echo json_encode($blockId); ?>;
+  var root  = document.getElementById(BID);
   if (!root) return;
 
   var shapeCards = root.querySelectorAll('.kn-sofa-shape-card');
@@ -174,16 +181,15 @@ $blockId = 'sofa-sim-' . substr(md5(serialize($block)), 0, 8);
   var stepperInc = root.querySelector('.kn-sofa-stepper__inc');
   var merBtns    = root.querySelectorAll('.kn-sofa-mer-btn');
   var priceEl    = root.querySelector('.kn-sofa-result__price');
-  var ctaEl      = root.getElementById ? null : document.getElementById(<?php echo json_encode($blockId . '-cta'); ?>);
-
-  if (!ctaEl) ctaEl = document.getElementById(<?php echo json_encode($blockId . '-cta'); ?>);
+  var ctaEl      = document.getElementById(BID + '-cta');
+  var svgEl      = document.getElementById(BID + '-svg');
+  var capEl      = document.getElementById(BID + '-caption');
+  var isDark     = root.querySelector('.kn-sofa-widget--dark') !== null;
 
   var selectedShape = cfg.shapes[0];
   var seats         = selectedShape ? selectedShape.base_seats : 2;
   var meridians     = 0;
-
-  var MIN_SEATS = 1;
-  var MAX_SEATS = 10;
+  var MIN_SEATS = 1, MAX_SEATS = 10;
 
   function getShape(key) {
     for (var i = 0; i < cfg.shapes.length; i++) {
@@ -194,24 +200,154 @@ $blockId = 'sofa-sim-' . substr(md5(serialize($block)), 0, 8);
 
   function calcPrice() {
     if (!selectedShape) return 0;
-    var extra = Math.max(0, seats - selectedShape.base_seats);
     return selectedShape.base_price
-      + extra * cfg.price_per_extra_seat
+      + Math.max(0, seats - selectedShape.base_seats) * cfg.price_per_extra_seat
       + meridians * cfg.price_per_meridienne;
   }
+
+  /* ─── SVG sofa renderer ───────────────────────────── */
+  function renderSofa(shape, n, mer) {
+    if (!svgEl) return;
+    var fc  = isDark ? '#ffd700'              : '#0050ff';
+    var sc  = isDark ? 'rgba(255,215,0,.14)'  : 'rgba(0,80,255,.11)';
+    var sc2 = isDark ? 'rgba(255,215,0,.07)'  : 'rgba(0,80,255,.06)';
+    var dc  = isDark ? 'rgba(255,215,0,.45)'  : 'rgba(0,80,255,.35)';
+    var pad = 6, bk = 28, arm = 24, sh = 82, R = 10;
+
+    function rr(x,y,w,h,fill,stroke,rx) {
+      rx = rx !== undefined ? rx : R;
+      return '<rect x="'+(x+pad)+'" y="'+(y+pad)+'" width="'+w+'" height="'+h
+        +'" fill="'+fill+'"'+(stroke?' stroke="'+stroke+'" stroke-width="2.5"':'')
+        +' rx="'+rx+'"/>';
+    }
+    function ln(x1,y1,x2,y2) {
+      return '<line x1="'+(x1+pad)+'" y1="'+(y1+pad)+'" x2="'+(x2+pad)+'" y2="'+(y2+pad)
+        +'" stroke="'+dc+'" stroke-width="2" stroke-linecap="round"/>';
+    }
+
+    var k = shape === 'fauteuil' ? 'droit' : shape;
+    var sn = shape === 'fauteuil' ? 1 : n;
+    var mn = shape === 'fauteuil' ? 0 : mer;
+    var html = '', W, H;
+
+    if (k === 'droit') {
+      var merW = mn > 0 ? 60 + (mn-1)*30 : 0;
+      var sofaW = Math.max(shape==='fauteuil'?90:120, sn*42 + arm*2);
+      W = sofaW + (merW>0 ? merW+8 : 0);
+      H = bk + sh;
+      // body
+      html += rr(0,0,sofaW,H,sc,fc);
+      // backrest
+      html += rr(0,0,sofaW,bk,fc,'',R);
+      // left arm
+      html += rr(0,bk,arm,sh,fc,'',0);
+      // right arm
+      html += rr(sofaW-arm,bk,arm,sh,fc,'',0);
+      // cushion dividers
+      var inner = sofaW - arm*2;
+      var cw = inner / sn;
+      for (var i=1;i<sn;i++) html += ln(arm+i*cw, bk+8, arm+i*cw, H-8);
+      // méridienne
+      if (mn>0) {
+        var mx = sofaW+8;
+        html += rr(mx,bk,merW,sh,sc2,fc,0);
+        html += rr(mx,H-bk,merW,bk,fc,'',0);
+        if (mn>1) {
+          html += rr(mx,bk+sh/2,merW,sh/2-bk/2,sc2,'',0);
+          html += ln(mx,bk+sh/2,mx+merW,bk+sh/2);
+        }
+        W = mx + merW;
+      }
+    }
+
+    else if (k === 'angle') {
+      var hS = Math.max(2, Math.ceil(sn*0.6));
+      var vS = Math.max(1, sn - hS);
+      var hW = Math.max(110, hS*42 + arm);
+      var vH2 = Math.max(90, vS*42 + arm);
+      var unit = bk + sh;
+      W = unit + hW; H = vH2 + unit;
+
+      // vertical arm (left)
+      html += rr(0,0,unit,vH2,sc,fc);
+      html += rr(0,0,bk,vH2,fc,'',R);
+      html += rr(0,vH2-arm,unit,arm,fc,'',0);
+      var vc = (vH2-arm)/vS;
+      for (var i=1;i<vS;i++) html += ln(bk+6,i*vc,unit-6,i*vc);
+
+      // horizontal arm (bottom)
+      html += rr(unit,vH2-unit,hW,unit,sc,fc);
+      html += rr(unit,vH2-unit,hW,bk,fc,'',R);
+      html += rr(unit+hW-arm,vH2-unit,arm,unit,fc,'',0);
+      var hc = (hW-arm)/hS;
+      for (var i=1;i<hS;i++) html += ln(unit+i*hc,vH2-unit+bk+6,unit+i*hc,H-6);
+
+      // corner fill
+      html += rr(0,vH2-unit,unit,unit,sc,'none',0);
+
+      // méridienne
+      if (mn>0) {
+        var merW2 = 55+(mn-1)*28;
+        html += rr(unit+hW+6,vH2-unit+bk,merW2,sh,sc2,fc,0);
+        html += rr(unit+hW+6,H-bk,merW2,bk,fc,'',0);
+        W = unit+hW+6+merW2;
+      }
+    }
+
+    else if (k === 'u') {
+      var sideS  = Math.max(1, Math.floor((sn-2)/2));
+      var cS     = Math.max(2, sn - 2*sideS);
+      var cW2    = Math.max(90, cS*40);
+      var sH2    = Math.max(80, sideS*42 + arm);
+      var unit2  = bk + sh;
+      W = unit2*2 + cW2; H = sH2 + unit2;
+
+      // left
+      html += rr(0,0,unit2,sH2,sc,fc);
+      html += rr(0,0,bk,sH2,fc,'',R);
+      html += rr(0,sH2-arm,unit2,arm,fc,'',0);
+      var ls2=(sH2-arm)/sideS;
+      for (var i=1;i<sideS;i++) html += ln(bk+6,i*ls2,unit2-6,i*ls2);
+
+      // right
+      html += rr(W-unit2,0,unit2,sH2,sc,fc);
+      html += rr(W-bk,0,bk,sH2,fc,'',R);
+      html += rr(W-unit2,sH2-arm,unit2,arm,fc,'',0);
+      for (var i=1;i<sideS;i++) html += ln(W-unit2+6,i*ls2,W-bk-6,i*ls2);
+
+      // center bottom
+      html += rr(unit2,sH2,cW2,unit2,sc,fc);
+      html += rr(unit2,sH2,cW2,bk,fc,'',R);
+      var cc2=cW2/cS;
+      for (var i=1;i<cS;i++) html += ln(unit2+i*cc2,sH2+bk+6,unit2+i*cc2,H-6);
+
+      // corners
+      html += rr(0,sH2,unit2,unit2,sc,'none',0);
+      html += rr(W-unit2,sH2,unit2,unit2,sc,'none',0);
+    }
+
+    svgEl.setAttribute('viewBox', '0 0 '+(W+pad*2)+' '+(H+pad*2));
+    svgEl.innerHTML = html;
+
+    // Caption
+    if (capEl) {
+      var merLabel = mn===0 ? '' : (mn===1 ? ' + 1 méridienne' : ' + 2 méridiennes');
+      capEl.textContent = (selectedShape ? selectedShape.label : '') + ' — ' + sn + ' place' + (sn>1?'s':'') + merLabel;
+    }
+  }
+  /* ─────────────────────────────────────────────────── */
 
   function updateUI() {
     var price = calcPrice();
     priceEl.textContent = price + ' €';
-
     stepperDec.disabled = seats <= MIN_SEATS;
     stepperInc.disabled = seats >= MAX_SEATS;
-
     if (selectedShape && ctaEl) {
       var url = selectedShape.cta_url || '#';
       var sep = url.indexOf('?') === -1 ? '?' : '&';
       ctaEl.href = url + sep + 'places=' + seats + '&meridienne=' + meridians;
     }
+    renderSofa(selectedShape ? selectedShape.key : 'droit', seats, meridians);
   }
 
   // Shape selection
