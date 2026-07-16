@@ -89,6 +89,7 @@ const BLOCK_TYPES = {
   'logos':        'Logos partenaires',
   'seo-content':  'Contenu SEO',
   'domicile-vs-atelier': 'Domicile vs Atelier',
+  'sofa-simulator':      'Simulateur canapé',
 };
 
 let dragSrcEl = null;
@@ -529,6 +530,15 @@ function buildBlockForm(type, data) {
       d.querySelector('[data-repeater-add="workshop_items"]').addEventListener('click', function() {
         addRepeaterRow(d.querySelector('[data-repeater="workshop_items"]'), 'workshop_items', ['icon','label'], ['Icône (optionnel)','Libellé'], {});
       });
+      break;
+
+    case 'sofa-simulator':
+      d.innerHTML =
+        fg('Eyebrow <small style="font-weight:400;opacity:.6">(optionnel)</small>', inp('eyebrow', data.eyebrow, 'SIMULATEUR')) +
+        fg('H2', inp('h2', data.h2, 'Estimez le nettoyage de votre canapé')) +
+        fg('Intro <small style="font-weight:400;opacity:.6">(optionnel)</small>', ta('intro', data.intro, 'Sélectionnez la forme, le nombre de places et de méridiennes pour obtenir une estimation.', 2)) +
+        bgField(data.bg || 'cream') +
+        visibilityField(data.visible);
       break;
 
     case 'seo-content':

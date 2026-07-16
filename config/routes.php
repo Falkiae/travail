@@ -58,6 +58,9 @@ return [
     'POST /admin/settings'                      => ['SettingsController', 'update'],
     'POST /admin/settings/clear-cache'          => ['SettingsController', 'clearCache'],
 
+    'GET /admin/sofa'                           => ['SofaController', 'index'],
+    'POST /admin/sofa'                          => ['SofaController', 'update'],
+
     'GET /admin/redirections'                   => ['RedirectionController', 'index'],
     'POST /admin/redirections'                  => ['RedirectionController', 'store'],
     'POST /admin/redirections/{id}/delete'      => ['RedirectionController', 'deleteRedirection'],

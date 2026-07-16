@@ -1177,3 +1177,247 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); }
 .kn-bg--blue .kn-how__num, .kn-bg--night .kn-how__num { color: var(--kn-yellow); }
 
 /* .kn-two-col__inner and .kn-zone__inner mobile stacking now handled by .kn-grid--* */
+
+/* ═══════════════════════════════════════════
+   Bloc : Simulateur Canapé
+   ═══════════════════════════════════════════ */
+
+.kn-sofa-intro {
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.kn-sofa-widget {
+  background: var(--kn-white);
+  border-radius: var(--r-card);
+  box-shadow: 0 4px 24px rgba(0,0,0,.07);
+  padding: 2.5rem;
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.kn-sofa-widget--dark {
+  background: rgba(255,255,255,.08);
+  box-shadow: 0 4px 24px rgba(0,0,0,.2);
+}
+
+/* Steps */
+.kn-sofa-step__label {
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin: 0 0 .9rem;
+  color: var(--kn-muted);
+}
+.kn-sofa-widget--dark .kn-sofa-step__label { color: rgba(255,255,255,.55); }
+
+/* Shape cards grid */
+.kn-sofa-shapes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .75rem;
+}
+@media (max-width: 580px) {
+  .kn-sofa-shapes { grid-template-columns: repeat(2, 1fr); }
+}
+
+.kn-sofa-shape-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .6rem;
+  padding: 1rem .75rem .85rem;
+  background: var(--kn-bg-alt);
+  border: 2px solid transparent;
+  border-radius: var(--r-card);
+  cursor: pointer;
+  transition: border-color .18s, background .18s, box-shadow .18s;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--kn-muted);
+  line-height: 1.2;
+  text-align: center;
+}
+.kn-sofa-widget--dark .kn-sofa-shape-card {
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.6);
+}
+.kn-sofa-shape-card:hover {
+  border-color: var(--kn-blue);
+  background: rgba(0,80,255,.05);
+}
+.kn-sofa-shape-card.is-selected {
+  border-color: var(--kn-blue);
+  background: rgba(0,80,255,.07);
+  color: var(--kn-blue);
+  box-shadow: 0 2px 10px rgba(0,80,255,.12);
+}
+.kn-sofa-widget--dark .kn-sofa-shape-card.is-selected {
+  border-color: var(--kn-yellow);
+  background: rgba(255,204,0,.08);
+  color: var(--kn-yellow);
+}
+
+/* SVG icon wrapper */
+.kn-sofa-svg {
+  width: 60px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--kn-night);
+  transition: color .18s;
+}
+.kn-sofa-shape-card.is-selected .kn-sofa-svg { color: var(--kn-blue); }
+.kn-sofa-widget--dark .kn-sofa-svg { color: rgba(255,255,255,.5); }
+.kn-sofa-widget--dark .kn-sofa-shape-card.is-selected .kn-sofa-svg { color: var(--kn-yellow); }
+
+.kn-sofa-svg--u .kn-sofa-svg__icon,
+.kn-sofa-svg--angle .kn-sofa-svg__icon { height: 100%; }
+
+.kn-sofa-svg__icon {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.kn-sofa-shape-card__label { font-size: .78rem; }
+
+/* Seat stepper */
+.kn-sofa-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  border: 2px solid var(--kn-border);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--kn-white);
+}
+.kn-sofa-widget--dark .kn-sofa-stepper {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.15);
+}
+.kn-sofa-stepper__btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.4rem;
+  font-weight: 400;
+  line-height: 1;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--kn-night);
+  transition: background .15s;
+}
+.kn-sofa-widget--dark .kn-sofa-stepper__btn { color: var(--kn-white); }
+.kn-sofa-stepper__btn:hover:not(:disabled) { background: var(--kn-bg-alt); }
+.kn-sofa-stepper__btn:disabled { opacity: .3; cursor: default; }
+.kn-sofa-stepper__val {
+  min-width: 52px;
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--kn-night);
+  padding: 0 .25rem;
+}
+.kn-sofa-widget--dark .kn-sofa-stepper__val { color: var(--kn-white); }
+
+/* Méridienne toggle */
+.kn-sofa-meridienne {
+  display: inline-flex;
+  gap: .5rem;
+}
+.kn-sofa-mer-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--kn-border);
+  background: var(--kn-white);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--kn-muted);
+  transition: border-color .15s, background .15s, color .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.kn-sofa-widget--dark .kn-sofa-mer-btn {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.15);
+  color: rgba(255,255,255,.55);
+}
+.kn-sofa-mer-btn:hover { border-color: var(--kn-blue); }
+.kn-sofa-mer-btn.is-selected {
+  border-color: var(--kn-blue);
+  background: var(--kn-blue);
+  color: var(--kn-white);
+}
+.kn-sofa-widget--dark .kn-sofa-mer-btn.is-selected {
+  border-color: var(--kn-yellow);
+  background: var(--kn-yellow);
+  color: var(--kn-night);
+}
+
+/* Result */
+.kn-sofa-result {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--kn-border);
+}
+.kn-sofa-widget--dark .kn-sofa-result { border-top-color: rgba(255,255,255,.12); }
+
+.kn-sofa-result__price-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  flex: 1;
+}
+.kn-sofa-result__label {
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--kn-muted);
+}
+.kn-sofa-widget--dark .kn-sofa-result__label { color: rgba(255,255,255,.45); }
+.kn-sofa-result__price {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 800;
+  color: var(--kn-blue);
+  line-height: 1;
+  letter-spacing: -.02em;
+  transition: color .2s;
+}
+.kn-sofa-widget--dark .kn-sofa-result__price { color: var(--kn-yellow); }
+.kn-sofa-result__note {
+  font-size: .73rem;
+  color: var(--kn-muted);
+  font-style: italic;
+  line-height: 1.4;
+}
+.kn-sofa-widget--dark .kn-sofa-result__note { color: rgba(255,255,255,.35); }
+
+.kn-sofa-result__cta {
+  flex: 0 0 auto;
+  max-width: 260px;
+}
+@media (max-width: 640px) {
+  .kn-sofa-widget { padding: 1.5rem; gap: 1.5rem; }
+  .kn-sofa-result {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .kn-sofa-result__cta { max-width: 100%; width: 100%; }
+}

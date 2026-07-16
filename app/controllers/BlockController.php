@@ -10,7 +10,7 @@ class BlockController extends BaseController
     private $blockTypes = [
         'hero', 'services', 'two-col', 'how', 'reviews', 'zone',
         'accordion', 'cta-final', 'heading', 'text', 'image',
-        'cta', 'html', 'video', 'file', 'quote', 'domicile-vs-atelier',
+        'cta', 'html', 'video', 'file', 'quote', 'domicile-vs-atelier', 'sofa-simulator',
     ];
 
     public function index(): void
