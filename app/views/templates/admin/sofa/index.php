@@ -67,6 +67,18 @@ $ctaText            = isset($config['cta_text'])             ? $config['cta_text
                 <label>URL de réservation</label>
                 <input type="text" name="shape_cta_url[]" value="<?= htmlspecialchars($shape['cta_url']) ?>" placeholder="/rdv">
               </div>
+              <div class="form-group" style="flex:2;margin:0">
+                <label>Image picto (optionnel)</label>
+                <div class="input-row">
+                  <input type="text" name="shape_image_url[]" id="shape_img_<?= $i ?>"
+                         value="<?= htmlspecialchars($shape['image_url'] ?? '') ?>"
+                         placeholder="/uploads/canape-droit.webp" style="flex:1">
+                  <button type="button" class="btn btn-secondary btn-sm"
+                          onclick="openMediaModal(function(m){document.getElementById('shape_img_<?= $i ?>').value=m.webp_path||m.path||'';}, 'image')">
+                    Médiathèque
+                  </button>
+                </div>
+              </div>
               <button type="button" class="btn btn-danger btn-sm remove-shape-btn" title="Supprimer">×</button>
             </div>
           </div>
@@ -111,6 +123,7 @@ $ctaText            = isset($config['cta_text'])             ? $config['cta_text
     '<div class="form-group" style="flex:0 0 100px;margin:0"><label>Prix (€)</label><input type="number" name="shape_base_price[]" value="99" min="0" step="1" required></div>' +
     '<div class="form-group" style="flex:0 0 120px;margin:0"><label>Places incluses</label><input type="number" name="shape_base_seats[]" value="2" min="1" step="1" required></div>' +
     '<div class="form-group" style="flex:2;margin:0"><label>URL réservation</label><input type="text" name="shape_cta_url[]" placeholder="/rdv"></div>' +
+    '<div class="form-group" style="flex:2;margin:0"><label>Image picto (opt.)</label><div class="input-row"><input type="text" name="shape_image_url[]" class="shape-img-input" placeholder="/uploads/…" style="flex:1"><button type="button" class="btn btn-secondary btn-sm shape-img-btn">Médiathèque</button></div></div>' +
     '<button type="button" class="btn btn-danger btn-sm remove-shape-btn" title="Supprimer">×</button>' +
     '</div></div>';
 
@@ -119,6 +132,10 @@ $ctaText            = isset($config['cta_text'])             ? $config['cta_text
     div.innerHTML = shapeRowTemplate;
     var row = div.firstChild;
     row.querySelector('.remove-shape-btn').addEventListener('click', function() { row.remove(); });
+    row.querySelector('.shape-img-btn').addEventListener('click', function() {
+      var inp = row.querySelector('.shape-img-input');
+      openMediaModal(function(m) { inp.value = m.webp_path || m.path || ''; }, 'image');
+    });
     document.getElementById('sofa-shapes-list').appendChild(row);
   });
 

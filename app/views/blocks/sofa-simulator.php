@@ -93,7 +93,9 @@ $svgIcons = [
               <?php foreach ($shapes as $i => $shape):
                 $k     = htmlspecialchars($shape['key']);
                 $lbl   = htmlspecialchars($shape['label']);
-                $icon  = isset($svgIcons[$shape['key']]) ? $svgIcons[$shape['key']] : $svgIcons['droit'];
+                $icon  = (!empty($shape['image_url']))
+                  ? '<img src="'.htmlspecialchars($shape['image_url']).'" alt="'.htmlspecialchars($shape['label']).'" class="kn-sofa-icon-img">'
+                  : (isset($svgIcons[$shape['key']]) ? $svgIcons[$shape['key']] : $svgIcons['droit']);
               ?>
               <button type="button"
                 class="kn-sofa-shape-card<?php echo $i === 0 ? ' is-selected' : ''; ?>"

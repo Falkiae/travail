@@ -11,10 +11,10 @@ class SofaController extends BaseController
     {
         return [
             'shapes' => [
-                ['key' => 'droit',    'label' => 'Droit',     'base_price' => 89,  'base_seats' => 2, 'cta_url' => '/rdv'],
-                ['key' => 'angle',    'label' => 'Angle / L', 'base_price' => 129, 'base_seats' => 3, 'cta_url' => '/rdv'],
-                ['key' => 'u',        'label' => 'En U',      'base_price' => 169, 'base_seats' => 5, 'cta_url' => '/rdv'],
-                ['key' => 'fauteuil', 'label' => 'Fauteuil',  'base_price' => 49,  'base_seats' => 1, 'cta_url' => '/rdv'],
+                ['key' => 'droit',    'label' => 'Droit',     'base_price' => 89,  'base_seats' => 2, 'cta_url' => '/rdv', 'image_url' => ''],
+                ['key' => 'angle',    'label' => 'Angle / L', 'base_price' => 129, 'base_seats' => 3, 'cta_url' => '/rdv', 'image_url' => ''],
+                ['key' => 'u',        'label' => 'En U',      'base_price' => 169, 'base_seats' => 5, 'cta_url' => '/rdv', 'image_url' => ''],
+                ['key' => 'fauteuil', 'label' => 'Fauteuil',  'base_price' => 49,  'base_seats' => 1, 'cta_url' => '/rdv', 'image_url' => ''],
             ],
             'price_per_extra_seat' => 20,
             'price_per_meridienne' => 35,
@@ -57,6 +57,7 @@ class SofaController extends BaseController
         $prices    = isset($_POST['shape_base_price']) ? (array)$_POST['shape_base_price'] : [];
         $seats     = isset($_POST['shape_base_seats']) ? (array)$_POST['shape_base_seats'] : [];
         $ctaUrls   = isset($_POST['shape_cta_url'])    ? (array)$_POST['shape_cta_url']    : [];
+        $imageUrls = isset($_POST['shape_image_url'])  ? (array)$_POST['shape_image_url']  : [];
 
         $count = count($keys);
         for ($i = 0; $i < $count; $i++) {
@@ -64,10 +65,11 @@ class SofaController extends BaseController
             if ($k === '') continue;
             $shapes[] = [
                 'key'        => $k,
-                'label'      => trim(isset($labels[$i])  ? $labels[$i]  : ''),
+                'label'      => trim(isset($labels[$i])     ? $labels[$i]     : ''),
                 'base_price' => max(0, (int)(isset($prices[$i]) ? $prices[$i] : 0)),
                 'base_seats' => max(1, (int)(isset($seats[$i])  ? $seats[$i]  : 1)),
-                'cta_url'    => trim(isset($ctaUrls[$i]) ? $ctaUrls[$i] : ''),
+                'cta_url'    => trim(isset($ctaUrls[$i])   ? $ctaUrls[$i]   : ''),
+                'image_url'  => trim(isset($imageUrls[$i]) ? $imageUrls[$i] : ''),
             ];
         }
 
