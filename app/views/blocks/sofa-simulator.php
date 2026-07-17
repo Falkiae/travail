@@ -40,26 +40,23 @@ $ctaText     = isset($sofaConfig['cta_text']) ? $sofaConfig['cta_text'] : 'Prend
 $configJson  = json_encode($sofaConfig, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
 $blockId     = 'sofa-sim-' . substr(md5(serialize($block)), 0, 8);
 
-// Stroke-based icons (top-view, line-art)
+// Top-view sofa icons: filled backrest + outlined seat body (inspired by reference)
 $svgIcons = [
-    'droit' => '<svg viewBox="0 0 64 38" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <rect x="2" y="2" width="60" height="34" rx="7"/>
-  <line x1="2" y1="13" x2="62" y2="13"/>
+    'droit' => '<svg viewBox="0 0 44 30" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+  <rect x="4" y="13" width="36" height="14" rx="3"/>
+  <rect x="4" y="8" width="36" height="7" rx="2" fill="currentColor" stroke="none"/>
 </svg>',
-    'angle' => '<svg viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <path d="M2 2 h18 v48 M2 2 v18 h48 a2 2 0 0 1 2 2 v28"/>
-  <line x1="12" y1="2" x2="12" y2="18"/>
-  <line x1="2" y1="12" x2="50" y2="12"/>
+    'angle' => '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+  <path d="M6 36 V10 H18 V28 H34 V36 Z"/>
+  <rect x="4" y="7" width="14" height="6" rx="1.5" fill="currentColor" stroke="none"/>
 </svg>',
-    'u' => '<svg viewBox="0 0 60 50" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <path d="M2 2 v40 a6 6 0 0 0 6 6 h44 a6 6 0 0 0 6-6 v-40"/>
-  <line x1="2" y1="12" x2="58" y2="12"/>
-  <line x1="14" y1="12" x2="14" y2="48"/>
-  <line x1="46" y1="12" x2="46" y2="48"/>
+    'u' => '<svg viewBox="0 0 44 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+  <path d="M4 34 V14 H12 V26 H32 V14 H40 V34 Z"/>
+  <rect x="4" y="10" width="36" height="6" rx="1.5" fill="currentColor" stroke="none"/>
 </svg>',
-    'fauteuil' => '<svg viewBox="0 0 40 38" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <rect x="2" y="2" width="36" height="34" rx="7"/>
-  <line x1="2" y1="13" x2="38" y2="13"/>
+    'fauteuil' => '<svg viewBox="0 0 28 30" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+  <rect x="4" y="13" width="20" height="14" rx="3"/>
+  <rect x="4" y="8" width="20" height="7" rx="2" fill="currentColor" stroke="none"/>
 </svg>',
 ];
 ?>
