@@ -11,9 +11,18 @@ class MediaController extends BaseController
     public function index(): void
     {
         $this->requireLogin();
-        $media     = (new Media())->findAll();
-        $csrfToken = Auth::generateCsrfToken();
-        $this->view->render('admin/media/index', ['title' => 'Médiathèque', 'media' => $media, 'csrf_token' => $csrfToken], 'admin');
+        $limit      = 60;
+        $mediaModel = new Media();
+        $media      = $mediaModel->findAll($limit, 0);
+        $total      = $mediaModel->count();
+        $csrfToken  = Auth::generateCsrfToken();
+        $this->view->render('admin/media/index', [
+            'title'      => 'Médiathèque',
+            'media'      => $media,
+            'total'      => $total,
+            'has_more'   => $total > $limit,
+            'csrf_token' => $csrfToken,
+        ], 'admin');
     }
 
     public function upload(): void
@@ -37,7 +46,7 @@ class MediaController extends BaseController
             Auth::setFlash('error', 'Fichier trop lourd (max ' . $maxLabel . ').');
             $this->redirect('/' . ADMIN_PATH . '/media');
         }
-        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf', 'video/mp4', 'video/webm', 'video/ogg'];
+        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'application/pdf', 'video/mp4', 'video/webm', 'video/ogg'];
         if (!in_array($mime, $allowed, true)) {
             Auth::setFlash('error', 'Type de fichier non autorisé.');
             $this->redirect('/' . ADMIN_PATH . '/media');
@@ -47,6 +56,7 @@ class MediaController extends BaseController
             case 'image/png':       $ext = 'png';  break;
             case 'image/gif':       $ext = 'gif';  break;
             case 'image/webp':      $ext = 'webp'; break;
+            case 'image/svg+xml':   $ext = 'svg';  break;
             case 'application/pdf': $ext = 'pdf';  break;
             case 'video/mp4':       $ext = 'mp4';  break;
             case 'video/webm':      $ext = 'webm'; break;
@@ -62,8 +72,9 @@ class MediaController extends BaseController
         $width = null; $height = null;
         $webpPath = null;
         $sizesJson = null;
-        $isImage = !$isVideo && strncmp($mime, 'image/', 6) === 0;
-        $canProcess = $isImage && in_array($mime, ['image/jpeg', 'image/png', 'image/gif'], true);
+        $isImage    = !$isVideo && strncmp($mime, 'image/', 6) === 0;
+        $isSvg      = ($mime === 'image/svg+xml');
+        $canProcess = $isImage && !$isSvg && in_array($mime, ['image/jpeg', 'image/png', 'image/gif'], true);
 
         if ($canProcess) {
             $img = $this->loadImage($dest, $mime);
@@ -94,7 +105,7 @@ class MediaController extends BaseController
 
                 imagedestroy($img);
             }
-        } elseif ($isImage && $mime !== 'image/webp') {
+        } elseif ($isImage && !$isSvg && $mime !== 'image/webp') {
             $size   = getimagesize($dest);
             $width  = $size ? $size[0] : null;
             $height = $size ? $size[1] : null;
@@ -159,9 +170,13 @@ class MediaController extends BaseController
     public function jsonList(): void
     {
         $this->requireLogin();
-        $media = (new Media())->findAll();
+        $limit      = 60;
+        $offset     = max(0, (int)($_GET['offset'] ?? 0));
+        $mediaModel = new Media();
+        $items      = $mediaModel->findAll($limit, $offset);
+        $total      = $mediaModel->count();
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($media);
+        echo json_encode(['items' => $items, 'total' => $total, 'offset' => $offset, 'limit' => $limit]);
         exit;
     }
 

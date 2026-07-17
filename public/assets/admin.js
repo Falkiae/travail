@@ -934,57 +934,117 @@ function createBlockItem(type, data) {
    ============================================================ */
 
 var mediaModalCallback = null;
+var mediaModalCache    = null;  // cached items array
+var mediaModalTotal    = 0;
+var mediaModalOffset   = 0;
+var mediaModalFilter   = null;
 
 function openMediaModal(callback, filter) {
   mediaModalCallback = callback;
+  mediaModalFilter   = filter || null;
   var overlay = document.getElementById('media-modal');
   if (!overlay) return;
   overlay.classList.remove('hidden');
 
   var grid = overlay.querySelector('#media-modal-grid');
-  grid.innerHTML = '<p>Chargement…</p>';
 
-  fetch('/admin/media/json')
+  // Use cache if already loaded for same filter context
+  if (mediaModalCache) {
+    renderModalItems(grid, mediaModalCache, filter);
+    return;
+  }
+
+  grid.innerHTML = '<p>Chargement…</p>';
+  mediaModalOffset = 0;
+  fetchModalPage(grid, 0, filter, true);
+}
+
+function fetchModalPage(grid, offset, filter, replace) {
+  fetch('/admin/media/json?offset=' + offset)
     .then(function(r) { return r.json(); })
-    .then(function(media) {
-      grid.innerHTML = '';
-      var filtered = media;
-      if (filter === 'image') filtered = media.filter(function(m) { return m.mime_type && m.mime_type.startsWith('image/'); });
-      else if (filter === 'video') filtered = media.filter(function(m) { return m.mime_type && m.mime_type.startsWith('video/'); });
-      if (!filtered.length) {
-        grid.innerHTML = '<p style="color:var(--color-muted)">Aucun fichier dans la médiathèque.</p>';
-        return;
+    .then(function(data) {
+      if (replace) {
+        mediaModalCache  = data.items;
+        grid.innerHTML   = '';
+      } else {
+        mediaModalCache  = (mediaModalCache || []).concat(data.items);
       }
-      filtered.forEach(function(m) {
-        var card = document.createElement('div');
-        card.className = 'media-card';
-        var isImage = m.mime_type && m.mime_type.startsWith('image/');
-        var isVideo = m.mime_type && m.mime_type.startsWith('video/');
-        if (isImage) {
-          card.innerHTML = '<img src="' + esc(m.path) + '" alt="' + esc(m.alt || '') + '" loading="lazy">';
-        } else if (isVideo) {
-          card.innerHTML = '<div class="media-video-thumb"><video src="' + esc(m.path) + '" preload="metadata" muted playsinline></video><div class="media-video-play">&#9654;</div></div>';
-        } else {
-          card.innerHTML = '<div class="media-icon">📄</div>';
-        }
-        card.innerHTML += '<div class="media-info"><div class="media-name">' + esc(m.original_name) + '</div></div>';
-        card.addEventListener('click', function() {
-          var cb = mediaModalCallback;
-          closeMediaModal();
-          if (cb) cb(m);
+      mediaModalTotal  = data.total;
+      mediaModalOffset = offset + data.items.length;
+
+      // Remove existing load-more button before re-rendering
+      var prev = grid.querySelector('.modal-load-more');
+      if (prev) prev.remove();
+
+      renderModalItems(grid, replace ? data.items : data.items, filter);
+
+      if (mediaModalOffset < mediaModalTotal) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-secondary btn-sm modal-load-more';
+        btn.style.cssText = 'display:block;margin:1rem auto 0;';
+        btn.textContent = 'Charger plus (' + (mediaModalTotal - mediaModalOffset) + ' restants)';
+        btn.addEventListener('click', function() {
+          btn.textContent = 'Chargement…';
+          btn.disabled = true;
+          fetchModalPage(grid, mediaModalOffset, filter, false);
         });
-        grid.appendChild(card);
-      });
+        grid.appendChild(btn);
+      }
     })
     .catch(function() {
       grid.innerHTML = '<p style="color:var(--color-danger)">Erreur lors du chargement.</p>';
     });
 }
 
+function renderModalItems(grid, items, filter) {
+  var filtered = items;
+  if (filter === 'image') filtered = items.filter(function(m) { return m.mime_type && m.mime_type.startsWith('image/'); });
+  else if (filter === 'video') filtered = items.filter(function(m) { return m.mime_type && m.mime_type.startsWith('video/'); });
+
+  if (!filtered.length && !grid.querySelector('.media-card')) {
+    grid.innerHTML = '<p style="color:var(--color-muted)">Aucun fichier dans la médiathèque.</p>';
+    return;
+  }
+
+  // Insert before load-more button
+  var loadMoreBtn = grid.querySelector('.modal-load-more');
+  filtered.forEach(function(m) {
+    var card = document.createElement('div');
+    card.className = 'media-card';
+    var isImage = m.mime_type && m.mime_type.startsWith('image/');
+    var isVideo = m.mime_type && m.mime_type.startsWith('video/');
+    if (isImage) {
+      card.innerHTML = '<img src="' + esc(m.path) + '" alt="' + esc(m.alt || '') + '" loading="lazy">';
+    } else if (isVideo) {
+      card.innerHTML = '<div class="media-video-thumb"><video src="' + esc(m.path) + '" preload="metadata" muted playsinline></video><div class="media-video-play">&#9654;</div></div>';
+    } else {
+      card.innerHTML = '<div class="media-icon">📄</div>';
+    }
+    card.innerHTML += '<div class="media-info"><div class="media-name">' + esc(m.original_name) + '</div></div>';
+    card.addEventListener('click', function() {
+      var cb = mediaModalCallback;
+      closeMediaModal();
+      if (cb) cb(m);
+    });
+    if (loadMoreBtn) {
+      grid.insertBefore(card, loadMoreBtn);
+    } else {
+      grid.appendChild(card);
+    }
+  });
+}
+
 function closeMediaModal() {
   var overlay = document.getElementById('media-modal');
   if (overlay) overlay.classList.add('hidden');
   mediaModalCallback = null;
+}
+
+function invalidateMediaCache() {
+  mediaModalCache  = null;
+  mediaModalTotal  = 0;
+  mediaModalOffset = 0;
 }
 
 (function initMediaModal() {
