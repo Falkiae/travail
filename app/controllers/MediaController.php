@@ -139,6 +139,23 @@ class MediaController extends BaseController
         $this->jsonResponse(['ok' => true]);
     }
 
+    public function updateMeta(): void
+    {
+        $this->requireLogin();
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
+            $this->jsonResponse(['error' => 'Token invalide'], 403);
+        }
+        $id   = (int)(isset($_POST['id'])   ? $_POST['id']   : 0);
+        $name = trim(isset($_POST['name'])  ? $_POST['name'] : '');
+        $alt  = trim(isset($_POST['alt'])   ? $_POST['alt']  : '');
+        $data = ['alt' => $alt];
+        if ($name !== '') {
+            $data['original_name'] = $name;
+        }
+        (new Media())->update($id, $data);
+        $this->jsonResponse(['ok' => true]);
+    }
+
     public function deleteMedia(): void
     {
         $this->requireLogin();

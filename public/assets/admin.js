@@ -1173,24 +1173,29 @@ function esc(str) {
   });
 })();
 
-/* ── Alt text AJAX save ── */
-(function initAltSave() {
-  document.querySelectorAll('.alt-save-btn').forEach(function(btn) {
+/* ── Name + Alt AJAX save (media library) ── */
+(function initMetaSave() {
+  var csrf = document.getElementById('csrf-token-value');
+  if (!csrf) return;
+  document.querySelectorAll('.meta-save-btn').forEach(function(btn) {
+    if (btn.dataset.bound) return;
+    btn.dataset.bound = '1';
     btn.addEventListener('click', function() {
       var card = btn.closest('[data-media-id]');
-      var id = card.dataset.mediaId;
-      var altInput = card.querySelector('.alt-input');
-      var csrf = document.getElementById('csrf-token-value');
-      if (!altInput || !csrf) return;
-
-      fetch('/admin/media/alt', {
+      var id   = card ? card.dataset.mediaId : null;
+      if (!id) return;
+      var name = (card.querySelector('.name-input') || {}).value || '';
+      var alt  = (card.querySelector('.alt-input')  || {}).value || '';
+      btn.textContent = '…'; btn.disabled = true;
+      fetch('/admin/media/meta', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'id=' + encodeURIComponent(id) + '&alt=' + encodeURIComponent(altInput.value) + '&csrf_token=' + encodeURIComponent(csrf.value),
+        body: 'id=' + encodeURIComponent(id) + '&name=' + encodeURIComponent(name) + '&alt=' + encodeURIComponent(alt) + '&csrf_token=' + encodeURIComponent(csrf.value),
       }).then(function(r) { return r.json(); }).then(function(data) {
-        if (data.ok) btn.textContent = 'Sauvegardé ✓';
+        btn.textContent = data.ok ? 'Sauvegardé ✓' : 'Erreur';
+        btn.disabled = false;
         setTimeout(function() { btn.textContent = 'Sauvegarder'; }, 2000);
-      });
+      }).catch(function() { btn.textContent = 'Erreur'; btn.disabled = false; });
     });
   });
 })();

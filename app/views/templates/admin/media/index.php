@@ -59,14 +59,10 @@
         <?php if ($isPdf): ?><span class="media-type-badge">PDF</span><?php endif; ?>
       <?php endif; ?>
       <div class="media-info">
-        <div class="media-name" title="<?= htmlspecialchars($file['original_name']) ?>"><?= htmlspecialchars($file['original_name']) ?></div>
-        <?php if (!$isVideo): ?>
-        <input type="text" class="alt-input" value="<?= htmlspecialchars($file['alt'] ?? '') ?>" placeholder="Texte alternatif" style="margin-top:.3rem">
-        <?php endif; ?>
+        <input type="text" class="name-input" value="<?= htmlspecialchars($file['original_name']) ?>" placeholder="Nom du fichier" title="Nom affiché">
+        <input type="text" class="alt-input" value="<?= htmlspecialchars($file['alt'] ?? '') ?>" placeholder="Texte alternatif (alt)">
         <div class="media-actions" style="margin-top:.3rem">
-          <?php if (!$isVideo): ?>
-          <button type="button" class="btn btn-secondary btn-sm alt-save-btn">Sauvegarder</button>
-          <?php endif; ?>
+          <button type="button" class="btn btn-secondary btn-sm meta-save-btn">Sauvegarder</button>
           <form method="POST" action="/admin/media/delete" class="confirm-delete" style="display:inline">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
             <input type="hidden" name="id" value="<?= (int)$file['id'] ?>">
@@ -91,6 +87,40 @@
 <script>
 (function() {
   var currentFilter = 'all';
+
+  // Save name + alt
+  var csrfVal = document.getElementById('csrf-token-value') ? document.getElementById('csrf-token-value').value : '';
+  function initMetaSave(root) {
+    (root || document).querySelectorAll('.meta-save-btn').forEach(function(btn) {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', function() {
+        var card  = btn.closest('[data-media-id]');
+        var id    = card ? card.dataset.mediaId : null;
+        var name  = card ? (card.querySelector('.name-input') || {}).value : '';
+        var alt   = card ? (card.querySelector('.alt-input')  || {}).value : '';
+        if (!id) return;
+        btn.textContent = '…';
+        btn.disabled = true;
+        fetch('/admin/media/meta', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'id=' + encodeURIComponent(id)
+              + '&name=' + encodeURIComponent(name)
+              + '&alt='  + encodeURIComponent(alt)
+              + '&csrf_token=' + encodeURIComponent(csrfVal),
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          btn.textContent = data.ok ? 'Sauvegardé ✓' : 'Erreur';
+          btn.disabled = false;
+          setTimeout(function() { btn.textContent = 'Sauvegarder'; }, 2000);
+        }).catch(function() {
+          btn.textContent = 'Erreur';
+          btn.disabled = false;
+        });
+      });
+    });
+  }
+  initMetaSave();
 
   // Click-to-load video placeholders
   function initVideoPlaceholders(root) {
@@ -163,13 +193,21 @@
             } else {
               thumb = '<div class="media-icon">📄</div>' + (m.mime_type === 'application/pdf' ? '<span class="media-type-badge">PDF</span>' : '');
             }
-            var altInput = !isVideo ? '<input type="text" class="alt-input" value="' + (m.alt||'').replace(/"/g,'&quot;') + '" placeholder="Texte alternatif" style="margin-top:.3rem">' : '';
-            var altBtn   = !isVideo ? '<button type="button" class="btn btn-secondary btn-sm alt-save-btn">Sauvegarder</button>' : '';
-            card.innerHTML = thumb + '<div class="media-info"><div class="media-name" title="' + m.original_name + '">' + m.original_name + '</div>' + altInput + '<div class="media-actions" style="margin-top:.3rem">' + altBtn + '<form method="POST" action="/admin/media/delete" class="confirm-delete" style="display:inline"><input type="hidden" name="csrf_token" value="' + csrfToken + '"><input type="hidden" name="id" value="' + m.id + '"><button type="submit" class="btn btn-danger btn-sm">✕</button></form></div></div>';
+            var nameVal = (m.original_name||'').replace(/"/g,'&quot;');
+            var altVal  = (m.alt||'').replace(/"/g,'&quot;');
+            card.innerHTML = thumb
+              + '<div class="media-info">'
+              + '<input type="text" class="name-input" value="' + nameVal + '" placeholder="Nom du fichier" title="Nom affiché">'
+              + '<input type="text" class="alt-input" value="' + altVal + '" placeholder="Texte alternatif (alt)">'
+              + '<div class="media-actions" style="margin-top:.3rem">'
+              + '<button type="button" class="btn btn-secondary btn-sm meta-save-btn">Sauvegarder</button>'
+              + '<form method="POST" action="/admin/media/delete" class="confirm-delete" style="display:inline"><input type="hidden" name="csrf_token" value="' + csrfToken + '"><input type="hidden" name="id" value="' + m.id + '"><button type="submit" class="btn btn-danger btn-sm">✕</button></form>'
+              + '</div></div>';
             grid.appendChild(card);
           });
           var newOffset = offset + data.items.length;
           initVideoPlaceholders(grid);
+          initMetaSave(grid);
           if (newOffset >= total) {
             loadMoreBtn.parentNode.remove();
           } else {
