@@ -213,120 +213,101 @@ $svgIcons = [
       + meridians * cfg.price_per_meridienne;
   }
 
-  /* ── Floor-plan SVG preview ─────────────────────────────── */
+  /* ── Cushion-grid SVG preview (inspired by reference) ───── */
   function renderSofa(shapeKey, n, mer) {
     if (!svgEl) return;
 
     var VW = 300, VH = 200;
-    var BR = 13;   // backrest bar thickness
-    var SD = 46;   // seat depth (front to back)
-    var AW = 13;   // armrest width
-    var RX = 6;    // corner radius
-    var DIV_W = 1.5;
+    var BAR  = 5;    // backrest bar thickness
+    var BOFF = 4;    // protrusion outside seat
+    var RX   = 8;    // seat corner radius
 
-    var seatFill = isDark ? '#2a2742' : '#ede8df';
-    var armFill  = isDark ? '#1e1b30' : '#d8d0c6';
-    var backFill = isDark ? '#ffd700' : '#0050ff';
-    var divCol   = isDark ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.1)';
-    var stk      = isDark ? 'rgba(255,255,255,.18)' : 'rgba(0,0,0,.13)';
-    var merFill  = isDark ? '#2a1e3d' : '#ede9f8';
-    var merBack  = isDark ? '#c4b0ff' : '#9b8aff';
-    var merArm   = isDark ? '#211730' : '#dbd6f0';
+    var seatFill   = isDark ? '#2d1f35' : '#F4E3EA';
+    var seatStroke = isDark ? '#3d2f45' : '#E3C4D2';
+    var backFill   = isDark ? '#ffd700' : '#586FF3';
+    var merFill    = isDark ? '#1a2535' : '#dde6f8';
+    var merStroke  = isDark ? '#2a3545' : '#b8c8e8';
+    var merBack    = isDark ? '#7799ff' : '#3355cc';
 
-    var body = '';
-
-    function r(x,y,w,h,fill,rx,sw) {
-      body += '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'"'
-            + ' fill="'+fill+'" rx="'+(rx||0)+'"'
-            + (sw ? ' stroke="'+stk+'" stroke-width="'+sw+'"' : '')+'/>';
+    // Build cell list: [{r, c, back, mer}]
+    function cells(shape, sn, mn) {
+      var out = [];
+      if (shape === 'fauteuil') {
+        out.push({r:0,c:0,back:'top',mer:false});
+        return out;
+      }
+      if (shape === 'droit') {
+        for (var c=0;c<sn;c++) out.push({r:0,c:c,back:'top',mer:false});
+        for (var r=1;r<=mn;r++) out.push({r:r,c:sn-1,back:'right',mer:true});
+        return out;
+      }
+      if (shape === 'angle') {
+        // ~34% vertical return from right corner (same ratio as reference)
+        var v = Math.min(Math.max(Math.round(sn*0.34),1), sn-1);
+        var h = sn - v;
+        for (var c=0;c<h;c++) out.push({r:0,c:c,back:'top',mer:false});
+        for (var r=1;r<=v;r++) out.push({r:r,c:h-1,back:'right',mer:false});
+        for (var r=v+1;r<=v+mn;r++) out.push({r:r,c:h-1,back:'right',mer:true});
+        return out;
+      }
+      if (shape === 'u') {
+        var arm = Math.min(Math.max(Math.round((sn-1)/3),1),3);
+        arm = Math.min(arm, Math.floor((sn-1)/2));
+        arm = Math.max(arm,1);
+        var base = Math.max(1, sn - 2*arm);
+        for (var c=0;c<base;c++) out.push({r:0,c:c,back:'top',mer:false});
+        for (var r=1;r<=arm;r++) out.push({r:r,c:0,back:'left',mer:false});
+        for (var r=1;r<=arm;r++) out.push({r:r,c:base-1,back:'right',mer:false});
+        return out;
+      }
+      return out;
     }
-    function vl(x,y1,y2) { body += '<line x1="'+x+'" y1="'+y1+'" x2="'+x+'" y2="'+y2+'" stroke="'+divCol+'" stroke-width="'+DIV_W+'"/>'; }
-    function hl(x1,x2,y)  { body += '<line x1="'+x1+'" y1="'+y+'" x2="'+x2+'" y2="'+y+'" stroke="'+divCol+'" stroke-width="'+DIV_W+'"/>'; }
 
     var isFauteuil = (shapeKey === 'fauteuil');
-    var actualN    = isFauteuil ? 1 : n;
-    var actualMer  = isFauteuil ? 0 : mer;
+    var list = cells(shapeKey, isFauteuil ? 1 : n, isFauteuil ? 0 : mer);
 
-    if (shapeKey === 'droit' || isFauteuil) {
-      var sw = isFauteuil ? 80 : Math.min(68, Math.max(38, (VW - AW*2 - 30) / actualN));
-      var totalW = AW + actualN*sw + AW;
-      var merH   = actualMer > 0 ? (BR + SD) : 0;
-      var totalH = BR + SD + merH;
-      var ox = (VW - totalW) / 2;
-      var oy = (VH - totalH) / 2;
-      // Main seat body
-      r(ox+AW, oy, actualN*sw, BR+SD, seatFill, RX, 1.5);
-      // Backrest bar
-      r(ox+AW, oy, actualN*sw, BR, backFill, RX);
-      // Left armrest
-      r(ox, oy+BR, AW, SD, armFill, RX, 1.5);
-      // Right armrest
-      r(ox+AW+actualN*sw, oy+BR, AW, SD, armFill, RX, 1.5);
-      // Seat dividers
-      for (var i=1; i<actualN; i++) vl(ox+AW+i*sw, oy+BR, oy+BR+SD);
-      // Méridienne: extends downward from right end
-      if (actualMer > 0) {
-        var mx = ox+AW+(actualN-1)*sw;
-        var my = oy+BR+SD;
-        r(mx, my, sw, actualMer*(BR+SD), merFill, RX, 1.5);
-        r(mx+sw-BR, my, BR, actualMer*(BR+SD), merBack, RX);
-        r(ox+AW+actualN*sw, my, AW, Math.min(actualMer*(BR+SD), SD), merArm, RX, 1.5);
-        for (var i=1; i<actualMer; i++) hl(mx, mx+sw, my+i*(BR+SD));
+    // Bounding box
+    var maxR=0, maxC=0;
+    for (var i=0;i<list.length;i++) {
+      if (list[i].r>maxR) maxR=list[i].r;
+      if (list[i].c>maxC) maxC=list[i].c;
+    }
+    var rows=maxR+1, cols=maxC+1;
+
+    // Adaptive seat size
+    var maxDim = Math.max(rows, cols);
+    var CELL = Math.max(30, Math.min(54, Math.floor(Math.min(VW-BOFF*4, VH-BOFF*4) / maxDim) - 2));
+    var GAP  = Math.max(3, Math.floor(CELL*0.1));
+    var SW   = CELL - GAP;
+
+    var totalW = cols*CELL + GAP;
+    var totalH = rows*CELL + GAP;
+    var ox = Math.max(BOFF+2, Math.floor((VW - totalW) / 2));
+    var oy = Math.max(BOFF+2, Math.floor((VH - totalH) / 2));
+
+    var body = '';
+    for (var i=0;i<list.length;i++) {
+      var cell = list[i];
+      var x = ox + GAP + cell.c*CELL;
+      var y = oy + GAP + cell.r*CELL;
+      var sf = cell.mer ? merFill : seatFill;
+      var ss = cell.mer ? merStroke : seatStroke;
+      var bf = cell.mer ? merBack : backFill;
+
+      // Seat cushion
+      body += '<rect x="'+x+'" y="'+y+'" width="'+SW+'" height="'+SW+'"'
+            + ' fill="'+sf+'" rx="'+RX+'" stroke="'+ss+'" stroke-width="1.5"/>';
+
+      // Backrest bar protruding outside
+      var bx=0,by=0,bw=0,bh=0;
+      if (cell.back==='top')    { bx=x+4; by=y-BOFF; bw=SW-8; bh=BAR; }
+      if (cell.back==='bottom') { bx=x+4; by=y+SW+BOFF-BAR; bw=SW-8; bh=BAR; }
+      if (cell.back==='left')   { bx=x-BOFF; by=y+4; bw=BAR; bh=SW-8; }
+      if (cell.back==='right')  { bx=x+SW+BOFF-BAR; by=y+4; bw=BAR; bh=SW-8; }
+      if (cell.back) {
+        body += '<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'"'
+              + ' fill="'+bf+'" rx="2"/>';
       }
-
-    } else if (shapeKey === 'angle') {
-      var hN = Math.max(2, Math.ceil(actualN*0.6));
-      var vN = Math.max(1, actualN - hN);
-      var sw = Math.min(62, Math.max(36, (VW - AW*2 - 20) / (hN+0.5)));
-      var hW = hN*sw;
-      var vH = vN*sw;
-      var totalW = AW + hW;
-      var totalH = BR + SD + vH + AW;
-      var ox = (VW - totalW - AW) / 2;
-      var oy = (VH - totalH) / 2;
-      // Horizontal arm (backrest top), left armrest
-      r(ox+AW, oy, hW, BR+SD, seatFill, RX, 1.5);
-      r(ox+AW, oy, hW, BR, backFill, RX);
-      r(ox, oy+BR, AW, SD, armFill, RX, 1.5);
-      for (var i=1; i<hN; i++) vl(ox+AW+i*sw, oy+BR, oy+BR+SD);
-      // Vertical arm (backrest right), starts exactly where horizontal arm ends
-      var vx = ox+AW+(hN-1)*sw;
-      var vy = oy+BR+SD;
-      r(vx, vy, sw+AW, vH, seatFill, RX, 1.5);
-      r(vx+sw, vy, AW, vH, armFill, RX, 1.5);
-      r(vx+sw-BR, vy, BR, vH, backFill, RX);
-      for (var i=1; i<vN; i++) hl(vx, vx+sw, vy+i*sw);
-      // Bottom armrest cap on vertical arm
-      r(vx, vy+vH, sw, AW, armFill, RX, 1.5);
-
-    } else if (shapeKey === 'u') {
-      var sideN = Math.max(1, Math.floor((actualN-2)/2));
-      var cN    = Math.max(2, actualN - 2*sideN);
-      var sw    = Math.min(54, Math.max(32, (VW - 40) / (cN+2)));
-      var armW  = sw + AW;
-      var totalW = armW + cN*sw + armW;
-      var totalH = sideN*sw + (BR+SD) + AW;
-      var ox = (VW - totalW) / 2;
-      var oy = (VH - totalH) / 2;
-      // Left arm (backrest left)
-      r(ox, oy, armW, totalH, seatFill, RX, 1.5);
-      r(ox, oy, AW, totalH, armFill, RX, 1.5);
-      r(ox+AW, oy, BR, totalH-AW, backFill, RX);
-      for (var i=1; i<sideN; i++) hl(ox+AW, ox+armW, oy+i*sw);
-      // Right arm (backrest right)
-      var rx2 = ox+armW+cN*sw;
-      r(rx2, oy, armW, totalH, seatFill, RX, 1.5);
-      r(rx2+sw, oy, AW, totalH, armFill, RX, 1.5);
-      r(rx2+sw-BR, oy, BR, totalH-AW, backFill, RX);
-      for (var i=1; i<sideN; i++) hl(rx2, rx2+sw, oy+i*sw);
-      // Bottom section (backrest bottom), fills the gap between arms
-      var by = oy+sideN*sw;
-      r(ox+armW, by, cN*sw, BR+SD, seatFill, 0, 1.5);
-      r(ox+armW, by+SD, cN*sw, BR, backFill);
-      for (var i=1; i<cN; i++) vl(ox+armW+i*sw, by, by+SD+BR);
-      // Bottom armrest caps
-      r(ox+AW, by+SD, sw, AW, armFill, RX, 1.5);
-      r(rx2, by+SD, sw, AW, armFill, RX, 1.5);
     }
 
     svgEl.setAttribute('viewBox', '0 0 '+VW+' '+VH);
