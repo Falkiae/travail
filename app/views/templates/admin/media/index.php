@@ -34,18 +34,20 @@
   </div>
   <div class="media-grid">
     <?php foreach ($media as $file):
-      $mime = $file['mime_type'] ?? '';
-      $isImage = (strncmp($mime, 'image/', 6) === 0);
-      $isSvg   = ($mime === 'image/svg+xml');
-      $isVideo = (strncmp($mime, 'video/', 6) === 0);
-      $isPdf   = ($mime === 'application/pdf');
+      $mime      = $file['mime_type'] ?? '';
+      $isImage   = (strncmp($mime, 'image/', 6) === 0);
+      $isSvg     = ($mime === 'image/svg+xml');
+      $isVideo   = (strncmp($mime, 'video/', 6) === 0);
+      $isPdf     = ($mime === 'application/pdf');
       $filterKey = $isImage ? 'image' : ($isVideo ? 'video' : 'document');
+      $sizes     = (!empty($file['sizes'])) ? json_decode($file['sizes'], true) : [];
+      $thumb     = $sizes['thumb_webp'] ?? $sizes['thumb'] ?? $file['path'];
     ?>
     <div class="media-card" data-media-id="<?= (int)$file['id'] ?>" data-filter="<?= $filterKey ?>">
       <?php if ($isSvg): ?>
         <img src="<?= htmlspecialchars($file['path']) ?>" alt="<?= htmlspecialchars($file['alt'] ?? '') ?>" loading="lazy" style="object-fit:contain;background:#f5f5f5">
       <?php elseif ($isImage): ?>
-        <img src="<?= htmlspecialchars($file['path']) ?>" alt="<?= htmlspecialchars($file['alt'] ?? '') ?>" loading="lazy">
+        <img src="<?= htmlspecialchars($thumb) ?>" alt="<?= htmlspecialchars($file['alt'] ?? '') ?>" loading="lazy">
       <?php elseif ($isVideo): ?>
         <div class="media-video-thumb">
           <video src="<?= htmlspecialchars($file['path']) ?>" preload="metadata" muted playsinline></video>
@@ -128,7 +130,9 @@
             if (currentFilter !== 'all' && filterKey !== currentFilter) card.style.display = 'none';
             var thumb = '';
             if (isSvg || isImage) {
-              thumb = '<img src="' + m.path + '" alt="' + (m.alt||'') + '" loading="lazy"' + (isSvg ? ' style="object-fit:contain;background:#f5f5f5"' : '') + '>';
+              var sizes = m.sizes ? JSON.parse(m.sizes) : {};
+              var src = isSvg ? m.path : (sizes.thumb_webp || sizes.thumb || m.path);
+              thumb = '<img src="' + src + '" alt="' + (m.alt||'') + '" loading="lazy"' + (isSvg ? ' style="object-fit:contain;background:#f5f5f5"' : '') + '>';
             } else if (isVideo) {
               thumb = '<div class="media-video-thumb"><video src="' + m.path + '" preload="metadata" muted playsinline></video><div class="media-video-play">&#9654;</div></div><span class="media-type-badge">VIDEO</span>';
             } else {

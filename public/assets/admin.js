@@ -1013,9 +1013,12 @@ function renderModalItems(grid, items, filter) {
     var card = document.createElement('div');
     card.className = 'media-card';
     var isImage = m.mime_type && m.mime_type.startsWith('image/');
+    var isSvg   = m.mime_type === 'image/svg+xml';
     var isVideo = m.mime_type && m.mime_type.startsWith('video/');
     if (isImage) {
-      card.innerHTML = '<img src="' + esc(m.path) + '" alt="' + esc(m.alt || '') + '" loading="lazy">';
+      var mSizes = m.sizes ? JSON.parse(m.sizes) : {};
+      var mSrc   = isSvg ? m.path : (mSizes.thumb_webp || mSizes.thumb || m.path);
+      card.innerHTML = '<img src="' + esc(mSrc) + '" alt="' + esc(m.alt || '') + '" loading="lazy"' + (isSvg ? ' style="object-fit:contain;background:#f5f5f5"' : '') + '>';
     } else if (isVideo) {
       card.innerHTML = '<div class="media-video-thumb"><video src="' + esc(m.path) + '" preload="metadata" muted playsinline></video><div class="media-video-play">&#9654;</div></div>';
     } else {
