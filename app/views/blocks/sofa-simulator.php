@@ -238,16 +238,19 @@ $svgIcons = [
       }
       if (shape === 'droit') {
         for (var c=0;c<sn;c++) out.push({r:0,c:c,back:'top',mer:false});
-        for (var r=1;r<=mn;r++) out.push({r:r,c:sn-1,back:'right',mer:true});
+        // 1 méridienne : droite ; 2 méridiennes : gauche + droite
+        if (mn >= 1) out.push({r:1,c:sn-1,back:'',mer:true});
+        if (mn >= 2) out.push({r:1,c:0,back:'',mer:true});
         return out;
       }
       if (shape === 'angle') {
-        // ~34% vertical return from right corner (same ratio as reference)
         var v = Math.min(Math.max(Math.round(sn*0.34),1), sn-1);
         var h = sn - v;
         for (var c=0;c<h;c++) out.push({r:0,c:c,back:'top',mer:false});
         for (var r=1;r<=v;r++) out.push({r:r,c:h-1,back:'right',mer:false});
-        for (var r=v+1;r<=v+mn;r++) out.push({r:r,c:h-1,back:'right',mer:true});
+        // 1 méridienne : bas du bras vertical ; 2 : + extrémité gauche horizontale
+        if (mn >= 1) out.push({r:v+1,c:h-1,back:'',mer:true});
+        if (mn >= 2) out.push({r:1,c:0,back:'',mer:true});
         return out;
       }
       if (shape === 'u') {
