@@ -49,9 +49,9 @@
       <?php elseif ($isImage): ?>
         <img src="<?= htmlspecialchars($thumb) ?>" alt="<?= htmlspecialchars($file['alt'] ?? '') ?>" loading="lazy">
       <?php elseif ($isVideo): ?>
-        <div class="media-video-thumb">
-          <video src="<?= htmlspecialchars($file['path']) ?>" preload="metadata" muted playsinline></video>
-          <div class="media-video-play">&#9654;</div>
+        <div class="media-video-thumb media-video-placeholder" data-src="<?= htmlspecialchars($file['path']) ?>">
+          <div class="media-video-icon">&#9654;</div>
+          <span class="media-video-ext"><?= strtoupper(pathinfo($file['original_name'], PATHINFO_EXTENSION)) ?></span>
         </div>
         <span class="media-type-badge">VIDEO</span>
       <?php else: ?>
@@ -91,6 +91,30 @@
 <script>
 (function() {
   var currentFilter = 'all';
+
+  // Click-to-load video placeholders
+  function initVideoPlaceholders(root) {
+    (root || document).querySelectorAll('.media-video-placeholder').forEach(function(el) {
+      if (el.dataset.bound) return;
+      el.dataset.bound = '1';
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', function() {
+        var src = el.dataset.src;
+        var video = document.createElement('video');
+        video.src = src;
+        video.preload = 'metadata';
+        video.muted = true;
+        video.controls = true;
+        video.playsinline = true;
+        video.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000';
+        el.style.position = 'relative';
+        el.appendChild(video);
+        video.play().catch(function(){});
+        el.classList.remove('media-video-placeholder');
+      });
+    });
+  }
+  initVideoPlaceholders();
 
   // Filter tabs
   var tabs = document.querySelectorAll('.media-tab');
@@ -134,7 +158,8 @@
               var src = isSvg ? m.path : (sizes.thumb_webp || sizes.thumb || m.path);
               thumb = '<img src="' + src + '" alt="' + (m.alt||'') + '" loading="lazy"' + (isSvg ? ' style="object-fit:contain;background:#f5f5f5"' : '') + '>';
             } else if (isVideo) {
-              thumb = '<div class="media-video-thumb"><video src="' + m.path + '" preload="metadata" muted playsinline></video><div class="media-video-play">&#9654;</div></div><span class="media-type-badge">VIDEO</span>';
+              var ext = m.original_name.split('.').pop().toUpperCase();
+              thumb = '<div class="media-video-thumb media-video-placeholder" data-src="' + m.path + '"><div class="media-video-icon">&#9654;</div><span class="media-video-ext">' + ext + '</span></div><span class="media-type-badge">VIDEO</span>';
             } else {
               thumb = '<div class="media-icon">📄</div>' + (m.mime_type === 'application/pdf' ? '<span class="media-type-badge">PDF</span>' : '');
             }
@@ -144,6 +169,7 @@
             grid.appendChild(card);
           });
           var newOffset = offset + data.items.length;
+          initVideoPlaceholders(grid);
           if (newOffset >= total) {
             loadMoreBtn.parentNode.remove();
           } else {

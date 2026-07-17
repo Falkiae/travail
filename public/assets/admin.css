@@ -270,6 +270,10 @@ textarea { min-height: 120px; resize: vertical; }
 .media-card .media-video-thumb { width: 100%; height: 100px; background: #111; overflow: hidden; position: relative; }
 .media-card .media-video-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .media-card .media-video-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #fff; background: rgba(0,0,0,.3); pointer-events: none; }
+.media-video-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .3rem; }
+.media-video-placeholder:hover { background: #222; }
+.media-video-icon { font-size: 1.8rem; color: rgba(255,255,255,.8); line-height: 1; }
+.media-video-ext { font-size: .65rem; font-weight: 700; letter-spacing: .06em; color: rgba(255,255,255,.5); text-transform: uppercase; }
 .media-card .media-info { padding: .4rem .5rem; font-size: .75rem; }
 .media-card .media-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-muted); }
 .media-card .media-actions { display: flex; gap: .3rem; padding: .3rem .5rem; border-top: 1px solid #e5e7eb; }

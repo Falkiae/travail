@@ -1020,7 +1020,8 @@ function renderModalItems(grid, items, filter) {
       var mSrc   = isSvg ? m.path : (mSizes.thumb_webp || mSizes.thumb || m.path);
       card.innerHTML = '<img src="' + esc(mSrc) + '" alt="' + esc(m.alt || '') + '" loading="lazy"' + (isSvg ? ' style="object-fit:contain;background:#f5f5f5"' : '') + '>';
     } else if (isVideo) {
-      card.innerHTML = '<div class="media-video-thumb"><video src="' + esc(m.path) + '" preload="metadata" muted playsinline></video><div class="media-video-play">&#9654;</div></div>';
+      var mExt = (m.original_name || '').split('.').pop().toUpperCase();
+      card.innerHTML = '<div class="media-video-thumb media-video-placeholder" data-src="' + esc(m.path) + '" style="cursor:pointer"><div class="media-video-icon">&#9654;</div><span class="media-video-ext">' + mExt + '</span></div>';
     } else {
       card.innerHTML = '<div class="media-icon">📄</div>';
     }
