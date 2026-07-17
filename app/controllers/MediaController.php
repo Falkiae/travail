@@ -13,7 +13,7 @@ class MediaController extends BaseController
         $this->requireLogin();
         $limit      = 60;
         $mediaModel = new Media();
-        $media      = $mediaModel->findAll($limit, 0);
+        $media      = $mediaModel->findPaginated($limit, 0);
         $total      = $mediaModel->count();
         $csrfToken  = Auth::generateCsrfToken();
         $this->view->render('admin/media/index', [
@@ -173,7 +173,7 @@ class MediaController extends BaseController
         $limit      = 60;
         $offset     = max(0, (int)($_GET['offset'] ?? 0));
         $mediaModel = new Media();
-        $items      = $mediaModel->findAll($limit, $offset);
+        $items      = $mediaModel->findPaginated($limit, $offset);
         $total      = $mediaModel->count();
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode(['items' => $items, 'total' => $total, 'offset' => $offset, 'limit' => $limit]);

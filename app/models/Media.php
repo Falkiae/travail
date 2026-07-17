@@ -7,7 +7,7 @@ class Media extends BaseModel
 {
     protected string $table = 'kn_media';
 
-    public function findAll(int $limit = 60, int $offset = 0): array
+    public function findPaginated(int $limit = 60, int $offset = 0): array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM kn_media ORDER BY created_at DESC LIMIT :limit OFFSET :offset');
         $stmt->bindValue(':limit',  $limit,  \PDO::PARAM_INT);
