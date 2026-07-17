@@ -304,7 +304,7 @@ $svgIcons = [
       if (cell.back==='bottom') { bx=x+4; by=y+SW+BOFF-BAR; bw=SW-8; bh=BAR; }
       if (cell.back==='left')   { bx=x-BOFF; by=y+4; bw=BAR; bh=SW-8; }
       if (cell.back==='right')  { bx=x+SW+BOFF-BAR; by=y+4; bw=BAR; bh=SW-8; }
-      if (cell.back) {
+      if (cell.back && !cell.mer) {
         body += '<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'"'
               + ' fill="'+bf+'" rx="2"/>';
       }
