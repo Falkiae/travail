@@ -132,7 +132,7 @@
 
 .kn-nav__menu a {
   font-weight: 600;
-  font-size: .9375rem;
+  font-size: 1.0625rem;
   color: var(--kn-night);
   transition: color .15s ease;
 }
