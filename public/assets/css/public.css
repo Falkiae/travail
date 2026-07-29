@@ -23,11 +23,14 @@
   z-index: 1000;
   background: var(--kn-cream);
   border-bottom: 1px solid var(--kn-border);
-  min-height: 80px;
+  height: 116px;
   display: flex;
   align-items: center;
-  padding: .5rem 0;
   transition: background .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+
+@media (min-width: 768px) {
+  .kn-nav { height: 150px; }
 }
 
 /* Transparent nav overlaying the hero */
@@ -203,11 +206,11 @@
 
 .kn-nav--transparent ~ .kn-nav__mobile {
   position: fixed;
-  top: 80px;
+  top: 116px;
   left: 0;
   right: 0;
   z-index: 99;
-  max-height: calc(100vh - 80px);
+  max-height: calc(100vh - 116px);
   overflow-y: auto;
 }
 
@@ -261,7 +264,10 @@
   padding-top: 2rem;
 }
 .kn-hero.kn-hero--under-nav {
-  padding-top: calc(80px + 2rem);
+  padding-top: calc(116px + 2rem);
+}
+@media (min-width: 768px) {
+  .kn-hero.kn-hero--under-nav { padding-top: calc(150px + 2rem); }
 }
 
 /* .kn-hero__inner grid is now handled by .kn-grid--* classes */
