@@ -228,6 +228,108 @@ p {
   border: 1px solid rgba(74,99,231,.25);
 }
 
+/* ── Surbrillances de titre (inline <span> dans h1/h2/h3)
+   --------------------------------------------------------
+   Usage : <h1>Gardez vos biens <span class="kn-hl-rose">comme neufs</span>.</h1>
+   -------------------------------------------------------- */
+
+/* 1. Italique Playfair Display (emphase élégante) */
+.kn-hl-italic {
+  font-style: italic;
+  font-weight: inherit;
+}
+
+/* 2. Soulignement rose poudré décalé */
+.kn-hl-underline {
+  position: relative;
+  display: inline;
+  white-space: nowrap;
+}
+.kn-hl-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: .08em;
+  width: 100%;
+  height: .1em;
+  background: var(--kn-rose-mid);
+  border-radius: 1px;
+}
+
+/* 3. Fond rose poudré — marker pastel */
+.kn-hl-rose {
+  background: var(--kn-rose-mid);
+  color: var(--kn-navy);
+  padding: .04em .18em;
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* 4. Fond crème sur navy (inverse doux) */
+.kn-hl-cream {
+  background: var(--kn-cream);
+  color: var(--kn-navy);
+  padding: .04em .18em;
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* 5. Fond navy inversé — texte crème */
+.kn-hl-navy {
+  background: var(--kn-navy);
+  color: var(--kn-cream);
+  padding: .06em .22em;
+  border-radius: var(--r-xs);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* 6. Couleur or — prix, chiffres, stats */
+.kn-hl-gold {
+  color: var(--kn-gold);
+}
+
+/* 7. Couleur royal — action, accent bleu */
+.kn-hl-royal {
+  color: var(--kn-blue);
+}
+
+/* 8. Couleur rose — accent vintage */
+.kn-hl-rose-text {
+  color: var(--kn-rose-deep);
+}
+
+/* 9. Accent Great Vibes (signature calligraphique, parcimonieux) */
+.kn-hl-script {
+  font-family: var(--font-script);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.25em;
+  line-height: .8;
+  color: var(--kn-rose-deep);
+  letter-spacing: .02em;
+}
+
+/* 10. Double filet — effet gravure cérémoniel */
+.kn-hl-engraved {
+  display: inline-block;
+  padding: .04em .3em;
+  border: 1px solid var(--kn-navy);
+  outline: 1px solid var(--kn-navy);
+  outline-offset: 3px;
+  border-radius: 0;
+  line-height: 1.2;
+}
+/* Sur fond navy */
+.kn-bg--blue .kn-hl-engraved,
+.kn-bg--night .kn-hl-engraved {
+  border-color: var(--kn-cream);
+  outline-color: rgba(247,244,236,.35);
+  color: var(--kn-cream);
+}
+
 /* 7. Pills / Tags
    ------------------------------------------------------------ */
 .kn-pill {
