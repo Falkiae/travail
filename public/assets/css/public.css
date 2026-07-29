@@ -99,14 +99,14 @@
   align-items: center;
 }
 .kn-nav__logo-img {
-  max-height: 55px;
+  max-height: 100px;
   width: auto;
   object-fit: contain;
   display: block;
 }
 
 @media (min-width: 768px) {
-  .kn-nav__logo-img { max-height: 90px; }
+  .kn-nav__logo-img { max-height: 130px; }
 }
 
 /* Logo sombre → visible sur fond clair, caché sur fond sombre */
