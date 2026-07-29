@@ -282,7 +282,14 @@ function buildBlockForm(type, data) {
         reverseFields(data) +
         visibilityField(data.visible) +
         fg('Eyebrow <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('eyebrow', data.eyebrow, 'CANAPÉ · VOITURE · MATELAS — À DOMICILE', 2)) +
-        fg('H1 <small style="font-weight:400;opacity:.6">(HTML autorisé — ex: Titre <span class="kn-tape">souligné</span>)</small>', ta('h1', data.h1, 'Nettoyage à domicile de canapé, matelas et voitures.', 3)) +
+        fg('H1 <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('h1', data.h1, 'Nettoyage à domicile de canapé, matelas et voitures.', 3)) +
+        '<div class="form-group"><div style="display:flex;flex-wrap:wrap;gap:.5rem;padding:.6rem .75rem;background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius);font-size:.8rem">' +
+          '<span style="display:block;width:100%;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--color-muted);margin-bottom:.25rem">Surbrillances — cliquer pour insérer</span>' +
+          '<button type="button" class="btn btn-secondary btn-sm hl-insert-btn" data-hl="hl"         title="Fond crème/blanc">Mot <span class="hl"         style="font-family:inherit;font-size:1em">surligné</span></button>' +
+          '<button type="button" class="btn btn-secondary btn-sm hl-insert-btn" data-hl="hl-strong"  title="Plus de punch">Mot <span class="hl-strong"  style="font-family:inherit;font-size:1em">surligné</span></button>' +
+          '<button type="button" class="btn btn-secondary btn-sm hl-insert-btn" data-hl="hl-inverse" title="Sur fond navy">Mot <span class="hl-inverse" style="font-family:inherit;font-size:1em">surligné</span></button>' +
+          '<button type="button" class="btn btn-secondary btn-sm hl-insert-btn" data-hl="hl-on-rose" title="Sur fond rose">Mot <span class="hl-on-rose" style="font-family:inherit;font-size:1em">surligné</span></button>' +
+        '</div></div>' +
         fg('Corps de texte (HTML autorisé)', ta('body', data.body, 'Keepnew nettoie vos <strong>canapés</strong>...')) +
         fg('CTA — Eyebrow', inp('cta_eyebrow', data.cta_eyebrow, 'RÉSERVATION EN LIGNE')) +
         fg('CTA — Titre', inp('cta_title', data.cta_title, 'Prendre RDV en 2 min')) +
@@ -322,6 +329,19 @@ function buildBlockForm(type, data) {
       ['video_autoplay','video_loop','video_muted','video_controls'].forEach(function(f) {
         var cb = d.querySelector('[data-field="' + f + '"]');
         if (cb && data[f] !== undefined) cb.checked = !!data[f];
+      });
+      // Surbrillance insert buttons
+      d.querySelectorAll('.hl-insert-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var cls = btn.dataset.hl;
+          var ta  = d.querySelector('[data-field="h1"]');
+          var snippet = '<span class="' + cls + '">mot</span>';
+          var start = ta.selectionStart, end = ta.selectionEnd;
+          var selected = ta.value.slice(start, end);
+          if (selected) snippet = '<span class="' + cls + '">' + selected + '</span>';
+          ta.setRangeText(snippet, start, end, 'end');
+          ta.focus();
+        });
       });
       // Show/hide visual sections based on visual_type
       function updateHeroVisualSections() {
