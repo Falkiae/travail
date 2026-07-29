@@ -228,90 +228,16 @@ p {
   border: 1px solid rgba(74,99,231,.25);
 }
 
-/* ── Surbrillance marqueur — classes canoniques du design system
+/* ── Surlignages de titre
    --------------------------------------------------------
-   Usage  : <h1>Votre <span class="hl">voiture</span>, votre canapé.</h1>
-   Variantes :
-     .hl            → soulignement rose poudré (fond clair)
-     .hl-strong     → soulignement rose plus épais/prononcé
-     .hl-inverse    → soulignement rose sur fond navy
-     .hl-on-rose    → soulignement navy sur fond rose
+   Usage : <h1>Votre <span class="hl">voiture</span> comme neuve.</h1>
    -------------------------------------------------------- */
 
-/* Base — soulignement rose poudré sur fond clair */
-.hl {
-  position: relative;
-  display: inline;
-  white-space: nowrap;
-}
-.hl::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: .06em;
-  width: 100%;
-  height: .12em;
-  background: var(--kn-rose-mid);
-  border-radius: 1px;
-  z-index: -1;
-}
-
-/* Strong — soulignement plus prononcé (fond légèrement coloré) */
-.hl-strong {
-  position: relative;
-  display: inline;
-  white-space: nowrap;
-}
-.hl-strong::after {
-  content: '';
-  position: absolute;
-  left: -.04em;
-  right: -.04em;
-  bottom: .04em;
-  height: .28em;
-  background: var(--kn-rose-mid);
-  border-radius: 2px;
-  z-index: -1;
-  opacity: .55;
-}
-
-/* Inverse — fond navy, soulignement rose */
-.hl-inverse {
-  position: relative;
-  display: inline;
-  white-space: nowrap;
-  color: var(--kn-cream);
-}
-.hl-inverse::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: .06em;
-  width: 100%;
-  height: .12em;
-  background: var(--kn-rose-mid);
-  border-radius: 1px;
-  z-index: -1;
-}
-
-/* On-rose — fond rose poudré, soulignement navy */
-.hl-on-rose {
-  position: relative;
-  display: inline;
-  white-space: nowrap;
-  color: var(--kn-navy);
-}
-.hl-on-rose::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: .06em;
-  width: 100%;
-  height: .12em;
-  background: var(--kn-navy);
-  border-radius: 1px;
-  z-index: -1;
-}
+.hl        { background: var(--kn-rose-mid);   color: var(--kn-navy);  padding: .04em .15em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.hl-cream  { background: var(--kn-cream);      color: var(--kn-navy);  padding: .04em .15em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.hl-navy   { background: var(--kn-navy);       color: var(--kn-cream); padding: .04em .15em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.hl-royal  { background: var(--kn-blue);       color: #fff;            padding: .04em .15em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.hl-gold   { background: var(--kn-gold-light); color: var(--kn-navy);  padding: .04em .15em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 
 /* ── Surbrillances de titre (inline <span> dans h1/h2/h3)
    --------------------------------------------------------
