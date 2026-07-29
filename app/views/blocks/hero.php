@@ -12,7 +12,8 @@ $heroExtra    = 'kn-hero' . ($isVideoBg ? ' kn-hero--video-bg' : '') . ($isFirst
 $sectionClass = blockClasses($block, 'cream', $heroExtra);
 $gridClass    = gridClasses($block, '1-1');
 
-$eyebrowColor = $isDark ? 'var(--kn-yellow)' : 'var(--kn-blue)';
+$isRose = ($bg === 'rose');
+$eyebrowColor = $isDark ? 'var(--kn-yellow)' : ($isRose ? 'var(--kn-rose-600)' : 'var(--kn-blue)');
 $h1Color      = $isDark ? 'var(--kn-white)'  : 'var(--kn-night)';
 $proofColor   = $isDark ? 'rgba(255,255,255,.7)' : 'var(--kn-muted)';
 
