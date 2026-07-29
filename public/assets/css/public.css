@@ -105,6 +105,10 @@
   display: block;
 }
 
+@media (min-width: 768px) {
+  .kn-nav__logo-img { max-height: 90px; }
+}
+
 /* Logo sombre → visible sur fond clair, caché sur fond sombre */
 .kn-nav__logo-img--dark  { display: block; }
 .kn-nav__logo-img--light { display: none; }
