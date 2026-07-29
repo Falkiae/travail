@@ -577,6 +577,7 @@ p {
 .kn-bg--blue   { background: var(--kn-navy);    color: var(--kn-cream); }
 .kn-bg--night  { background: var(--kn-navy-ink);color: var(--kn-cream); }
 
+.kn-bg--rose .kn-eyebrow  { color: var(--kn-rose-600); }
 .kn-bg--blue .kn-eyebrow,
 .kn-bg--night .kn-eyebrow { color: var(--kn-rose-mid); }
 
