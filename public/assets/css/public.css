@@ -105,6 +105,18 @@
   display: block;
 }
 
+/* Logo sombre → visible sur fond clair, caché sur fond sombre */
+.kn-nav__logo-img--dark  { display: block; }
+.kn-nav__logo-img--light { display: none; }
+
+/* Quand la nav est en mode light (hero dark/video) */
+.kn-nav--light .kn-nav__logo-img--dark  { display: none; }
+.kn-nav--light .kn-nav__logo-img--light { display: block; }
+
+/* Une fois scrollé (retour fond clair), reprendre le logo sombre */
+.kn-nav--light.kn-nav--scrolled .kn-nav__logo-img--dark  { display: block; }
+.kn-nav--light.kn-nav--scrolled .kn-nav__logo-img--light { display: none; }
+
 .kn-nav__menu {
   display: none;
   align-items: center;

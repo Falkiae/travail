@@ -61,24 +61,44 @@ function s(array $settings, string $key, string $default = ''): string {
     <div class="card-title">Logo</div>
     <div class="form-row">
       <div class="form-group">
-        <label for="logo_url">Logo image</label>
+        <label for="logo_url">Logo version sombre</label>
         <div class="input-row">
           <input type="text" id="logo_url" name="logo_url" value="<?= s($settings, 'logo_url') ?>" placeholder="/uploads/logo.svg" style="flex:1">
           <button type="button" class="btn btn-secondary btn-sm" id="logo-media-btn">Médiathèque</button>
         </div>
-        <small style="color:var(--color-muted)">Laissez vide pour afficher le nom du site en texte.</small>
+        <small style="color:var(--color-muted)">Affiché sur fond clair (nav blanche/crème). Laissez vide pour afficher le nom du site en texte.</small>
       </div>
       <div class="form-group">
-        <label for="logo_alt">Texte alternatif du logo</label>
-        <input type="text" id="logo_alt" name="logo_alt" value="<?= s($settings, 'logo_alt') ?>" placeholder="Keepnew — Nettoyage à domicile">
+        <label for="logo_light_url">Logo version claire</label>
+        <div class="input-row">
+          <input type="text" id="logo_light_url" name="logo_light_url" value="<?= s($settings, 'logo_light_url') ?>" placeholder="/uploads/logo-light.svg" style="flex:1">
+          <button type="button" class="btn btn-secondary btn-sm" id="logo-light-media-btn">Médiathèque</button>
+        </div>
+        <small style="color:var(--color-muted)">Affiché sur hero sombre / vidéo. Si vide, le logo sombre est utilisé partout.</small>
       </div>
     </div>
-    <?php if (!empty($settings['logo_url'])): ?>
     <div class="form-group">
-      <label>Aperçu</label>
-      <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:var(--radius);padding:1rem;display:inline-block">
-        <img src="<?= htmlspecialchars($settings['logo_url']) ?>" alt="<?= htmlspecialchars($settings['logo_alt'] ?? '') ?>" style="max-height:60px;max-width:200px;object-fit:contain">
+      <label for="logo_alt">Texte alternatif du logo</label>
+      <input type="text" id="logo_alt" name="logo_alt" value="<?= s($settings, 'logo_alt') ?>" placeholder="Keepnew — Nettoyage à domicile">
+    </div>
+    <?php if (!empty($settings['logo_url']) || !empty($settings['logo_light_url'])): ?>
+    <div class="form-row">
+      <?php if (!empty($settings['logo_url'])): ?>
+      <div class="form-group">
+        <label>Aperçu — fond clair</label>
+        <div style="background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius);padding:1rem;display:inline-flex;align-items:center">
+          <img src="<?= htmlspecialchars($settings['logo_url']) ?>" alt="" style="max-height:50px;max-width:180px;object-fit:contain">
+        </div>
       </div>
+      <?php endif; ?>
+      <?php if (!empty($settings['logo_light_url'])): ?>
+      <div class="form-group">
+        <label>Aperçu — fond sombre</label>
+        <div style="background:#24355C;border:1px solid #24355C;border-radius:var(--radius);padding:1rem;display:inline-flex;align-items:center">
+          <img src="<?= htmlspecialchars($settings['logo_light_url']) ?>" alt="" style="max-height:50px;max-width:180px;object-fit:contain">
+        </div>
+      </div>
+      <?php endif; ?>
     </div>
     <?php endif; ?>
   </div>
@@ -234,6 +254,11 @@ function s(array $settings, string $key, string $default = ''): string {
 document.getElementById('logo-media-btn').addEventListener('click', function() {
   openMediaModal(function(media) {
     document.getElementById('logo_url').value = media.webp_path || media.path;
+  });
+});
+document.getElementById('logo-light-media-btn').addEventListener('click', function() {
+  openMediaModal(function(media) {
+    document.getElementById('logo_light_url').value = media.webp_path || media.path;
   });
 });
 </script>

@@ -108,8 +108,15 @@ if (!empty($blocks) && is_array($blocks)) {
   <div class="container">
     <div class="kn-nav__inner">
       <a class="kn-nav__logo" href="/">
-        <?php if (!empty($logo_url)): ?>
-          <img src="<?php echo htmlspecialchars($logo_url); ?>" alt="<?php echo htmlspecialchars(isset($logo_alt) ? $logo_alt : (isset($site_name) ? $site_name : 'Keepnew')); ?>" class="kn-nav__logo-img">
+        <?php
+          $__logoAlt   = htmlspecialchars(isset($logo_alt) ? $logo_alt : (isset($site_name) ? $site_name : 'Keepnew'));
+          $__logoDark  = !empty($logo_url)       ? htmlspecialchars($logo_url)       : '';
+          $__logoLight = !empty($logo_light_url) ? htmlspecialchars($logo_light_url) : $__logoDark;
+          if ($__logoDark !== ''): ?>
+          <img src="<?php echo $__logoDark; ?>" alt="<?php echo $__logoAlt; ?>" class="kn-nav__logo-img kn-nav__logo-img--dark">
+          <?php if ($__logoLight !== $__logoDark): ?>
+          <img src="<?php echo $__logoLight; ?>" alt="<?php echo $__logoAlt; ?>" class="kn-nav__logo-img kn-nav__logo-img--light">
+          <?php endif; ?>
         <?php else: ?>
           <?php echo htmlspecialchars(isset($site_name) ? $site_name : 'Keepnew'); ?>
         <?php endif; ?>
