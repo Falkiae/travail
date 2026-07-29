@@ -264,10 +264,10 @@
   padding-top: 2rem;
 }
 .kn-hero.kn-hero--under-nav {
-  padding-top: calc(116px + 2rem);
+  padding-top: 116px;
 }
 @media (min-width: 768px) {
-  .kn-hero.kn-hero--under-nav { padding-top: calc(150px + 2rem); }
+  .kn-hero.kn-hero--under-nav { padding-top: 150px; }
 }
 
 /* .kn-hero__inner grid is now handled by .kn-grid--* classes */
