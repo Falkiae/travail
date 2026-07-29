@@ -23,7 +23,8 @@
   /* ── Rose poudré (accent vintage) ── */
   --kn-rose:        #F8E7E9;
   --kn-rose-mid:    #EFC6CB;
-  --kn-rose-deep:   #D08E99;
+  --kn-rose-deep:   #E4AEB7;
+  --kn-rose-600:    #A15D69;
 
   /* ── Royal (action) ── */
   --kn-blue:        #4A63E7;
@@ -228,16 +229,16 @@ p {
   border: 1px solid rgba(74,99,231,.25);
 }
 
-/* ── Surlignages de titre
-   --------------------------------------------------------
+/* ── Surbrillance marqueur
    Usage : <h1>Votre <span class="hl">voiture</span> comme neuve.</h1>
+   .hl = fond crème/blanc · .hl-strong = plus de punch ·
+   .hl-inverse = sur fond navy · .hl-on-rose = sur fond rose
    -------------------------------------------------------- */
 
-.hl        { background: var(--kn-rose-mid);   color: var(--kn-navy);  padding: .04em .15em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-.hl-cream  { background: var(--kn-cream);      color: var(--kn-navy);  padding: .04em .15em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-.hl-navy   { background: var(--kn-navy);       color: var(--kn-cream); padding: .04em .15em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-.hl-royal  { background: var(--kn-blue);       color: #fff;            padding: .04em .15em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-.hl-gold   { background: var(--kn-gold-light); color: var(--kn-navy);  padding: .04em .15em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.hl         { background: linear-gradient(transparent 55%, var(--kn-rose-mid)  55%, var(--kn-rose-mid)  92%, transparent 92%); padding: 0 .08em; }
+.hl-strong  { background: linear-gradient(transparent 55%, var(--kn-rose-deep) 55%, var(--kn-rose-deep) 92%, transparent 92%); padding: 0 .08em; }
+.hl-inverse { background: linear-gradient(transparent 55%, var(--kn-rose-600)  55%, var(--kn-rose-600)  92%, transparent 92%); padding: 0 .08em; }
+.hl-on-rose { background: linear-gradient(transparent 55%, var(--kn-cream)     55%, var(--kn-cream)     92%, transparent 92%); padding: 0 .08em; }
 
 /* ── Surbrillances de titre (inline <span> dans h1/h2/h3)
    --------------------------------------------------------
