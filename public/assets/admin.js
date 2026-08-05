@@ -90,6 +90,7 @@ const BLOCK_TYPES = {
   'seo-content':  'Contenu SEO',
   'domicile-vs-atelier': 'Domicile vs Atelier',
   'sofa-simulator':      'Simulateur canapé',
+  'prestation':          'Prestation détaillée',
 };
 
 let dragSrcEl = null;
@@ -374,6 +375,53 @@ function buildBlockForm(type, data) {
       });
       d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
         addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['name','desc','icon'], ['Nom','Description','Icône (emoji)'], {});
+      });
+      break;
+
+    case 'prestation':
+      d.innerHTML =
+        fg('Eyebrow <small style="font-weight:400;opacity:.6">(optionnel)</small>', inp('eyebrow', data.eyebrow, 'CE QUI EST INCLUS')) +
+        fg('H2 <small style="font-weight:400;opacity:.6">(HTML autorisé — surbrillance possible)</small>',
+          ta('h2', data.h2, 'Ex : Tout est <span class="hl">compris</span> dans la prestation.', 2)) +
+        fg('Intro <small style="font-weight:400;opacity:.6">(optionnel, HTML autorisé)</small>',
+          ta('intro', data.intro, 'Une phrase qui pose le cadre de la prestation…', 3)) +
+        bgField(data.bg) +
+        layoutField(data.layout || '2-3') +
+        visibilityField(data.visible) +
+        '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
+        '<div class="form-group"><label>Bandeau info <small style="font-weight:400;opacity:.6">(durée, garantie, produits…)</small></label>'
+        + '<div class="block-repeater" data-repeater="metas"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="metas">+ Ajouter une info</button></div>' +
+        '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
+        fg('Titre de la liste <small style="font-weight:400;opacity:.6">(optionnel)</small>',
+          inp('list_title', data.list_title, 'Ce que comprend la prestation')) +
+        fg('Colonnes de la liste', sel('columns', [['1','1 colonne (liste dense)'],['2','2 colonnes'],['3','3 colonnes']], data.columns || '2')) +
+        '<div class="form-group"><label>Points inclus</label><div class="block-repeater" data-repeater="items"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter un point</button></div>' +
+        fg('Note bas de liste <small style="font-weight:400;opacity:.6">(optionnel)</small>',
+          ta('note', data.note, 'Ex : Devis gratuit, sans engagement. Satisfait ou on revient.', 2)) +
+        '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
+        fg('Image <small style="font-weight:400;opacity:.6">(optionnel — la liste passe pleine largeur si vide)</small>',
+          mediaBtn('image_url', 'Médiathèque')) +
+        fg('Alt de l\'image', inp('image_alt', data.image_alt, 'Nettoyage d\'un canapé en tissu')) +
+        fg('Label CTA <small style="font-weight:400;opacity:.6">(optionnel)</small>', inp('cta_label', data.cta_label, 'Réserver ma prestation')) +
+        fg('URL CTA', inp('cta_url', data.cta_url, '/reservation'));
+
+      if (data.image_url) {
+        var prestaImg = d.querySelector('[data-field="image_url"]');
+        if (prestaImg) prestaImg.value = data.image_url;
+      }
+      (data.metas || []).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="metas"]'), 'metas', ['icon','label','value'], ['Icône (emoji)','Libellé','Valeur'], item);
+      });
+      d.querySelector('[data-repeater-add="metas"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="metas"]'), 'metas', ['icon','label','value'], ['Icône (emoji)','Libellé','Valeur'], {});
+      });
+      (data.items || []).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['title','desc'], ['Intitulé','Description (optionnel)'], item);
+      });
+      d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['title','desc'], ['Intitulé','Description (optionnel)'], {});
       });
       break;
 
