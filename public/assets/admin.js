@@ -573,7 +573,7 @@ function buildBlockForm(type, data) {
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="steps">+ Ajouter une étape</button></div>' +
         '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
         '<h4 style="margin:.5rem 0 1rem">Carte « À domicile »</h4>' +
-        fg('Icône', inp('home_icon', data.home_icon, '🏠')) +
+        fg('Icône', iconInp('home_icon', data.home_icon, 'terrasse')) +
         fg('Titre', inp('home_title', data.home_title, 'À domicile')) +
         fg('Description', ta('home_desc', data.home_desc, 'Pour un service pratique…', 2)) +
         '<div class="form-group"><label>Prestations</label><div class="block-repeater" data-repeater="home_items"></div>'
@@ -584,7 +584,7 @@ function buildBlockForm(type, data) {
         fg('CTA — URL', inp('home_cta_url', data.home_cta_url, '/reservation')) +
         '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
         '<h4 style="margin:.5rem 0 1rem">Carte « En atelier »</h4>' +
-        fg('Icône', inp('workshop_icon', data.workshop_icon, '🏭')) +
+        fg('Icône', iconInp('workshop_icon', data.workshop_icon, 'atelier')) +
         fg('Titre', inp('workshop_title', data.workshop_title, 'En atelier Keepnew')) +
         fg('Description', ta('workshop_desc', data.workshop_desc, 'Idéal si vous n\'avez pas d\'espace…', 2)) +
         fg('Adresse', inp('workshop_address', data.workshop_address, 'Rue des Cyclistes Frontières 24, 4600 Visé')) +
