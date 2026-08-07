@@ -244,14 +244,215 @@ class FrontController extends BaseController
         $stmt->execute(array($key, $value));
     }
 
+    /**
+     * Variables communes à toutes les pages publiques (nav, footer, logo…),
+     * pour éviter de les répéter dans chaque action qui rend le layout public.
+     */
+    private function commonPublicData(\PDO $pdo, array $settings, string $lang): array
+    {
+        $site_name = isset($settings['site_name']) && $settings['site_name'] ? $settings['site_name'] : 'Keepnew';
+        return array(
+            'booking_url'    => isset($settings['booking_url']) && $settings['booking_url'] ? $settings['booking_url'] : '#',
+            'site_name'      => $site_name,
+            'logo_url'       => isset($settings['logo_url']) ? $settings['logo_url'] : '',
+            'logo_light_url' => isset($settings['logo_light_url']) ? $settings['logo_light_url'] : '',
+            'logo_alt'       => isset($settings['logo_alt']) ? $settings['logo_alt'] : $site_name,
+            'nav_items'      => $this->fetchNavItems($pdo, $lang),
+            'gtm_id'         => isset($settings['gtm_id']) ? $settings['gtm_id'] : null,
+            'noindex_all'    => isset($settings['noindex_all']) && $settings['noindex_all'] === '1',
+            'robots_global'  => isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',
+            'cache_version'  => (isset($settings['cache_enabled']) && $settings['cache_enabled'] === '1' && isset($settings['cache_version'])) ? $settings['cache_version'] : '',
+            'footer_menus'      => $this->fetchFooterMenus($pdo, $lang),
+            'footer_tagline'    => isset($settings['footer_tagline']) ? $settings['footer_tagline'] : '',
+            'footer_phone'      => isset($settings['footer_phone']) ? $settings['footer_phone'] : '',
+            'footer_legal_text' => isset($settings['footer_legal_text']) ? $settings['footer_legal_text'] : '',
+            'cookie_banner_enabled' => ($settings['cookie_banner_enabled'] ?? '1') === '1',
+            'cookie_banner_text'    => $settings['cookie_banner_text'] ?? 'Nous utilisons des cookies pour améliorer votre expérience. Vous pouvez accepter ou refuser les cookies analytiques et publicitaires.',
+            'cookie_policy_url'     => $settings['cookie_policy_url'] ?? '/politique-cookies',
+        );
+    }
+
+    /**
+     * Ajoute l'URL de la vignette (webp de préférence) et le nom de la
+     * catégorie à une liste d'articles issue de kn_posts.
+     */
+    private function hydratePosts(\PDO $pdo, array $posts): array
+    {
+        if (!$posts) return $posts;
+
+        $mediaIds = array_values(array_unique(array_filter(array_map(function ($p) {
+            return isset($p['featured_image']) ? (int) $p['featured_image'] : 0;
+        }, $posts))));
+        $media = array();
+        if ($mediaIds) {
+            $in   = implode(',', array_fill(0, count($mediaIds), '?'));
+            $stmt = $pdo->prepare("SELECT id, path, webp_path FROM kn_media WHERE id IN ($in)");
+            $stmt->execute($mediaIds);
+            foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $media[(int) $row['id']] = $row;
+            }
+        }
+
+        $catIds = array_values(array_unique(array_filter(array_map(function ($p) {
+            return isset($p['category_id']) ? (int) $p['category_id'] : 0;
+        }, $posts))));
+        $cats = array();
+        if ($catIds) {
+            $in   = implode(',', array_fill(0, count($catIds), '?'));
+            $stmt = $pdo->prepare("SELECT id, name, slug FROM kn_categories WHERE id IN ($in)");
+            $stmt->execute($catIds);
+            foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $cats[(int) $row['id']] = $row;
+            }
+        }
+
+        foreach ($posts as &$p) {
+            $imgId = isset($p['featured_image']) ? (int) $p['featured_image'] : 0;
+            $p['image_url'] = ($imgId && isset($media[$imgId]))
+                ? (!empty($media[$imgId]['webp_path']) ? $media[$imgId]['webp_path'] : $media[$imgId]['path'])
+                : '';
+            $catId = isset($p['category_id']) ? (int) $p['category_id'] : 0;
+            $p['category_name'] = ($catId && isset($cats[$catId])) ? $cats[$catId]['name'] : '';
+            $p['category_slug'] = ($catId && isset($cats[$catId])) ? $cats[$catId]['slug'] : '';
+        }
+        unset($p);
+
+        return $posts;
+    }
+
     public function blogList(): void
     {
-        $this->view->render('blog-list', ['title' => 'Blog']);
+        $pdo      = $this->db();
+        $settings = $this->fetchSettings($pdo);
+        $lang     = isset($settings['lang']) ? $settings['lang'] : 'fr';
+
+        $perPage = 9;
+        $page    = max(1, (int) (isset($_GET['page']) ? $_GET['page'] : 1));
+        $catSlug = trim((string) (isset($_GET['cat']) ? $_GET['cat'] : ''));
+
+        $where  = 'status = ? AND lang = ?';
+        $params = array('published', $lang);
+
+        $activeCategory = null;
+        if ($catSlug !== '') {
+            $stmt = $pdo->prepare('SELECT id, name, slug FROM kn_categories WHERE slug = ? AND lang = ? LIMIT 1');
+            $stmt->execute(array($catSlug, $lang));
+            $activeCategory = $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+            if ($activeCategory) {
+                $where   .= ' AND category_id = ?';
+                $params[] = (int) $activeCategory['id'];
+            } else {
+                // Catégorie inconnue : aucun résultat plutôt qu'une liste non filtrée trompeuse
+                $where   .= ' AND 1 = 0';
+            }
+        }
+
+        $countStmt = $pdo->prepare("SELECT COUNT(*) FROM kn_posts WHERE $where");
+        $countStmt->execute($params);
+        $total      = (int) $countStmt->fetchColumn();
+        $totalPages = max(1, (int) ceil($total / $perPage));
+        $page       = min($page, $totalPages);
+        $offset     = ($page - 1) * $perPage;
+
+        $stmt = $pdo->prepare(
+            "SELECT * FROM kn_posts WHERE $where ORDER BY COALESCE(published_at, created_at) DESC LIMIT $perPage OFFSET $offset"
+        );
+        $stmt->execute($params);
+        $posts = $this->hydratePosts($pdo, $stmt->fetchAll(\PDO::FETCH_ASSOC));
+
+        $catStmt = $pdo->prepare('SELECT id, name, slug FROM kn_categories WHERE lang = ? ORDER BY name');
+        $catStmt->execute(array($lang));
+        $categories = $catStmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $data = array_merge($this->commonPublicData($pdo, $settings, $lang), array(
+            'title'             => 'Blog — Conseils d\'entretien | ' . (isset($settings['site_name']) && $settings['site_name'] ? $settings['site_name'] : 'Keepnew'),
+            'meta_title'        => 'Blog — Conseils d\'entretien',
+            'meta_description'  => 'Conseils, astuces et actualités Keepnew pour l\'entretien de vos canapés, matelas et véhicules.',
+            'posts'             => $posts,
+            'categories'        => $categories,
+            'active_category'   => $activeCategory,
+            'page'              => $page,
+            'total_pages'       => $totalPages,
+            'block_styles'      => '',
+        ));
+        $this->view->render('blog-list', $data);
     }
 
     public function blogPost(string $slug): void
     {
-        $this->view->render('blog-post', ['title' => $slug, 'slug' => $slug]);
+        $pdo      = $this->db();
+        $settings = $this->fetchSettings($pdo);
+        $lang     = isset($settings['lang']) ? $settings['lang'] : 'fr';
+
+        $stmt = $pdo->prepare('SELECT * FROM kn_posts WHERE slug = ? AND lang = ? LIMIT 1');
+        $stmt->execute(array($slug, $lang));
+        $post = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$post || $post['status'] !== 'published') {
+            http_response_code(404);
+            $data = array_merge($this->commonPublicData($pdo, $settings, $lang), array(
+                'title' => 'Article introuvable',
+            ));
+            $this->view->render('blog-not-found', $data);
+            return;
+        }
+
+        $posts = $this->hydratePosts($pdo, array($post));
+        $post  = $posts[0];
+
+        $blocks = array();
+        if (!empty($post['content'])) {
+            $decoded = json_decode($post['content'], true);
+            if (is_array($decoded)) $blocks = $decoded;
+        }
+
+        // Articles liés : même catégorie de préférence, sinon les plus récents
+        $related = array();
+        if (!empty($post['category_id'])) {
+            $stmt = $pdo->prepare(
+                "SELECT * FROM kn_posts WHERE status = 'published' AND lang = ? AND category_id = ? AND id != ?
+                 ORDER BY COALESCE(published_at, created_at) DESC LIMIT 3"
+            );
+            $stmt->execute(array($lang, (int) $post['category_id'], (int) $post['id']));
+            $related = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        }
+        if (count($related) < 3) {
+            $stmt = $pdo->prepare(
+                "SELECT * FROM kn_posts WHERE status = 'published' AND lang = ? AND id != ?
+                 ORDER BY COALESCE(published_at, created_at) DESC LIMIT ?"
+            );
+            $need = 3 - count($related);
+            $excludeIds = array_merge(array((int) $post['id']), array_column($related, 'id'));
+            $placeholders = implode(',', array_fill(0, count($excludeIds), '?'));
+            $stmt = $pdo->prepare(
+                "SELECT * FROM kn_posts WHERE status = 'published' AND lang = ? AND id NOT IN ($placeholders)
+                 ORDER BY COALESCE(published_at, created_at) DESC LIMIT $need"
+            );
+            $stmt->execute(array_merge(array($lang), $excludeIds));
+            $related = array_merge($related, $stmt->fetchAll(\PDO::FETCH_ASSOC));
+        }
+        $related = $this->hydratePosts($pdo, $related);
+
+        // Temps de lecture estimé (~200 mots/min) à partir du texte des blocs
+        $wordCount = 0;
+        array_walk_recursive($blocks, function ($v) use (&$wordCount) {
+            if (is_string($v)) $wordCount += str_word_count(strip_tags($v));
+        });
+        $readingMinutes = max(1, (int) ceil($wordCount / 200));
+
+        $data = array_merge($this->commonPublicData($pdo, $settings, $lang), array(
+            'title'             => isset($post['meta_title']) && $post['meta_title'] ? $post['meta_title'] : $post['title'],
+            'meta_title'        => isset($post['meta_title']) ? $post['meta_title'] : '',
+            'meta_description'  => isset($post['meta_description']) ? $post['meta_description'] : $post['excerpt'],
+            'og_image'          => isset($post['og_image']) && $post['og_image'] ? $post['og_image'] : $post['image_url'],
+            'slug'              => $slug,
+            'post'              => $post,
+            'blocks'            => $blocks,
+            'related_posts'     => $related,
+            'reading_minutes'   => $readingMinutes,
+            'block_styles'      => '',
+        ));
+        $this->view->render('blog-post', $data);
     }
 
     public function portfolioList(): void

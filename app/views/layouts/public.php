@@ -223,7 +223,7 @@ if (!empty($blocks) && is_array($blocks)) {
     <a href="/blog">Blog</a>
     <a href="/contact">Contact</a>
   <?php endif; ?>
-  <a href="<?php echo htmlspecialchars(isset($booking_url) ? $booking_url : '#'); ?>" style="margin-top:.75rem; display:inline-block; font-weight:800; color:var(--kn-blue);">&#8594; Prendre RDV en 2 min</a>
+  <a href="<?php echo htmlspecialchars(isset($booking_url) ? $booking_url : '#'); ?>" class="kn-btn kn-nav__mobile-cta">Prendre RDV en 2 min</a>
 </div>
 
 <!-- ── Flash Messages ───────────────────────────────────────── -->
@@ -338,6 +338,39 @@ $__siteName      = isset($site_name) && $site_name ? $site_name : 'Keepnew';
 })();
 </script>
 <?php endif; ?>
+
+<!-- ── CTA sticky (apparaît après 40% de défilement) ──────────── -->
+<?php
+$__stickyPhoneDigits = preg_replace('/[^+0-9]/', '', $__footerPhone);
+?>
+<div id="kn-sticky-cta" class="kn-sticky-cta" aria-hidden="true">
+    <a href="tel:<?php echo htmlspecialchars($__stickyPhoneDigits); ?>" class="kn-sticky-cta__phone" aria-label="Appeler <?php echo htmlspecialchars($__footerPhone); ?>">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span class="kn-sticky-cta__phone-text"><?php echo htmlspecialchars($__footerPhone); ?></span>
+    </a>
+    <a href="<?php echo htmlspecialchars(isset($booking_url) ? $booking_url : '#'); ?>" class="kn-btn kn-sticky-cta__book">Réserver un créneau</a>
+</div>
+<script>
+(function () {
+  var bar = document.getElementById('kn-sticky-cta');
+  if (!bar) return;
+  var shown = false;
+  function onScroll() {
+    var doc = document.documentElement;
+    var scrollable = doc.scrollHeight - doc.clientHeight;
+    var ratio = scrollable > 0 ? window.scrollY / scrollable : 0;
+    var show = ratio > 0.4;
+    if (show !== shown) {
+      shown = show;
+      bar.classList.toggle('is-visible', show);
+      bar.setAttribute('aria-hidden', show ? 'false' : 'true');
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+})();
+</script>
 
 <script src="/public/assets/js/public.js<?php echo '?v=' . htmlspecialchars((string)(($__cvBase ?? '') . ($__jsMtime ?? ''))); ?>"></script>
 </body>

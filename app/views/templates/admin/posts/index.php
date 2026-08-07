@@ -1,6 +1,9 @@
 <div class="page-header">
   <h1>Articles</h1>
-  <a href="/admin/posts/new" class="btn">+ Nouvel article</a>
+  <div class="d-flex gap-sm">
+    <a href="/admin/categories" class="btn btn-secondary">Catégories</a>
+    <a href="/admin/posts/new" class="btn">+ Nouvel article</a>
+  </div>
 </div>
 
 <div class="card">

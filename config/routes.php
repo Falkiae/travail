@@ -26,6 +26,10 @@ return [
     'POST /admin/posts/{id}/edit'     => ['PostController', 'update'],
     'POST /admin/posts/{id}/delete'   => ['PostController', 'delete'],
 
+    'GET /admin/categories'           => ['CategoryController', 'index'],
+    'POST /admin/categories'          => ['CategoryController', 'store'],
+    'POST /admin/categories/{id}/delete' => ['CategoryController', 'delete'],
+
     'GET /admin/projects'             => ['ProjectController', 'index'],
     'GET /admin/projects/new'         => ['ProjectController', 'create'],
     'POST /admin/projects/new'        => ['ProjectController', 'store'],
