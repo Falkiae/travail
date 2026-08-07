@@ -45,7 +45,7 @@ $gridClass    = gridClasses($block, '2-3');
       <?php foreach ($metas as $m): ?>
       <?php $mLabel = isset($m['label']) ? $m['label'] : ''; if ($mLabel === '') continue; ?>
       <span class="kn-presta__meta">
-        <?php if (!empty($m['icon'])): ?><span class="kn-presta__meta-icon"><?php echo $m['icon']; ?></span><?php endif; ?>
+        <?php if (!empty($m['icon'])): ?><span class="kn-presta__meta-icon"><?php echo knIcon($m['icon'], array('size' => 16)); ?></span><?php endif; ?>
         <span class="kn-presta__meta-label"><?php echo htmlspecialchars($mLabel); ?></span>
         <?php if (!empty($m['value'])): ?><strong class="kn-presta__meta-value"><?php echo htmlspecialchars($m['value']); ?></strong><?php endif; ?>
       </span>

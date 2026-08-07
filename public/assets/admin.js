@@ -67,6 +67,12 @@ function slugify(str) {
    Block Editor
    ============================================================ */
 
+const KN_ICONS = [
+  'sofa','armchair','bed','car','truck','home','factory','sparkles','wrench',
+  'spray','droplets','wind','leaf','calendar','clock','check','check-big',
+  'star','shield','award','heart','zap','pin','phone','arrow',
+];
+
 const BLOCK_TYPES = {
   heading:   'Titre',
   text:      'Texte',
@@ -107,6 +113,10 @@ function buildBlockForm(type, data) {
     val = val || '';
     placeholder = placeholder || '';
     return '<input type="text" data-field="' + name + '" value="' + esc(val) + '" placeholder="' + esc(placeholder) + '">';
+  }
+  function iconInp(name, val, placeholder) {
+    val = val || '';
+    return '<input type="text" list="kn-icon-list" data-field="' + name + '" value="' + esc(val) + '" placeholder="' + esc(placeholder || 'sofa') + '">';
   }
   function ta(name, val, placeholder, rows) {
     val = val || '';
@@ -371,10 +381,10 @@ function buildBlockForm(type, data) {
         '<div class="form-group"><label>Services</label><div class="block-repeater" data-repeater="items"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter un service</button></div>';
       (data.items || []).forEach(function(item) {
-        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['name','desc','icon'], ['Nom','Description','Icône (emoji)'], item);
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['name','desc','icon'], ['Nom','Description','Icône'], item);
       });
       d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
-        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['name','desc','icon'], ['Nom','Description','Icône (emoji)'], {});
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['name','desc','icon'], ['Nom','Description','Icône'], {});
       });
       break;
 
@@ -412,10 +422,10 @@ function buildBlockForm(type, data) {
         if (prestaImg) prestaImg.value = data.image_url;
       }
       (data.metas || []).forEach(function(item) {
-        addRepeaterRow(d.querySelector('[data-repeater="metas"]'), 'metas', ['icon','label','value'], ['Icône (emoji)','Libellé','Valeur'], item);
+        addRepeaterRow(d.querySelector('[data-repeater="metas"]'), 'metas', ['icon','label','value'], ['Icône','Libellé','Valeur'], item);
       });
       d.querySelector('[data-repeater-add="metas"]').addEventListener('click', function() {
-        addRepeaterRow(d.querySelector('[data-repeater="metas"]'), 'metas', ['icon','label','value'], ['Icône (emoji)','Libellé','Valeur'], {});
+        addRepeaterRow(d.querySelector('[data-repeater="metas"]'), 'metas', ['icon','label','value'], ['Icône','Libellé','Valeur'], {});
       });
       (data.items || []).forEach(function(item) {
         addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['title','desc'], ['Intitulé','Description (optionnel)'], item);
@@ -559,7 +569,7 @@ function buildBlockForm(type, data) {
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="steps">+ Ajouter une étape</button></div>' +
         '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
         '<h4 style="margin:.5rem 0 1rem">Carte « À domicile »</h4>' +
-        fg('Icône (emoji)', inp('home_icon', data.home_icon, '🏠')) +
+        fg('Icône', inp('home_icon', data.home_icon, '🏠')) +
         fg('Titre', inp('home_title', data.home_title, 'À domicile')) +
         fg('Description', ta('home_desc', data.home_desc, 'Pour un service pratique…', 2)) +
         '<div class="form-group"><label>Prestations</label><div class="block-repeater" data-repeater="home_items"></div>'
@@ -570,7 +580,7 @@ function buildBlockForm(type, data) {
         fg('CTA — URL', inp('home_cta_url', data.home_cta_url, '/reservation')) +
         '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
         '<h4 style="margin:.5rem 0 1rem">Carte « En atelier »</h4>' +
-        fg('Icône (emoji)', inp('workshop_icon', data.workshop_icon, '🏭')) +
+        fg('Icône', inp('workshop_icon', data.workshop_icon, '🏭')) +
         fg('Titre', inp('workshop_title', data.workshop_title, 'En atelier Keepnew')) +
         fg('Description', ta('workshop_desc', data.workshop_desc, 'Idéal si vous n\'avez pas d\'espace…', 2)) +
         fg('Adresse', inp('workshop_address', data.workshop_address, 'Rue des Cyclistes Frontières 24, 4600 Visé')) +
@@ -581,22 +591,22 @@ function buildBlockForm(type, data) {
         fg('CTA — Titre', inp('workshop_cta_title', data.workshop_cta_title, 'Prendre RDV à l\'atelier')) +
         fg('CTA — URL', inp('workshop_cta_url', data.workshop_cta_url, '/atelier'));
       (data.steps || []).forEach(function(item) {
-        addRepeaterRow(d.querySelector('[data-repeater="steps"]'), 'steps', ['icon','label'], ['Icône (emoji)','Libellé'], item);
+        addRepeaterRow(d.querySelector('[data-repeater="steps"]'), 'steps', ['icon','label'], ['Icône','Libellé'], item);
       });
       d.querySelector('[data-repeater-add="steps"]').addEventListener('click', function() {
-        addRepeaterRow(d.querySelector('[data-repeater="steps"]'), 'steps', ['icon','label'], ['Icône (emoji)','Libellé'], {});
+        addRepeaterRow(d.querySelector('[data-repeater="steps"]'), 'steps', ['icon','label'], ['Icône','Libellé'], {});
       });
       (data.home_items || []).forEach(function(item) {
-        addRepeaterRow(d.querySelector('[data-repeater="home_items"]'), 'home_items', ['icon','label'], ['Icône (optionnel)','Libellé'], item);
+        addRepeaterRow(d.querySelector('[data-repeater="home_items"]'), 'home_items', ['icon','label'], ['Icône','Libellé'], item);
       });
       d.querySelector('[data-repeater-add="home_items"]').addEventListener('click', function() {
-        addRepeaterRow(d.querySelector('[data-repeater="home_items"]'), 'home_items', ['icon','label'], ['Icône (optionnel)','Libellé'], {});
+        addRepeaterRow(d.querySelector('[data-repeater="home_items"]'), 'home_items', ['icon','label'], ['Icône','Libellé'], {});
       });
       (data.workshop_items || []).forEach(function(item) {
-        addRepeaterRow(d.querySelector('[data-repeater="workshop_items"]'), 'workshop_items', ['icon','label'], ['Icône (optionnel)','Libellé'], item);
+        addRepeaterRow(d.querySelector('[data-repeater="workshop_items"]'), 'workshop_items', ['icon','label'], ['Icône','Libellé'], item);
       });
       d.querySelector('[data-repeater-add="workshop_items"]').addEventListener('click', function() {
-        addRepeaterRow(d.querySelector('[data-repeater="workshop_items"]'), 'workshop_items', ['icon','label'], ['Icône (optionnel)','Libellé'], {});
+        addRepeaterRow(d.querySelector('[data-repeater="workshop_items"]'), 'workshop_items', ['icon','label'], ['Icône','Libellé'], {});
       });
       break;
 
@@ -669,7 +679,9 @@ function addRepeaterRow(container, repeaterName, fields, labels, data) {
   for (var i = 0; i < fields.length; i++) {
     var f = fields[i];
     var l = labels[i] || f;
-    html += '<label class="block-repeater-row__label">' + esc(l) + '<input type="text" data-rfield="' + esc(f) + '" placeholder="' + esc(l) + '" value="' + esc(data[f] || '') + '"></label>';
+    var listAttr = (f === 'icon') ? ' list="kn-icon-list"' : '';
+    var ph       = (f === 'icon') ? 'sofa, car, check…' : l;
+    html += '<label class="block-repeater-row__label">' + esc(l) + '<input type="text"' + listAttr + ' data-rfield="' + esc(f) + '" placeholder="' + esc(ph) + '" value="' + esc(data[f] || '') + '"></label>';
   }
   html += '</div><button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
   row.innerHTML = html;

@@ -99,6 +99,23 @@ $existingBlocks = $isEdit && !empty($page['content']) ? json_decode($page['conte
             </div>
           </div>
           <div id="block-list"></div>
+          <?php
+          // Noms d'icônes proposés : fichiers de public/assets/icons/ + jeu intégré
+          $__iconDir   = ROOT_PATH . '/public/assets/icons';
+          $__iconFiles = is_dir($__iconDir) ? glob($__iconDir . '/*.svg') : array();
+          $__iconNames = array_map(function ($f) { return basename($f, '.svg'); }, $__iconFiles ?: array());
+          $__iconNames = array_values(array_unique(array_merge($__iconNames, array(
+            'sofa','armchair','bed','car','truck','home','factory','sparkles','wrench',
+            'spray','droplets','wind','leaf','calendar','clock','check','check-big',
+            'star','shield','award','heart','zap','pin','phone','arrow',
+          ))));
+          sort($__iconNames);
+          ?>
+          <datalist id="kn-icon-list">
+            <?php foreach ($__iconNames as $__n): ?>
+            <option value="<?= htmlspecialchars($__n) ?>"></option>
+            <?php endforeach; ?>
+          </datalist>
         </div>
         <!-- Hidden field serialized by JS -->
         <input type="hidden" name="content" value="<?= htmlspecialchars($page['content'] ?? '') ?>">

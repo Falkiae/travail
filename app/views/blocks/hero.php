@@ -25,9 +25,9 @@ $pillClassMap = [
     'cream'  => 'kn-pill--cream',
 ];
 $defaultPills = [
-    ['text' => '✓ À domicile',    'style' => 'white'],
-    ['text' => '★ Garantie',      'style' => 'yellow'],
-    ['text' => '⚡ Devis en 2 min','style' => 'night'],
+    ['icon' => 'check',  'text' => 'À domicile',     'style' => 'white'],
+    ['icon' => 'shield', 'text' => 'Garantie',       'style' => 'yellow'],
+    ['icon' => 'zap',    'text' => 'Devis en 2 min', 'style' => 'night'],
 ];
 $rawPills = isset($block['pills']) && is_array($block['pills']) ? $block['pills'] : $defaultPills;
 ?>
@@ -54,13 +54,19 @@ $rawPills = isset($block['pills']) && is_array($block['pills']) ? $block['pills'
             $pillText  = is_array($pill) ? (isset($pill['text'])  ? $pill['text']  : '') : $pill;
             $pillStyle = is_array($pill) ? (isset($pill['style']) ? $pill['style'] : 'white') : 'white';
             $pillCls   = isset($pillClassMap[$pillStyle]) ? $pillClassMap[$pillStyle] : 'kn-pill--blue';
+            $pillIcon  = is_array($pill) && isset($pill['icon']) ? $pill['icon'] : '';
+            // Contenu ancien : l'icône était collée au début du libellé
+            if ($pillIcon === '' && preg_match('/^(\S+)\s+(.+)$/u', $pillText, $pm) && knIconName($pm[1]) !== '') {
+                $pillIcon = $pm[1];
+                $pillText = $pm[2];
+            }
           ?>
-          <span class="kn-pill <?php echo $pillCls; ?>"><?php echo htmlspecialchars($pillText); ?></span>
+          <span class="kn-pill <?php echo $pillCls; ?>"><?php echo knIcon($pillIcon, array('size' => 15, 'class' => 'kn-icon--pill')); ?><?php echo htmlspecialchars($pillText); ?></span>
           <?php endforeach; ?>
         </div>
         <a href="<?php echo htmlspecialchars($booking_url); ?>" class="kn-cta-card <?php echo $isDark ? 'kn-cta-card--glass' : 'kn-cta-card--blue'; ?>">
           <div class="kn-cta-card__content">
-            <span class="kn-eyebrow">&#128197; <?php echo htmlspecialchars(isset($block['cta_eyebrow']) ? $block['cta_eyebrow'] : 'RÉSERVATION EN LIGNE'); ?></span>
+            <span class="kn-eyebrow"><?php echo knIcon('calendar', array('size' => 14, 'class' => 'kn-icon--eyebrow')); ?><?php echo htmlspecialchars(isset($block['cta_eyebrow']) ? $block['cta_eyebrow'] : 'RÉSERVATION EN LIGNE'); ?></span>
             <p class="kn-cta-card__title"><?php echo htmlspecialchars(isset($block['cta_title']) ? $block['cta_title'] : 'Prendre RDV en 2 min'); ?></p>
           </div>
           <span class="kn-cta-card__arrow" aria-hidden="true">&#8594;</span>

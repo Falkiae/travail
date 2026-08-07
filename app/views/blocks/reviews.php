@@ -21,7 +21,7 @@ $reviews = isset($reviews) && is_array($reviews) ? $reviews : array();
             <strong><?php echo htmlspecialchars(isset($r['author_name']) ? $r['author_name'] : ''); ?></strong>
             <div class="kn-stars" aria-label="<?php echo (int)(isset($r['rating']) ? $r['rating'] : 5); ?>/5">
               <?php for ($i = 0; $i < 5; $i++): ?>
-              <span style="color:<?php echo $i < (int)(isset($r['rating']) ? $r['rating'] : 5) ? 'var(--kn-yellow-deep)' : 'var(--kn-border)'; ?>">&#9733;</span>
+              <span class="kn-stars__star" style="color:<?php echo $i < (int)(isset($r['rating']) ? $r['rating'] : 5) ? 'var(--kn-gold)' : 'var(--kn-border)'; ?>"><?php echo knIcon('star', array('size' => 15)); ?></span>
               <?php endfor; ?>
             </div>
           </div>
@@ -37,7 +37,7 @@ $reviews = isset($reviews) && is_array($reviews) ? $reviews : array();
     <p class="text-muted" style="text-align:center;margin-top:2rem;">Les avis Google apparaîtront ici (configurez la clé API dans les réglages).</p>
     <?php endif; ?>
     <div class="kn-reviews__proof" style="text-align:center;margin-top:2.5rem;">
-      <span class="kn-pill kn-pill--yellow">&#9733; 4,9/5 · +110 avis Google</span>
+      <span class="kn-pill kn-pill--yellow"><?php echo knIcon('star', array('size' => 15, 'class' => 'kn-icon--pill')); ?>4,9/5 · +110 avis Google</span>
     </div>
   </div>
 </section>

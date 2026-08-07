@@ -14,12 +14,12 @@ $homeItems      = isset($block['home_items']) && is_array($block['home_items']) 
 $workshopItems  = isset($block['workshop_items']) && is_array($block['workshop_items']) ? $block['workshop_items'] : [];
 
 $homeTitle    = isset($block['home_title']) ? $block['home_title'] : 'À domicile';
-$homeIcon     = isset($block['home_icon']) && $block['home_icon'] !== '' ? $block['home_icon'] : '🏠';
+$homeIcon     = isset($block['home_icon']) && $block['home_icon'] !== '' ? $block['home_icon'] : 'home';
 $homeDesc     = isset($block['home_desc']) ? $block['home_desc'] : '';
 $homeNote     = isset($block['home_note']) ? $block['home_note'] : '';
 
 $wsTitle      = isset($block['workshop_title']) ? $block['workshop_title'] : 'En atelier Keepnew';
-$wsIcon       = isset($block['workshop_icon']) && $block['workshop_icon'] !== '' ? $block['workshop_icon'] : '🏭';
+$wsIcon       = isset($block['workshop_icon']) && $block['workshop_icon'] !== '' ? $block['workshop_icon'] : 'factory';
 $wsDesc       = isset($block['workshop_desc']) ? $block['workshop_desc'] : '';
 $wsAddress    = isset($block['workshop_address']) ? $block['workshop_address'] : '';
 $wsNote       = isset($block['workshop_note']) ? $block['workshop_note'] : '';
@@ -78,7 +78,7 @@ $ctaCardClass   = $isDark ? 'kn-cta-card kn-cta-card--glass' : 'kn-cta-card kn-c
             $itLabel = isset($it['label']) ? $it['label'] : '';
           ?>
           <li class="kn-dva-card__item">
-            <span class="kn-dva-card__bullet" aria-hidden="true"><?php echo $itIcon !== '' ? htmlspecialchars($itIcon) : '✓'; ?></span>
+            <span class="kn-dva-card__bullet"><?php echo knIcon($itIcon !== '' ? $itIcon : 'check', array('size' => 16, 'fallback' => 'sparkle')); ?></span>
             <span><?php echo htmlspecialchars($itLabel); ?></span>
           </li>
           <?php endforeach; ?>
@@ -109,7 +109,7 @@ $ctaCardClass   = $isDark ? 'kn-cta-card kn-cta-card--glass' : 'kn-cta-card kn-c
         <p class="kn-dva-card__desc"><?php echo nl2br(htmlspecialchars($wsDesc)); ?></p>
         <?php endif; ?>
         <?php if ($wsAddress !== ''): ?>
-        <p class="kn-dva-card__address"><span aria-hidden="true">📍</span> <?php echo htmlspecialchars($wsAddress); ?></p>
+        <p class="kn-dva-card__address"><?php echo knIcon('pin', array('size' => 16, 'class' => 'kn-icon--inline')); ?><?php echo htmlspecialchars($wsAddress); ?></p>
         <?php endif; ?>
         <?php if (!empty($workshopItems)): ?>
         <ul class="kn-dva-card__list">
@@ -118,7 +118,7 @@ $ctaCardClass   = $isDark ? 'kn-cta-card kn-cta-card--glass' : 'kn-cta-card kn-c
             $itLabel = isset($it['label']) ? $it['label'] : '';
           ?>
           <li class="kn-dva-card__item">
-            <span class="kn-dva-card__bullet" aria-hidden="true"><?php echo $itIcon !== '' ? htmlspecialchars($itIcon) : '✓'; ?></span>
+            <span class="kn-dva-card__bullet"><?php echo knIcon($itIcon !== '' ? $itIcon : 'check', array('size' => 16, 'fallback' => 'sparkle')); ?></span>
             <span><?php echo htmlspecialchars($itLabel); ?></span>
           </li>
           <?php endforeach; ?>

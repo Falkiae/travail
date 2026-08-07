@@ -379,8 +379,12 @@
   width: 64px;
   height: 64px;
   background: var(--kn-navy);
+  color: var(--kn-rose-mid);
   border-radius: 4px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .kn-service-card__title {
@@ -830,9 +834,8 @@
   width: 22px;
   height: 22px;
   flex-shrink: 0;
+  margin-top: .1em;
   color: var(--kn-blue);
-  font-weight: 700;
-  font-size: .9rem;
 }
 
 .kn-dva-card__note {
@@ -1720,4 +1723,36 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 @media (max-width: 767px) {
   .kn-presta__panel { padding: 1.5rem 1.25rem; }
   .kn-presta__visual { min-height: 220px; }
+}
+
+/* ── Icônes ─────────────────────────────────────────────────── */
+/* SVG au trait, héritant de la couleur du texte. Aucun emoji :
+   l'étincelle ✦ est le seul ornement typographique de la marque. */
+.kn-icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.kn-icon--sparkle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--kn-rose-mid);
+  line-height: 1;
+}
+
+/* Accolée à un libellé */
+.kn-icon--inline,
+.kn-icon--pill,
+.kn-icon--eyebrow {
+  margin-right: .45em;
+  position: relative;
+  top: -.055em;
+}
+.kn-icon--eyebrow { margin-right: .55em; }
+
+/* Étoiles de notation */
+.kn-stars__star {
+  display: inline-flex;
+  align-items: center;
 }

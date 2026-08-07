@@ -25,7 +25,7 @@ $phoneHref = 'tel:' . preg_replace('/[^+0-9]/', '', $phone);
   <div class="container">
     <a href="<?php echo htmlspecialchars($booking_url); ?>" class="kn-cta-card <?php echo $cardStyle; ?>">
       <div class="kn-cta-card__content">
-        <span class="kn-eyebrow">&#128197; <?php echo htmlspecialchars($eyebrow); ?></span>
+        <span class="kn-eyebrow"><?php echo knIcon('calendar', array('size' => 14, 'class' => 'kn-icon--eyebrow')); ?><?php echo htmlspecialchars($eyebrow); ?></span>
         <p class="kn-cta-card__title"><?php echo htmlspecialchars($title); ?></p>
       </div>
       <span class="kn-cta-card__arrow" aria-hidden="true">&#8594;</span>
