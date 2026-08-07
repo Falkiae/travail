@@ -195,14 +195,34 @@ function knIconFile(string $name): ?string
     static $cache = array();
     if (array_key_exists($name, $cache)) return $cache[$name];
 
-    $slug = preg_replace('/[^a-z0-9_-]/', '', strtolower($name));
-    if ($slug === '') { $cache[$name] = null; return null; }
+    $publicDir = dirname(__DIR__, 3) . '/public';
+    $file      = null;
 
-    $file = dirname(__DIR__, 3) . '/public/assets/icons/' . $slug . '.svg';
-    if (!is_file($file)) { $cache[$name] = null; return null; }
+    if (substr(strtolower(trim($name)), -4) === '.svg') {
+        // Chemin de fichier : médiathèque (/uploads/…) ou tout SVG servi par le site
+        $rel  = '/' . ltrim(parse_url(trim($name), PHP_URL_PATH) ?: '', '/');
+        $real = realpath($publicDir . $rel);
+        // Confiné à public/ : pas de remontée d'arborescence
+        if ($real !== false && strpos($real, $publicDir . DIRECTORY_SEPARATOR) === 0 && is_file($real)) {
+            $file = $real;
+        }
+    } else {
+        // Nom court : fichier de la bibliothèque d'icônes
+        $slug = preg_replace('/[^a-z0-9_-]/', '', strtolower($name));
+        if ($slug !== '') {
+            $candidate = $publicDir . '/assets/icons/' . $slug . '.svg';
+            if (is_file($candidate)) $file = $candidate;
+        }
+    }
+
+    if ($file === null) { $cache[$name] = null; return null; }
 
     $svg = file_get_contents($file);
     if ($svg === false || stripos($svg, '<svg') === false) { $cache[$name] = null; return null; }
+
+    // Un SVG inline peut porter du script : on retire ce qui est exécutable
+    $svg = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $svg);
+    $svg = preg_replace('/\son\w+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $svg);
 
     $cache[$name] = $svg;
     return $svg;
