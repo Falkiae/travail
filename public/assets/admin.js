@@ -573,7 +573,7 @@ function buildBlockForm(type, data) {
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="steps">+ Ajouter une étape</button></div>' +
         '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
         '<h4 style="margin:.5rem 0 1rem">Carte « À domicile »</h4>' +
-        fg('Icône', iconInp('home_icon', data.home_icon, 'terrasse')) +
+        fg('Icône', iconInp('home_icon', data.home_icon, 'domicile')) +
         fg('Titre', inp('home_title', data.home_title, 'À domicile')) +
         fg('Description', ta('home_desc', data.home_desc, 'Pour un service pratique…', 2)) +
         '<div class="form-group"><label>Prestations</label><div class="block-repeater" data-repeater="home_items"></div>'

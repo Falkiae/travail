@@ -197,7 +197,7 @@ function knIconBrandFile(string $name): string
         'sofa' => 'canape', 'armchair' => 'canape', 'fauteuil' => 'canape',
         'bed' => 'matelas', 'lit' => 'matelas',
         'car' => 'voiture', 'auto' => 'voiture',
-        'home' => 'terrasse', 'maison' => 'terrasse',
+        'home' => 'domicile', 'maison' => 'domicile',
         'factory' => 'atelier', 'wrench' => 'atelier', 'outil' => 'atelier',
         'sparkles' => 'polissage', 'brillance' => 'polissage',
         'calendar' => 'devis', 'rdv' => 'devis', 'reservation' => 'devis',
