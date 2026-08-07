@@ -91,6 +91,7 @@ const BLOCK_TYPES = {
   'domicile-vs-atelier': 'Domicile vs Atelier',
   'sofa-simulator':      'Simulateur canapé',
   'prestation':          'Prestation détaillée',
+  'car-zones':           'Zones voiture (detailing)',
 };
 
 let dragSrcEl = null;
@@ -425,6 +426,42 @@ function buildBlockForm(type, data) {
       });
       break;
 
+    case 'car-zones':
+      d.innerHTML =
+        fg('Eyebrow <small style="font-weight:400;opacity:.6">(optionnel)</small>', inp('eyebrow', data.eyebrow, 'DETAILING INTÉRIEUR')) +
+        fg('H2 <small style="font-weight:400;opacity:.6">(HTML autorisé — surbrillance possible)</small>',
+          ta('h2', data.h2, 'Ex : Chaque surface, <span class="hl-inverse">sans exception</span>.', 2)) +
+        fg('Intro <small style="font-weight:400;opacity:.6">(optionnel, HTML autorisé)</small>',
+          ta('intro', data.intro, 'Une phrase qui explique la lecture du schéma…', 3)) +
+        bgField(data.bg || 'night') +
+        visibilityField(data.visible) +
+        '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
+        fg('Photo du véhicule <small style="font-weight:400;opacity:.6">(habitacle, cadrage large)</small>',
+          mediaBtn('image_url', 'Médiathèque')) +
+        fg('Alt de l\'image', inp('image_alt', data.image_alt, 'Habitacle d\'une voiture après detailing Keepnew')) +
+        '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
+        '<div class="form-group"><label>Zones repérées sur la photo</label>'
+        + '<p class="help-text" style="margin:.25rem 0 .75rem">Les coordonnées X et Y sont en pourcentage de l\'image : X = 0 à gauche, 100 à droite ; Y = 0 en haut, 100 en bas. Le côté indique de quel côté du point part l\'étiquette. Une action par ligne.</p>'
+        + '<div class="block-repeater" data-repeater="zones"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="zones">+ Ajouter une zone</button></div>' +
+        '<hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">' +
+        fg('Note de bas de bloc <small style="font-weight:400;opacity:.6">(optionnel)</small>',
+          ta('note', data.note, 'Ex : Chaque intervention est documentée en photos avant et après.', 2)) +
+        fg('Label CTA <small style="font-weight:400;opacity:.6">(optionnel)</small>', inp('cta_label', data.cta_label, 'Réserver un créneau')) +
+        fg('URL CTA', inp('cta_url', data.cta_url, '/reservation'));
+
+      if (data.image_url) {
+        var czImg = d.querySelector('[data-field="image_url"]');
+        if (czImg) czImg.value = data.image_url;
+      }
+      (data.zones || []).forEach(function(item) {
+        addCarZoneItem(d.querySelector('[data-repeater="zones"]'), item);
+      });
+      d.querySelector('[data-repeater-add="zones"]').addEventListener('click', function() {
+        addCarZoneItem(d.querySelector('[data-repeater="zones"]'), {});
+      });
+      break;
+
     case 'two-col':
       d.innerHTML =
         bgField(data.bg) +
@@ -679,6 +716,30 @@ function addRepeaterRow(container, repeaterName, fields, labels, data) {
   container.appendChild(row);
 }
 
+function addCarZoneItem(container, data) {
+  data = data || {};
+  var row = document.createElement('div');
+  row.className = 'block-repeater-row';
+  row.innerHTML =
+    '<div class="block-repeater-row__fields">'
+    + '<label class="block-repeater-row__label">Étiquette sur la photo<input type="text" data-rfield="label" value="' + esc(data.label || '') + '" placeholder="Ex : Tableau de bord"></label>'
+    + '<label class="block-repeater-row__label">X (%)<input type="number" min="0" max="100" step="1" data-rfield="x" value="' + esc(data.x || '50') + '" placeholder="50"></label>'
+    + '<label class="block-repeater-row__label">Y (%)<input type="number" min="0" max="100" step="1" data-rfield="y" value="' + esc(data.y || '50') + '" placeholder="50"></label>'
+    + '<label class="block-repeater-row__label">Côté de l\'étiquette'
+    +   '<select data-rfield="side">'
+    +     '<option value="left"' + (data.side !== 'right' ? ' selected' : '') + '>À gauche du point</option>'
+    +     '<option value="right"' + (data.side === 'right' ? ' selected' : '') + '>À droite du point</option>'
+    +   '</select>'
+    + '</label>'
+    + '<label class="block-repeater-row__label" style="flex-basis:100%">Titre du détail<input type="text" data-rfield="title" value="' + esc(data.title || '') + '" placeholder="Ex : Tableau de bord et écrans"></label>'
+    + '<label class="block-repeater-row__label" style="flex-basis:100%">Description<textarea data-rfield="desc" rows="2" placeholder="Pourquoi cette zone demande une attention particulière…">' + esc(data.desc || '') + '</textarea></label>'
+    + '<label class="block-repeater-row__label" style="flex-basis:100%">Ce que nous faisons <small style="font-weight:400;opacity:.6">(une action par ligne)</small><textarea data-rfield="acts" rows="4" placeholder="Dépoussiérage des grilles et aérateurs&#10;Nettoyage doux des plastiques soft-touch&#10;Écrans et compteurs sans trace">' + esc(data.acts || '') + '</textarea></label>'
+    + '</div>'
+    + '<button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
+  row.querySelector('.remove-repeater-row').addEventListener('click', function() { row.remove(); });
+  container.appendChild(row);
+}
+
 function addPricingItem(container, data) {
   data = data || {};
   var row = document.createElement('div');
@@ -773,6 +834,8 @@ function serializeBlock(blockItem) {
     'pricing':      'items',
     'before-after': 'items',
     'logos':        'items',
+    'prestation':   ['items','metas'],
+    'car-zones':    'zones',
     'domicile-vs-atelier': ['steps','home_items','workshop_items'],
   };
 
