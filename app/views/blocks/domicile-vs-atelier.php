@@ -55,7 +55,7 @@ $ctaCardClass   = $isDark ? 'kn-cta-card kn-cta-card--glass' : 'kn-cta-card kn-c
         $label = isset($step['label']) ? $step['label'] : '';
       ?>
       <span class="kn-pill kn-dva__step">
-        <?php if ($icon !== ''): ?><span class="kn-dva__step-icon"><?php echo htmlspecialchars($icon); ?></span><?php endif; ?>
+        <?php if ($icon !== ''): ?><span class="kn-dva__step-icon"><?php echo knIcon($icon, array('size' => 18, 'fallback' => 'sparkle')); ?></span><?php endif; ?>
         <span><?php echo htmlspecialchars($label); ?></span>
       </span>
       <?php endforeach; ?>
@@ -65,7 +65,7 @@ $ctaCardClass   = $isDark ? 'kn-cta-card kn-cta-card--glass' : 'kn-cta-card kn-c
     <div class="kn-dva__grid">
       <article class="kn-dva-card">
         <header class="kn-dva-card__head">
-          <span class="kn-dva-card__icon" aria-hidden="true"><?php echo htmlspecialchars($homeIcon); ?></span>
+          <span class="kn-dva-card__icon"><?php echo knIcon($homeIcon, array('size' => 26, 'fallback' => 'sparkle')); ?></span>
           <h3 class="kn-dva-card__title"><?php echo htmlspecialchars($homeTitle); ?></h3>
         </header>
         <?php if ($homeDesc !== ''): ?>
@@ -102,7 +102,7 @@ $ctaCardClass   = $isDark ? 'kn-cta-card kn-cta-card--glass' : 'kn-cta-card kn-c
 
       <article class="kn-dva-card">
         <header class="kn-dva-card__head">
-          <span class="kn-dva-card__icon" aria-hidden="true"><?php echo htmlspecialchars($wsIcon); ?></span>
+          <span class="kn-dva-card__icon"><?php echo knIcon($wsIcon, array('size' => 26, 'fallback' => 'sparkle')); ?></span>
           <h3 class="kn-dva-card__title"><?php echo htmlspecialchars($wsTitle); ?></h3>
         </header>
         <?php if ($wsDesc !== ''): ?>

@@ -116,7 +116,11 @@ function buildBlockForm(type, data) {
   }
   function iconInp(name, val, placeholder) {
     val = val || '';
-    return '<input type="text" list="kn-icon-list" data-field="' + name + '" value="' + esc(val) + '" placeholder="' + esc(placeholder || 'sofa') + '">';
+    return '<div class="input-row icon-field">'
+      + '<input type="text" list="kn-icon-list" data-field="' + name + '" value="' + esc(val) + '" placeholder="' + esc(placeholder || 'canape') + '" style="flex:1">'
+      + '<button type="button" class="btn btn-secondary btn-sm icon-pick-btn">Choisir</button>'
+      + '<span class="icon-field__preview"></span>'
+      + '</div>';
   }
   function ta(name, val, placeholder, rows) {
     val = val || '';
@@ -662,6 +666,9 @@ function buildBlockForm(type, data) {
     });
   });
 
+  // Aperçu des champs icône déjà renseignés
+  d.querySelectorAll('.icon-field input').forEach(function(f) { refreshIconPreview(f); });
+
   // Restore media display values
   if (data.media_id) {
     var hf = d.querySelector('[data-field="media_id"]');
@@ -679,9 +686,16 @@ function addRepeaterRow(container, repeaterName, fields, labels, data) {
   for (var i = 0; i < fields.length; i++) {
     var f = fields[i];
     var l = labels[i] || f;
-    var listAttr = (f === 'icon') ? ' list="kn-icon-list"' : '';
-    var ph       = (f === 'icon') ? 'sofa, car, check…' : l;
-    html += '<label class="block-repeater-row__label">' + esc(l) + '<input type="text"' + listAttr + ' data-rfield="' + esc(f) + '" placeholder="' + esc(ph) + '" value="' + esc(data[f] || '') + '"></label>';
+    if (f === 'icon') {
+      html += '<label class="block-repeater-row__label">' + esc(l)
+        + '<span class="input-row icon-field">'
+        +   '<input type="text" list="kn-icon-list" data-rfield="icon" placeholder="canape, voiture…" value="' + esc(data[f] || '') + '" style="flex:1;min-width:0">'
+        +   '<button type="button" class="btn btn-secondary btn-sm icon-pick-btn">Choisir</button>'
+        +   '<span class="icon-field__preview"></span>'
+        + '</span></label>';
+    } else {
+      html += '<label class="block-repeater-row__label">' + esc(l) + '<input type="text" data-rfield="' + esc(f) + '" placeholder="' + esc(l) + '" value="' + esc(data[f] || '') + '"></label>';
+    }
   }
   html += '</div><button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
   row.innerHTML = html;
@@ -1297,3 +1311,96 @@ document.querySelectorAll('.confirm-delete').forEach(function(form) {
     }
   });
 })();
+
+/* ── Sélecteur d'icônes ─────────────────────────────────────── */
+var iconModalCallback = null;
+
+function knIconSvg(name) {
+  var lib = window.KN_ICON_LIBRARY || [];
+  for (var i = 0; i < lib.length; i++) {
+    if (lib[i].name === name) return lib[i].svg;
+  }
+  return '';
+}
+
+/* Aperçu à droite du champ, mis à jour à chaque frappe */
+function refreshIconPreview(field) {
+  var wrap = field.closest('.icon-field');
+  if (!wrap) return;
+  var prev = wrap.querySelector('.icon-field__preview');
+  if (!prev) return;
+  var svg = knIconSvg(field.value.trim());
+  prev.innerHTML = svg;
+  prev.classList.toggle('is-empty', !svg);
+  prev.title = svg ? field.value.trim() : 'Icône inconnue';
+}
+
+function openIconModal(callback) {
+  iconModalCallback = callback;
+  var overlay = document.getElementById('icon-modal');
+  if (!overlay) return;
+  overlay.classList.remove('hidden');
+  var search = document.getElementById('icon-modal-search');
+  if (search) { search.value = ''; search.focus(); }
+  renderIconGrid('');
+}
+
+function renderIconGrid(query) {
+  var grid = document.getElementById('icon-modal-grid');
+  if (!grid) return;
+  var lib = window.KN_ICON_LIBRARY || [];
+  query = (query || '').toLowerCase().trim();
+
+  var groups = {};
+  lib.forEach(function(ic) {
+    if (query && ic.name.toLowerCase().indexOf(query) === -1) return;
+    (groups[ic.group] = groups[ic.group] || []).push(ic);
+  });
+
+  var html = '';
+  Object.keys(groups).forEach(function(g) {
+    html += '<p class="icon-grid__group">' + g + '</p><div class="icon-grid__items">';
+    groups[g].forEach(function(ic) {
+      html += '<button type="button" class="icon-grid__item" data-icon-name="' + esc(ic.name) + '" title="' + esc(ic.name) + '">'
+           +    ic.svg + '<span>' + esc(ic.name) + '</span></button>';
+    });
+    html += '</div>';
+  });
+  if (html === '') html = '<p style="color:var(--color-muted)">Aucune icône ne correspond.</p>';
+  grid.innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var overlay = document.getElementById('icon-modal');
+  if (!overlay) return;
+
+  var search = document.getElementById('icon-modal-search');
+  if (search) search.addEventListener('input', function() { renderIconGrid(search.value); });
+
+  overlay.querySelector('.modal-close').addEventListener('click', function() { overlay.classList.add('hidden'); });
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.classList.add('hidden'); });
+
+  overlay.addEventListener('click', function(e) {
+    var item = e.target.closest('.icon-grid__item');
+    if (!item) return;
+    if (iconModalCallback) iconModalCallback(item.dataset.iconName);
+    overlay.classList.add('hidden');
+  });
+});
+
+/* Délégation : vaut pour les champs créés dynamiquement */
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('.icon-pick-btn');
+  if (!btn) return;
+  var wrap  = btn.closest('.icon-field');
+  var field = wrap && wrap.querySelector('input');
+  if (!field) return;
+  openIconModal(function(name) {
+    field.value = name;
+    refreshIconPreview(field);
+  });
+});
+
+document.addEventListener('input', function(e) {
+  if (e.target.closest('.icon-field')) refreshIconPreview(e.target);
+});

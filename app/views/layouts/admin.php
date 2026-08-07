@@ -47,6 +47,38 @@ if ($flash): ?>
     </div>
   </div>
 </div>
+
+<?php
+// Bibliothèque d'icônes exposée au sélecteur de l'éditeur de blocs
+require_once APP_PATH . '/views/blocks/_block_helpers.php';
+$__iconDir   = ROOT_PATH . '/public/assets/icons';
+$__iconFiles = is_dir($__iconDir) ? glob($__iconDir . '/*.svg') : array();
+$__brandIcons = array_map(function ($f) { return basename($f, '.svg'); }, $__iconFiles ?: array());
+sort($__brandIcons);
+$__fallbackIcons = array_values(array_diff(array_keys(knIconPaths()), $__brandIcons));
+sort($__fallbackIcons);
+
+$__iconPayload = array();
+foreach (array(array('Icônes Keepnew', $__brandIcons), array('Icônes génériques', $__fallbackIcons)) as $__grp) {
+    foreach ($__grp[1] as $__n) {
+        $__iconPayload[] = array('name' => $__n, 'group' => $__grp[0], 'svg' => knIcon($__n, array('size' => 26)));
+    }
+}
+?>
+<script>window.KN_ICON_LIBRARY = <?= json_encode($__iconPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;</script>
+
+<div id="icon-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span>Choisir une icône</span>
+      <button class="modal-close" type="button">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="text" id="icon-modal-search" placeholder="Rechercher une icône…" style="width:100%;margin-bottom:1rem">
+      <div id="icon-modal-grid" class="icon-grid"></div>
+    </div>
+  </div>
+</div>
 <?php endif; ?>
 </body>
 </html>
