@@ -1,11 +1,11 @@
 <?php
 require_once __DIR__ . '/_block_helpers.php';
 $items = isset($block['items']) && is_array($block['items']) ? $block['items'] : array(
-  array('icon' => 'sofa',     'title' => 'Canapé & fauteuil', 'desc' => 'Aspiration profonde, vapeur, anti-odeurs.', 'url' => '/services/canape'),
-  array('icon' => 'bed',      'title' => 'Matelas', 'desc' => 'Nettoyage en profondeur, désinfection UV.', 'url' => '/services/matelas'),
-  array('icon' => 'car',      'title' => 'Voiture', 'desc' => 'Intérieur complet, cuir, moquette, vitrerie.', 'url' => '/services/voiture'),
-  array('icon' => 'home',     'title' => 'Terrasse', 'desc' => 'Carrelage, pierre naturelle, bois composite.', 'url' => '/services/terrasse'),
-  array('icon' => 'sparkles', 'title' => 'Polissage', 'desc' => 'Céramique, lustrage carrosserie, protection.', 'url' => '/services/polissage'),
+  array('icon' => 'canape',    'title' => 'Canapé & fauteuil', 'desc' => 'Aspiration profonde, vapeur, anti-odeurs.', 'url' => '/services/canape'),
+  array('icon' => 'matelas',   'title' => 'Matelas', 'desc' => 'Nettoyage en profondeur, désinfection UV.', 'url' => '/services/matelas'),
+  array('icon' => 'voiture',   'title' => 'Voiture', 'desc' => 'Intérieur complet, cuir, moquette, vitrerie.', 'url' => '/services/voiture'),
+  array('icon' => 'terrasse',  'title' => 'Terrasse', 'desc' => 'Carrelage, pierre naturelle, bois composite.', 'url' => '/services/terrasse'),
+  array('icon' => 'polissage', 'title' => 'Polissage', 'desc' => 'Céramique, lustrage carrosserie, protection.', 'url' => '/services/polissage'),
 );
 ?>
 <section class="<?php echo blockClasses($block, 'white'); ?>">

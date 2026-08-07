@@ -187,6 +187,33 @@ function knIconName(string $raw): string
  * repli est demandé.
  */
 /**
+ * Correspondance entre les noms génériques employés dans le code et les
+ * fichiers réellement dessinés pour Keepnew. Permet à un bloc qui demande
+ * « sofa » d'obtenir canape.svg plutôt que le tracé Lucide de secours.
+ */
+function knIconBrandFile(string $name): string
+{
+    static $map = array(
+        'sofa' => 'canape', 'armchair' => 'canape', 'fauteuil' => 'canape',
+        'bed' => 'matelas', 'lit' => 'matelas',
+        'car' => 'voiture', 'auto' => 'voiture',
+        'home' => 'terrasse', 'maison' => 'terrasse',
+        'factory' => 'atelier', 'wrench' => 'atelier', 'outil' => 'atelier',
+        'sparkles' => 'polissage', 'brillance' => 'polissage',
+        'calendar' => 'devis', 'rdv' => 'devis', 'reservation' => 'devis',
+        'droplets' => 'vapeur', 'spray' => 'vapeur', 'eau' => 'vapeur',
+        'key' => 'cles', 'keys' => 'cles', 'cle' => 'cles',
+        'window' => 'vitres', 'vitre' => 'vitres', 'glass' => 'vitres',
+        'wheel' => 'jantes', 'jante' => 'jantes',
+        'leather' => 'cuir',
+        'ceramic' => 'ceramique', 'coating' => 'ceramique',
+        'subscription' => 'abonnement', 'abo' => 'abonnement',
+    );
+    $k = strtolower(trim($name));
+    return isset($map[$k]) ? $map[$k] : '';
+}
+
+/**
  * Cherche un fichier SVG fourni par la marque dans public/assets/icons/.
  * Ces fichiers priment toujours sur le jeu Lucide de secours.
  */
@@ -229,6 +256,25 @@ function knIconFile(string $name): ?string
 }
 
 /**
+ * Remplace les couleurs de marque codées en dur dans les SVG fournis par
+ * des variables CSS, avec la valeur d'origine en repli. Le dessin bicolore
+ * est conservé tel quel sur fond clair, et devient adaptable sur fond
+ * sombre (voir --kn-icon-stroke / --kn-icon-accent dans public.css).
+ */
+function knIconTokenizeColors(string $svg): string
+{
+    static $map = array(
+        '#24355c' => 'var(--kn-icon-stroke, #24355C)', // navy — trait
+        '#d08e99' => 'var(--kn-icon-accent, #D08E99)', // rose 400 — accent
+    );
+
+    return preg_replace_callback('/#[0-9A-Fa-f]{6}\b/', function ($m) use ($map) {
+        $key = strtolower($m[0]);
+        return isset($map[$key]) ? $map[$key] : $m[0];
+    }, $svg);
+}
+
+/**
  * Réécrit les attributs d'un SVG fourni : taille et classe imposées,
  * viewBox et tracés conservés tels que dessinés.
  */
@@ -253,9 +299,11 @@ function knIconInline(string $svg, int $size, string $class): string
     $inner = preg_replace('/^.*?<svg\b[^>]*>/is', '', $svg);
     $inner = preg_replace('/<\/svg>\s*$/i', '', $inner);
 
-    return '<svg class="' . htmlspecialchars($class) . '" width="' . $size . '" height="' . $size . '"'
+    $out = '<svg class="' . htmlspecialchars($class) . '" width="' . $size . '" height="' . $size . '"'
          . ' viewBox="' . htmlspecialchars($viewBox) . '"' . $keep
          . ' aria-hidden="true" focusable="false">' . trim($inner) . '</svg>';
+
+    return knIconTokenizeColors($out);
 }
 
 function knIcon(string $name, array $opts = array()): string
@@ -267,7 +315,7 @@ function knIcon(string $name, array $opts = array()): string
     $resolved = knIconName($name);
 
     // 1. Fichier SVG fourni par la marque — sous le nom demandé ou son alias
-    foreach (array(trim($name), $resolved) as $candidate) {
+    foreach (array(trim($name), $resolved, knIconBrandFile($name), knIconBrandFile($resolved)) as $candidate) {
         if ($candidate === '') continue;
         $file = knIconFile($candidate);
         if ($file !== null) {

@@ -379,7 +379,6 @@
   width: 64px;
   height: 64px;
   background: var(--kn-navy);
-  color: var(--kn-rose-mid);
   border-radius: 4px;
   flex-shrink: 0;
   display: flex;
@@ -1728,10 +1727,32 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 /* ── Icônes ─────────────────────────────────────────────────── */
 /* SVG au trait, héritant de la couleur du texte. Aucun emoji :
    l'étincelle ✦ est le seul ornement typographique de la marque. */
+/* Les SVG de marque sont bicolores : trait navy + accent rose. Les deux
+   couleurs sont injectées en variables, donc réglables par contexte. */
+:root {
+  --kn-icon-stroke: var(--kn-navy);
+  --kn-icon-accent: var(--kn-rose-400);
+}
+
 .kn-icon {
   display: inline-block;
   vertical-align: middle;
   flex-shrink: 0;
+}
+
+/* Sur fond sombre : trait crème, accent rose clair */
+.kn-bg--blue,
+.kn-bg--night,
+.kn-czones--dark,
+.kn-nav--light:not(.kn-nav--scrolled) {
+  --kn-icon-stroke: var(--kn-cream);
+  --kn-icon-accent: var(--kn-rose-mid);
+}
+
+/* Le carré navy des cartes services */
+.kn-service-card__icon {
+  --kn-icon-stroke: var(--kn-cream);
+  --kn-icon-accent: var(--kn-rose-mid);
 }
 .kn-icon--sparkle {
   display: inline-flex;
