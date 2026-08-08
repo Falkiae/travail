@@ -36,6 +36,10 @@ function s(array $settings, string $key, string $default = ''): string {
         <input type="text" id="site_baseline" name="site_baseline" value="<?= s($settings, 'site_baseline') ?>">
       </div>
     </div>
+    <div class="form-group">
+      <label for="booking_url">URL de réservation <small style="font-weight:400;opacity:.6">(utilisée par tous les boutons « Réserver » du site, dont le CTA sticky)</small></label>
+      <input type="text" id="booking_url" name="booking_url" value="<?= s($settings, 'booking_url') ?>" placeholder="/reservation">
+    </div>
     <div class="form-row">
       <div class="form-group">
         <label for="favicon">Favicon (URL)</label>
@@ -209,6 +213,67 @@ function s(array $settings, string $key, string $default = ''): string {
       </div>
     </div>
     <p class="help-text">Les listes de liens (Services, Zones, etc.) se gèrent dans <a href="/admin/menus">Menus</a> en créant des menus avec l'emplacement « Footer ». Nommez-les <code>Services</code>, <code>Zones</code>, ou <code>Légal</code>.</p>
+  </div>
+
+  <!-- CTA sticky -->
+  <div class="card">
+    <div class="card-title">CTA sticky (barre flottante)</div>
+    <p class="help-text">Barre qui apparaît en bas de page après un certain pourcentage de défilement, avec un bouton d'appel et un bouton de réservation. Les champs laissés vides reprennent le téléphone et l'URL de réservation définis ailleurs dans les réglages.</p>
+
+    <div class="form-group">
+      <label style="display:flex; align-items:center; gap:.75rem; cursor:pointer; font-weight:600;">
+        <input type="hidden" name="sticky_cta_enabled" value="0">
+        <input type="checkbox" name="sticky_cta_enabled" value="1" <?= ($settings['sticky_cta_enabled'] ?? '1') === '1' ? 'checked' : '' ?> style="width:1.25rem;height:1.25rem;">
+        Afficher le CTA sticky
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="sticky_cta_threshold">Apparition après (% de la page défilée)</label>
+      <input type="number" id="sticky_cta_threshold" name="sticky_cta_threshold" min="0" max="100" step="5" value="<?= s($settings, 'sticky_cta_threshold', '40') ?>" style="max-width:140px">
+    </div>
+
+    <hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">
+    <h4 style="margin:.5rem 0 1rem">Bouton téléphone</h4>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="sticky_cta_phone_label">Libellé <small style="font-weight:400;opacity:.6">(optionnel — sinon le numéro s'affiche seul)</small></label>
+        <input type="text" id="sticky_cta_phone_label" name="sticky_cta_phone_label" value="<?= s($settings, 'sticky_cta_phone_label') ?>" placeholder="Nous appeler">
+      </div>
+      <div class="form-group">
+        <label for="sticky_cta_phone_number">Numéro <small style="font-weight:400;opacity:.6">(optionnel — sinon reprend le téléphone du Footer)</small></label>
+        <input type="text" id="sticky_cta_phone_number" name="sticky_cta_phone_number" value="<?= s($settings, 'sticky_cta_phone_number') ?>" placeholder="<?= s($settings, 'footer_phone', '+32 (0)4 55 13 84 19') ?>">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="sticky_cta_phone_icon">Icône</label>
+      <div class="input-row icon-field">
+        <input type="text" list="kn-icon-list" id="sticky_cta_phone_icon" name="sticky_cta_phone_icon" value="<?= s($settings, 'sticky_cta_phone_icon') ?>" placeholder="phone" style="flex:1">
+        <button type="button" class="btn btn-secondary btn-sm icon-pick-btn">Choisir</button>
+        <span class="icon-field__preview"></span>
+      </div>
+    </div>
+
+    <hr style="margin:1.5rem 0;border:none;border-top:1px solid #e5e7eb">
+    <h4 style="margin:.5rem 0 1rem">Bouton réservation</h4>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="sticky_cta_book_label">Libellé</label>
+        <input type="text" id="sticky_cta_book_label" name="sticky_cta_book_label" value="<?= s($settings, 'sticky_cta_book_label') ?>" placeholder="Réserver un créneau">
+      </div>
+      <div class="form-group">
+        <label for="sticky_cta_book_url">URL <small style="font-weight:400;opacity:.6">(optionnel — sinon reprend l'URL de réservation du bloc Général)</small></label>
+        <input type="text" id="sticky_cta_book_url" name="sticky_cta_book_url" value="<?= s($settings, 'sticky_cta_book_url') ?>" placeholder="<?= s($settings, 'booking_url', '#') ?>">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="sticky_cta_book_icon">Icône</label>
+      <div class="input-row icon-field">
+        <input type="text" list="kn-icon-list" id="sticky_cta_book_icon" name="sticky_cta_book_icon" value="<?= s($settings, 'sticky_cta_book_icon') ?>" placeholder="calendar" style="flex:1">
+        <button type="button" class="btn btn-secondary btn-sm icon-pick-btn">Choisir</button>
+        <span class="icon-field__preview"></span>
+      </div>
+    </div>
   </div>
 
   <!-- Maintenance -->

@@ -340,30 +340,44 @@ $__siteName      = isset($site_name) && $site_name ? $site_name : 'Keepnew';
 </script>
 <?php endif; ?>
 
-<!-- ── CTA sticky (apparaît après 40% de défilement) ──────────── -->
+<!-- ── CTA sticky (apparaît après N % de défilement, réglable) ─── -->
 <?php
-$__stickyPhoneDigits = preg_replace('/[^+0-9]/', '', $__footerPhone);
+$__stickyEnabled  = !isset($sticky_cta_enabled) || $sticky_cta_enabled;
+$__stickyPhone    = isset($sticky_cta_phone_number) && $sticky_cta_phone_number !== '' ? $sticky_cta_phone_number : $__footerPhone;
+$__stickyHasPhone = trim($__stickyPhone) !== '';
+$__stickyPhoneDigits = preg_replace('/[^+0-9]/', '', $__stickyPhone);
+$__stickyPhoneLabel  = isset($sticky_cta_phone_label) && $sticky_cta_phone_label !== '' ? $sticky_cta_phone_label : $__stickyPhone;
+$__stickyPhoneIcon   = isset($sticky_cta_phone_icon) && $sticky_cta_phone_icon !== '' ? $sticky_cta_phone_icon : 'phone';
+$__stickyBookLabel   = isset($sticky_cta_book_label) && $sticky_cta_book_label !== '' ? $sticky_cta_book_label : 'Réserver un créneau';
+$__stickyBookUrl     = isset($sticky_cta_book_url) && $sticky_cta_book_url !== '' ? $sticky_cta_book_url : (isset($booking_url) ? $booking_url : '#');
+$__stickyBookIcon    = isset($sticky_cta_book_icon) && $sticky_cta_book_icon !== '' ? $sticky_cta_book_icon : 'calendar';
+$__stickyThreshold   = isset($sticky_cta_threshold) ? max(0, min(100, (float) $sticky_cta_threshold)) : 40;
 ?>
-<div id="kn-sticky-cta" class="kn-sticky-cta" aria-hidden="true">
-    <a href="tel:<?php echo htmlspecialchars($__stickyPhoneDigits); ?>" class="kn-sticky-cta__phone" aria-label="Appeler <?php echo htmlspecialchars($__footerPhone); ?>">
-        <?php echo knIcon('phone', array('size' => 18, 'class' => 'kn-sticky-cta__icon')); ?>
-        <span class="kn-sticky-cta__phone-text"><?php echo htmlspecialchars($__footerPhone); ?></span>
+<?php if ($__stickyEnabled): ?>
+<div id="kn-sticky-cta" class="kn-sticky-cta" data-threshold="<?php echo htmlspecialchars((string) ($__stickyThreshold / 100)); ?>" aria-hidden="true">
+    <?php if ($__stickyHasPhone): ?>
+    <a href="tel:<?php echo htmlspecialchars($__stickyPhoneDigits); ?>" class="kn-sticky-cta__phone" aria-label="Appeler <?php echo htmlspecialchars($__stickyPhone); ?>">
+        <?php echo knIcon($__stickyPhoneIcon, array('size' => 18, 'class' => 'kn-sticky-cta__icon', 'fallback' => 'sparkle')); ?>
+        <span class="kn-sticky-cta__phone-text"><?php echo htmlspecialchars($__stickyPhoneLabel); ?></span>
     </a>
-    <a href="<?php echo htmlspecialchars(isset($booking_url) ? $booking_url : '#'); ?>" class="kn-btn kn-sticky-cta__book">
-        <?php echo knIcon('calendar', array('size' => 17, 'class' => 'kn-sticky-cta__icon')); ?>
-        Réserver un créneau
+    <?php endif; ?>
+    <a href="<?php echo htmlspecialchars($__stickyBookUrl); ?>" class="kn-btn kn-sticky-cta__book">
+        <?php echo knIcon($__stickyBookIcon, array('size' => 17, 'class' => 'kn-sticky-cta__icon', 'fallback' => 'sparkle')); ?>
+        <?php echo htmlspecialchars($__stickyBookLabel); ?>
     </a>
 </div>
 <script>
 (function () {
   var bar = document.getElementById('kn-sticky-cta');
   if (!bar) return;
+  var threshold = parseFloat(bar.dataset.threshold);
+  if (isNaN(threshold)) threshold = 0.4;
   var shown = false;
   function onScroll() {
     var doc = document.documentElement;
     var scrollable = doc.scrollHeight - doc.clientHeight;
     var ratio = scrollable > 0 ? window.scrollY / scrollable : 0;
-    var show = ratio > 0.4;
+    var show = ratio > threshold;
     if (show !== shown) {
       shown = show;
       bar.classList.toggle('is-visible', show);
@@ -375,6 +389,7 @@ $__stickyPhoneDigits = preg_replace('/[^+0-9]/', '', $__footerPhone);
   onScroll();
 })();
 </script>
+<?php endif; ?>
 
 <script src="/public/assets/js/public.js<?php echo '?v=' . htmlspecialchars((string)(($__cvBase ?? '') . ($__jsMtime ?? ''))); ?>"></script>
 </body>

@@ -67,6 +67,12 @@ foreach (array(array('Icônes Keepnew', $__brandIcons), array('Icônes génériq
 ?>
 <script>window.KN_ICON_LIBRARY = <?= json_encode($__iconPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;</script>
 
+<datalist id="kn-icon-list">
+  <?php foreach (array_merge($__brandIcons, $__fallbackIcons) as $__n): ?>
+  <option value="<?= htmlspecialchars($__n) ?>"></option>
+  <?php endforeach; ?>
+</datalist>
+
 <div id="icon-modal" class="modal-overlay hidden">
   <div class="modal-box">
     <div class="modal-header">

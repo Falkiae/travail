@@ -1388,6 +1388,12 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+/* Aperçu des champs icône déjà présents au chargement (formulaires
+   statiques comme les Réglages — le bloc éditeur gère les siens lui-même) */
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.icon-field input').forEach(function(f) { refreshIconPreview(f); });
+});
+
 /* Délégation : vaut pour les champs créés dynamiquement */
 document.addEventListener('click', function(e) {
   var btn = e.target.closest('.icon-pick-btn');

@@ -45,9 +45,12 @@ class SettingsController extends BaseController
             'google_reviews_api_key',
             'cache_enabled',
             'footer_tagline', 'footer_phone', 'footer_legal_text',
+            'sticky_cta_enabled', 'sticky_cta_threshold',
+            'sticky_cta_phone_label', 'sticky_cta_phone_number', 'sticky_cta_phone_icon',
+            'sticky_cta_book_label', 'sticky_cta_book_url', 'sticky_cta_book_icon',
         ];
 
-        $checkboxes = ['noindex_all', 'maintenance_mode', 'cookie_banner_enabled', 'cache_enabled'];
+        $checkboxes = ['noindex_all', 'maintenance_mode', 'cookie_banner_enabled', 'cache_enabled', 'sticky_cta_enabled'];
 
         $upsert = $pdo->prepare(
             "INSERT INTO kn_settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = ?"
