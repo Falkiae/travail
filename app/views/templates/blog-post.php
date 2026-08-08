@@ -71,7 +71,7 @@ $dateSrc = !empty($post['published_at']) ? $post['published_at'] : (isset($post[
   <!-- ── Pied récurrent : CTA + articles liés ────────────────────── -->
   <div class="container">
     <div class="kn-blog-article__cta">
-      <a href="<?php echo htmlspecialchars($booking_url); ?>" class="kn-cta-card kn-cta-card--blue">
+      <a href="<?php echo htmlspecialchars($booking_url); ?>" class="kn-cta-card kn-cta-card--navy">
         <div class="kn-cta-card__content">
           <span class="kn-eyebrow">RÉSERVATION EN LIGNE</span>
           <p class="kn-cta-card__title">Prendre RDV en 2 min</p>

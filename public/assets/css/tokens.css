@@ -363,7 +363,7 @@ p {
 .kn-pill--white  { background: rgba(255,255,255,.15); color: var(--kn-white); border: 1px solid rgba(255,255,255,.3); }
 .kn-pill--night  { background: var(--kn-navy);        color: var(--kn-cream); }
 /* compat */
-.kn-pill--yellow { background: var(--kn-rose);       color: var(--kn-navy); }
+.kn-pill--gold   { background: var(--kn-gold-light); color: #7A5C15; }
 
 /* 8. Boutons
    ------------------------------------------------------------ */
@@ -514,30 +514,19 @@ p {
 .kn-cta-card--glass:hover .kn-cta-card__arrow { background: var(--kn-rose-mid); color: var(--kn-navy); }
 .kn-cta-card--glass:hover { background: rgba(247,244,236,.17); }
 
-/* — Variante navy (sur fond clair) */
-.kn-cta-card--blue,
-.kn-cta-card--night {
+/* — Variante navy (carte sombre, pour poser sur un fond clair)
+   « --blue », « --night » et « --light » rendaient les trois exactement
+   la même couleur sous trois noms différents — dont un annonçait
+   « light » pour une carte pleinement navy. Fusionné en une seule classe
+   correctement nommée. */
+.kn-cta-card--navy {
   background: var(--kn-navy);
   box-shadow: var(--shadow-cta);
 }
-.kn-cta-card--blue .kn-eyebrow,
-.kn-cta-card--night .kn-eyebrow          { color: var(--kn-rose-mid); }
-.kn-cta-card--blue .kn-cta-card__title,
-.kn-cta-card--night .kn-cta-card__title  { color: var(--kn-cream); }
-.kn-cta-card--blue .kn-cta-card__arrow,
-.kn-cta-card--night .kn-cta-card__arrow  { background: var(--kn-cream); color: var(--kn-navy); }
-.kn-cta-card--blue:hover .kn-cta-card__arrow,
-.kn-cta-card--night:hover .kn-cta-card__arrow { background: var(--kn-rose-mid); color: var(--kn-navy); }
-
-/* — Variante light */
-.kn-cta-card--light {
-  background: var(--kn-navy);
-  box-shadow: var(--shadow-cta);
-}
-.kn-cta-card--light .kn-eyebrow          { color: var(--kn-rose-mid); }
-.kn-cta-card--light .kn-cta-card__title  { color: var(--kn-cream); }
-.kn-cta-card--light .kn-cta-card__arrow  { background: var(--kn-cream); color: var(--kn-navy); }
-.kn-cta-card--light:hover .kn-cta-card__arrow { background: var(--kn-rose-mid); color: var(--kn-navy); }
+.kn-cta-card--navy .kn-eyebrow         { color: var(--kn-rose-mid); }
+.kn-cta-card--navy .kn-cta-card__title { color: var(--kn-cream); }
+.kn-cta-card--navy .kn-cta-card__arrow { background: var(--kn-cream); color: var(--kn-navy); }
+.kn-cta-card--navy:hover .kn-cta-card__arrow { background: var(--kn-rose-mid); color: var(--kn-navy); }
 
 /* Ligne téléphone sous le CTA */
 .kn-cta-pave__phone {
@@ -572,8 +561,8 @@ p {
 
 /* Ambiances de fond */
 .kn-bg--white  { background: var(--kn-white);  color: var(--kn-navy); }
-.kn-bg--alt    { background: var(--kn-cream);   color: var(--kn-navy); }
-.kn-bg--cream  { background: var(--kn-cream);   color: var(--kn-navy); }
+.kn-bg--alt    { background: var(--kn-cream-soft); color: var(--kn-navy); }
+.kn-bg--cream  { background: var(--kn-cream);       color: var(--kn-navy); }
 .kn-bg--rose   { background: var(--kn-rose);    color: var(--kn-navy); }
 .kn-bg--blue   { background: var(--kn-navy);    color: var(--kn-cream); }
 .kn-bg--night  { background: var(--kn-navy-ink);color: var(--kn-cream); }

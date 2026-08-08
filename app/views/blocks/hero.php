@@ -13,16 +13,20 @@ $sectionClass = blockClasses($block, 'cream', $heroExtra);
 $gridClass    = gridClasses($block, '1-1');
 
 $isRose = ($bg === 'rose');
-$eyebrowColor = $isDark ? 'var(--kn-yellow)' : ($isRose ? 'var(--kn-rose-600)' : 'var(--kn-blue)');
+$eyebrowColor = $isDark ? 'var(--kn-rose-mid)' : ($isRose ? 'var(--kn-rose-600)' : 'var(--kn-blue)');
 $h1Color      = $isDark ? 'var(--kn-white)'  : 'var(--kn-night)';
 $proofColor   = $isDark ? 'rgba(255,255,255,.7)' : 'var(--kn-muted)';
 
 $pillClassMap = [
     'white'  => $isDark ? 'kn-pill--white' : 'kn-pill--blue',
-    'yellow' => 'kn-pill--yellow',
     'night'  => 'kn-pill--night',
     'blue'   => 'kn-pill--blue',
     'cream'  => 'kn-pill--cream',
+    'rose'   => 'kn-pill--rose',
+    // Alias hérité : du contenu déjà enregistré référence encore "yellow",
+    // qui a toujours rendu du rose (jamais du jaune) — conservé pour ne
+    // pas casser ces pastilles existantes.
+    'yellow' => 'kn-pill--rose',
 ];
 $defaultPills = [
     ['icon' => 'check',  'text' => 'À domicile',     'style' => 'white'],
@@ -64,7 +68,7 @@ $rawPills = isset($block['pills']) && is_array($block['pills']) ? $block['pills'
           <span class="kn-pill <?php echo $pillCls; ?>"><?php echo knIcon($pillIcon, array('size' => 15, 'class' => 'kn-icon--pill')); ?><?php echo htmlspecialchars($pillText); ?></span>
           <?php endforeach; ?>
         </div>
-        <a href="<?php echo htmlspecialchars($booking_url); ?>" class="kn-cta-card <?php echo $isDark ? 'kn-cta-card--glass' : 'kn-cta-card--blue'; ?>">
+        <a href="<?php echo htmlspecialchars($booking_url); ?>" class="kn-cta-card <?php echo $isDark ? 'kn-cta-card--glass' : 'kn-cta-card--navy'; ?>">
           <div class="kn-cta-card__content">
             <span class="kn-eyebrow"><?php echo knIcon('calendar', array('size' => 14, 'class' => 'kn-icon--eyebrow')); ?><?php echo htmlspecialchars(isset($block['cta_eyebrow']) ? $block['cta_eyebrow'] : 'RÉSERVATION EN LIGNE'); ?></span>
             <p class="kn-cta-card__title"><?php echo htmlspecialchars(isset($block['cta_title']) ? $block['cta_title'] : 'Prendre RDV en 2 min'); ?></p>

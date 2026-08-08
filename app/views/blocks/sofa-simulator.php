@@ -3,9 +3,10 @@ require_once __DIR__ . '/_block_helpers.php';
 
 $bg     = isset($block['bg']) ? $block['bg'] : 'cream';
 $isDark = ($bg === 'blue' || $bg === 'night');
+$isRose = ($bg === 'rose');
 
 $sectionClass = blockClasses($block, 'cream', 'kn-sofa-sim');
-$eyebrowColor = $isDark ? 'var(--kn-yellow)' : 'var(--kn-blue)';
+$eyebrowColor = $isDark ? 'var(--kn-rose-mid)' : ($isRose ? 'var(--kn-rose-600)' : 'var(--kn-blue)');
 $headingColor = $isDark ? 'var(--kn-white)'  : 'var(--kn-night)';
 $introColor   = $isDark ? 'rgba(255,255,255,.8)' : 'var(--kn-muted)';
 
@@ -161,7 +162,7 @@ $svgIcons = [
             <span class="kn-sofa-result__note">* estimatif</span>
           </div>
           <a href="<?php echo htmlspecialchars($firstShape['cta_url'] ?: '#'); ?>"
-             class="kn-cta-card kn-cta-card--blue kn-sofa-result__cta"
+             class="kn-cta-card kn-cta-card--navy kn-sofa-result__cta"
              id="<?php echo $blockId; ?>-cta">
             <div class="kn-cta-card__content">
               <p class="kn-cta-card__title"><?php echo htmlspecialchars($ctaText); ?></p>

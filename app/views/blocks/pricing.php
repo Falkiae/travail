@@ -3,9 +3,10 @@ require_once __DIR__ . '/_block_helpers.php';
 
 $bg     = isset($block['bg']) ? $block['bg'] : 'white';
 $isDark = ($bg === 'blue' || $bg === 'night');
+$isRose = ($bg === 'rose');
 
 $sectionClass  = blockClasses($block, 'white', 'kn-pricing');
-$eyebrowColor  = $isDark ? 'var(--kn-yellow)' : 'var(--kn-blue)';
+$eyebrowColor  = $isDark ? 'var(--kn-rose-mid)' : ($isRose ? 'var(--kn-rose-600)' : 'var(--kn-blue)');
 $headingColor  = $isDark ? 'var(--kn-white)'  : 'var(--kn-night)';
 
 $defaultItems = [

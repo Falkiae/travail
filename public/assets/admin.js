@@ -151,7 +151,7 @@ function buildBlockForm(type, data) {
       + '</div>';
   }
 
-  var BG_OPTIONS = [['white','⬜ Blanc (défaut)'],['alt','🔲 Gris clair'],['blue','🔵 Bleu Keepnew'],['night','⬛ Night Ink (sombre)'],['cream','🟡 Cream (éditorial)'],['rose','🌸 Rose (premium)']];
+  var BG_OPTIONS = [['white','⬜ Blanc (défaut)'],['alt','◽ Ivoire alterné (rythme de page)'],['cream','🟡 Crème éditorial'],['blue','🔷 Navy (fond signature)'],['night','⬛ Navy profond (Night Ink)'],['rose','🌸 Rose poudré (premium)']];
   function bgField(current) {
     return fg('Ambiance de fond', sel('bg', BG_OPTIONS, current || 'white'));
   }
@@ -735,7 +735,7 @@ function addPricingItem(container, data) {
 
 function addHeroPill(container, data) {
   data = data || {};
-  var styleOptions = [['white','⬜ Blanc'],['yellow','🟡 Jaune'],['night','⬛ Sombre'],['blue','🔵 Bleu'],['cream','🟤 Cream'],['rose','🌸 Rose']];
+  var styleOptions = [['white','⬜ Blanc'],['night','⬛ Sombre'],['blue','🔵 Bleu'],['cream','🟤 Cream'],['rose','🌸 Rose poudré']];
   var selHtml = '<select data-rfield="style">';
   styleOptions.forEach(function(o) {
     selHtml += '<option value="' + o[0] + '"' + (data.style === o[0] ? ' selected' : '') + '>' + o[1] + '</option>';

@@ -6,8 +6,12 @@ $bg = isset($block['bg']) ? $block['bg'] : 'blue';
 if (!in_array($bg, ['white','alt','blue','night','cream','rose'], true)) {
     $bg = 'blue';
 }
-$bgClass   = 'kn-bg--' . $bg;
-$cardStyle = ($bg === 'night') ? 'kn-cta-card--night' : (($bg === 'blue') ? 'kn-cta-card--blue' : 'kn-cta-card--light');
+$bgClass = 'kn-bg--' . $bg;
+$isDark  = ($bg === 'blue' || $bg === 'night');
+// Sur un fond déjà sombre, une carte navy s'y fondait presque
+// entièrement (même couleur que la section) : verre dépoli à la place,
+// comme sur les blocs hero et domicile-vs-atelier.
+$cardStyle = $isDark ? 'kn-cta-card--glass' : 'kn-cta-card--navy';
 
 // Visibility classes
 $visClasses = '';

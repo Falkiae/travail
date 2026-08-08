@@ -3,9 +3,10 @@ require_once __DIR__ . '/_block_helpers.php';
 
 $bg     = isset($block['bg']) ? $block['bg'] : 'white';
 $isDark = ($bg === 'blue' || $bg === 'night');
+$isRose = ($bg === 'rose');
 
 $sectionClass = blockClasses($block, 'white', 'kn-dva');
-$eyebrowColor = $isDark ? 'var(--kn-yellow)' : 'var(--kn-blue)';
+$eyebrowColor = $isDark ? 'var(--kn-rose-mid)' : ($isRose ? 'var(--kn-rose-600)' : 'var(--kn-blue)');
 $headingColor = $isDark ? 'var(--kn-white)'  : 'var(--kn-night)';
 $introColor   = $isDark ? 'rgba(255,255,255,.8)' : 'var(--kn-muted)';
 
@@ -32,7 +33,7 @@ $wsCtaEyebrow   = isset($block['workshop_cta_eyebrow']) ? $block['workshop_cta_e
 $wsCtaTitle     = isset($block['workshop_cta_title']) ? $block['workshop_cta_title'] : '';
 $wsCtaUrl       = isset($block['workshop_cta_url']) ? $block['workshop_cta_url'] : '';
 
-$ctaCardClass   = $isDark ? 'kn-cta-card kn-cta-card--glass' : 'kn-cta-card kn-cta-card--blue';
+$ctaCardClass   = $isDark ? 'kn-cta-card kn-cta-card--glass' : 'kn-cta-card kn-cta-card--navy';
 ?>
 <section class="<?php echo $sectionClass; ?>">
   <div class="container">

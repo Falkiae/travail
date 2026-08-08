@@ -53,7 +53,7 @@
   color: var(--kn-white);
 }
 .kn-nav--transparent.kn-nav--light .kn-nav__menu a:hover {
-  color: var(--kn-yellow);
+  color: var(--kn-rose-mid);
 }
 .kn-nav--transparent.kn-nav--light .kn-nav__toggle span {
   background: var(--kn-white);
@@ -913,7 +913,7 @@
   color: var(--kn-white);
 }
 .kn-bg--blue .kn-dva-card__bullet,
-.kn-bg--night .kn-dva-card__bullet { color: var(--kn-yellow); }
+.kn-bg--night .kn-dva-card__bullet { color: var(--kn-rose-mid); }
 
 @media (min-width: 768px) {
   .kn-dva__grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
@@ -936,7 +936,7 @@
 .kn-cookie[hidden] { display: none; }
 .kn-cookie__inner { display: flex; flex-direction: column; gap: .875rem; }
 .kn-cookie__text { margin: 0; font-size: .9rem; line-height: 1.5; color: rgba(255,255,255,.9); }
-.kn-cookie__link { color: var(--kn-yellow); text-decoration: underline; text-underline-offset: 2px; margin-left: .25rem; }
+.kn-cookie__link { color: var(--kn-rose-mid); text-decoration: underline; text-underline-offset: 2px; margin-left: .25rem; }
 .kn-cookie__actions { display: flex; gap: .625rem; justify-content: flex-end; flex-wrap: wrap; }
 .kn-cookie__btn {
   font-family: var(--font-body); font-weight: 600; font-size: .875rem;
@@ -1196,7 +1196,7 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 .kn-bg--blue .kn-accordion__q,
 .kn-bg--night .kn-accordion__q { color: var(--kn-white); }
 .kn-bg--blue .kn-accordion__q::after,
-.kn-bg--night .kn-accordion__q::after { color: var(--kn-yellow); }
+.kn-bg--night .kn-accordion__q::after { color: var(--kn-rose-mid); }
 .kn-bg--blue .kn-accordion__a,
 .kn-bg--night .kn-accordion__a { color: rgba(255,255,255,.75); }
 
@@ -1220,7 +1220,7 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 .kn-placeholder--hero { min-height: 100%; aspect-ratio: 4/3; }
 
 /* ── How it works – step num colors ─────────── */
-.kn-bg--blue .kn-how__num, .kn-bg--night .kn-how__num { color: var(--kn-yellow); }
+.kn-bg--blue .kn-how__num, .kn-bg--night .kn-how__num { color: var(--kn-rose-mid); }
 
 /* .kn-two-col__inner and .kn-zone__inner mobile stacking now handled by .kn-grid--* */
 
@@ -1788,11 +1788,10 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 }
 
 /* Icônes de marque à l'intérieur d'un bouton plein (.kn-btn a toujours
-   un fond navy/bleu) ou d'une carte CTA sombre : trait crème, accent
-   rose clair — sinon un tracé navy sur fond navy serait invisible. */
+   un fond navy/bleu) ou d'une carte CTA navy : trait crème, accent
+   rose clair, sinon un tracé navy sur fond navy serait invisible. */
 .kn-btn .kn-icon,
-.kn-cta-card--blue .kn-icon,
-.kn-cta-card--night .kn-icon {
+.kn-cta-card--navy .kn-icon {
   --kn-icon-stroke: var(--kn-cream);
   --kn-icon-accent: var(--kn-rose-mid);
 }

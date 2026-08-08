@@ -37,7 +37,7 @@ $reviews = isset($reviews) && is_array($reviews) ? $reviews : array();
     <p class="text-muted" style="text-align:center;margin-top:2rem;">Les avis Google apparaîtront ici (configurez la clé API dans les réglages).</p>
     <?php endif; ?>
     <div class="kn-reviews__proof" style="text-align:center;margin-top:2.5rem;">
-      <span class="kn-pill kn-pill--yellow"><?php echo knIcon('star', array('size' => 15, 'class' => 'kn-icon--pill')); ?>4,9/5 · +110 avis Google</span>
+      <span class="kn-pill kn-pill--gold"><?php echo knIcon('star', array('size' => 15, 'class' => 'kn-icon--pill')); ?>4,9/5 · +110 avis Google</span>
     </div>
   </div>
 </section>
