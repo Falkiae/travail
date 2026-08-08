@@ -1787,9 +1787,22 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
   align-items: center;
 }
 
+/* Icônes de marque à l'intérieur d'un bouton plein (.kn-btn a toujours
+   un fond navy/bleu) ou d'une carte CTA sombre : trait crème, accent
+   rose clair — sinon un tracé navy sur fond navy serait invisible. */
+.kn-btn .kn-icon,
+.kn-cta-card--blue .kn-icon,
+.kn-cta-card--night .kn-icon {
+  --kn-icon-stroke: var(--kn-cream);
+  --kn-icon-accent: var(--kn-rose-mid);
+}
+
 /* ── CTA sticky (réservation + téléphone) ─────────────────────
    Apparaît après 40% de défilement de la page. Barre pleine
-   largeur sur mobile, cluster flottant bas-droite sur desktop. */
+   largeur sur mobile, cluster flottant bas-droite sur desktop.
+   Accent rose en tête de bloc + montée avec léger zoom pour se
+   détacher nettement de la page à l'arrivée (une seule fois,
+   pas de boucle — cohérent avec l'usage sobre des animations). */
 .kn-sticky-cta {
   position: fixed;
   left: 0;
@@ -1800,42 +1813,46 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
   align-items: stretch;
   gap: 1px;
   background: var(--kn-border);
-  border-top: 1px solid var(--kn-border);
-  box-shadow: 0 -4px 20px rgba(27,42,74,.12);
-  transform: translateY(100%);
+  border-top: 3px solid var(--kn-rose-mid);
+  box-shadow: 0 -8px 32px rgba(27,42,74,.22);
+  transform: translateY(100%) scale(.98);
   opacity: 0;
-  transition: transform .28s var(--ease-classic, cubic-bezier(.4,0,.2,1)), opacity .28s var(--ease-classic, cubic-bezier(.4,0,.2,1));
+  transition: transform .32s var(--ease-classic, cubic-bezier(.4,0,.2,1)), opacity .32s var(--ease-classic, cubic-bezier(.4,0,.2,1));
   pointer-events: none;
 }
 .kn-sticky-cta.is-visible {
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
   opacity: 1;
   pointer-events: auto;
 }
+
+.kn-sticky-cta__icon { flex-shrink: 0; }
 
 .kn-sticky-cta__phone,
 .kn-sticky-cta__book {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .5rem;
+  gap: .55rem;
   border-radius: 0;
   font-size: .9375rem;
 }
 
 .kn-sticky-cta__phone {
   flex: 0 0 auto;
-  padding: .9rem 1.1rem;
-  background: var(--kn-white);
+  padding: 1rem 1.25rem;
+  background: var(--kn-cream);
   color: var(--kn-navy);
-  font-weight: 600;
+  font-weight: 700;
 }
-.kn-sticky-cta__phone:hover { color: var(--kn-blue); }
+.kn-sticky-cta__phone:hover { color: var(--kn-blue); background: var(--kn-cream-soft); }
 .kn-sticky-cta__phone-text { display: none; }
 
 .kn-sticky-cta__book {
   flex: 1 1 auto;
-  padding: .9rem 1.25rem;
+  padding: 1rem 1.375rem;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 @media (min-width: 640px) {
@@ -1846,17 +1863,18 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 @media (min-width: 900px) {
   .kn-sticky-cta {
     left: auto;
-    right: 1.5rem;
-    bottom: 1.5rem;
+    right: 1.75rem;
+    bottom: 1.75rem;
     border-radius: var(--r-card);
     overflow: hidden;
     border: 1px solid var(--kn-border);
-    border-top: 1px solid var(--kn-border);
-    transform: translateY(16px);
+    border-top: 3px solid var(--kn-rose-mid);
+    box-shadow: var(--shadow-raised, 0 16px 40px rgba(27,42,74,.22));
+    transform: translateY(16px) scale(.98);
   }
-  .kn-sticky-cta.is-visible { transform: translateY(0); }
-  .kn-sticky-cta__phone { padding: .85rem 1.25rem; }
-  .kn-sticky-cta__book { padding: .85rem 1.5rem; }
+  .kn-sticky-cta.is-visible { transform: translateY(0) scale(1); }
+  .kn-sticky-cta__phone { padding: .9rem 1.375rem; }
+  .kn-sticky-cta__book  { padding: .9rem 1.625rem; }
 }
 
 /* ── Blog : hero + filtres ─────────────────────────────────── */
