@@ -2087,8 +2087,22 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
   border-left: 2px solid var(--kn-rose-mid);
 }
 
+/* Chaque bloc (titre, texte…) est une <section> à 5rem de padding —
+   pensé pour des sections de page, pas pour de la prose qui s'enchaîne.
+   On resserre nettement dans le corps d'un article, où le texte doit se
+   lire comme un flux continu plutôt que comme des blocs indépendants. */
 .kn-blog-article__body { padding-bottom: 1rem; }
-.kn-blog-article__body .kn-section:first-child { padding-top: 2.5rem; }
+.kn-blog-article__body .kn-section {
+  padding: .75rem 0;
+}
+.kn-blog-article__body .kn-section:first-child { padding-top: 2rem; }
+.kn-blog-article__body .kn-section:last-of-type { padding-bottom: 1.5rem; }
+/* Le titre garde un peu plus d'air au-dessus (sépare du paragraphe précédent) */
+.kn-blog-article__body .kn-section:has(.kn-section__title) {
+  padding-top: 2rem;
+  padding-bottom: .25rem;
+}
+.kn-blog-article__body .kn-section__title { margin-top: 0; }
 
 .kn-blog-article__cta { margin: 1rem 0 3rem; }
 
