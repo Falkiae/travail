@@ -21,7 +21,7 @@ if (!function_exists('knBlogPageUrl')) {
   <div class="container">
     <span class="kn-eyebrow">LE JOURNAL KEEPNEW</span>
     <h1 class="kn-section__title">Conseils d'entretien &amp; actualités.</h1>
-    <p class="kn-blog-hero__intro">Nos astuces d'artisans pour prendre soin de vos canapés, matelas et véhicules — et les nouvelles de l'atelier.</p>
+    <p class="kn-blog-hero__intro">Nos astuces d'artisans pour prendre soin de vos canapés, matelas et véhicules, et les nouvelles de l'atelier.</p>
 
     <?php if ($categories): ?>
     <nav class="kn-blog-filters" aria-label="Filtrer par catégorie">
@@ -38,7 +38,7 @@ if (!function_exists('knBlogPageUrl')) {
   <div class="container">
     <?php if (!$posts): ?>
     <p class="kn-blog-empty">
-      <?php echo $activeCategory ? 'Aucun article dans cette catégorie pour le moment.' : 'Aucun article publié pour le moment — revenez bientôt.'; ?>
+      <?php echo $activeCategory ? 'Aucun article dans cette catégorie pour le moment.' : 'Aucun article publié pour le moment, revenez bientôt.'; ?>
     </p>
     <?php else: ?>
     <div class="kn-blog-grid">

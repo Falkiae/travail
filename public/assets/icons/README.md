@@ -15,7 +15,7 @@ qui l'entoure.
 ## Recommandations pour les fichiers
 
 - `viewBox="0 0 24 24"` de préférence (n'importe quel viewBox carré fonctionne)
-- Traits plutôt que aplats, `stroke-width` autour de 1.5 — charte Keepnew
+- Traits plutôt que aplats, `stroke-width` autour de 1.5 (charte Keepnew)
 - Utilisez `stroke="currentColor"` et/ou `fill="currentColor"` pour que
   l'icône prenne la couleur du contexte (navy sur crème, crème sur navy…).
   Si vos fichiers ont des couleurs en dur, elles seront respectées telles

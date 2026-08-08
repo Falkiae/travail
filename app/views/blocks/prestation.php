@@ -5,7 +5,7 @@ $bg     = isset($block['bg']) ? $block['bg'] : 'cream';
 $isDark = ($bg === 'blue' || $bg === 'night');
 
 $items = isset($block['items']) && is_array($block['items']) ? $block['items'] : array(
-  array('title' => 'Diagnostic de la matière',  'desc' => 'Tissu, cuir, microfibre ou velours — on identifie et on adapte le traitement.'),
+  array('title' => 'Diagnostic de la matière',  'desc' => 'Tissu, cuir, microfibre ou velours : on identifie et on adapte le traitement.'),
   array('title' => 'Aspiration profonde',       'desc' => 'Extraction des poussières et acariens jusqu\'au rembourrage.'),
   array('title' => 'Détachage ciblé',           'desc' => 'Traitement des taches tenaces, auréoles et marques d\'usage.'),
   array('title' => 'Injection / extraction',    'desc' => 'Nettoyage en profondeur des fibres, sans détremper.'),
