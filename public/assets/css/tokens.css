@@ -567,9 +567,15 @@ p {
 .kn-bg--blue   { background: var(--kn-navy);    color: var(--kn-cream); }
 .kn-bg--night  { background: var(--kn-navy-ink);color: var(--kn-cream); }
 
-.kn-bg--rose .kn-eyebrow  { color: var(--kn-rose-600); }
-.kn-bg--blue .kn-eyebrow,
-.kn-bg--night .kn-eyebrow { color: var(--kn-rose-mid); }
+/* :where() = spécificité nulle : ces teintes par défaut ne doivent
+   jamais l'emporter sur la couleur propre à un composant (carte CTA,
+   pill…) posé sur la section — sinon, à spécificité égale, c'est
+   l'ordre d'écriture dans le fichier qui tranche au hasard. C'est
+   exactement ce qui rendait l'eyebrow illisible (rose foncé sur navy)
+   dans une carte CTA posée sur une section rose. */
+:where(.kn-bg--rose) .kn-eyebrow  { color: var(--kn-rose-600); }
+:where(.kn-bg--blue) .kn-eyebrow,
+:where(.kn-bg--night) .kn-eyebrow { color: var(--kn-rose-mid); }
 
 .kn-bg--blue h2,  .kn-bg--blue .h2,
 .kn-bg--blue h1,  .kn-bg--blue .h1,
