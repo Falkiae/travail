@@ -253,6 +253,18 @@ class FrontController extends BaseController
     }
 
     /**
+     * Convertit un chemin relatif (/uploads/x.jpg) en URL absolue. Laisse
+     * intactes les URLs déjà absolues. Requis par les données structurées,
+     * que les moteurs ne doivent jamais recevoir en chemin relatif.
+     */
+    private function absUrl(string $path): string
+    {
+        if ($path === '') return '';
+        if (preg_match('#^https?://#i', $path)) return $path;
+        return $this->baseUrl() . '/' . ltrim($path, '/');
+    }
+
+    /**
      * Variables communes à toutes les pages publiques (nav, footer, logo…),
      * pour éviter de les répéter dans chaque action qui rend le layout public.
      */
@@ -380,10 +392,30 @@ class FrontController extends BaseController
         $catStmt->execute(array($lang));
         $categories = $catStmt->fetchAll(\PDO::FETCH_ASSOC);
 
+        $metaTitle = $activeCategory
+            ? $activeCategory['name'] . ' — Blog | ' . (isset($settings['site_name']) && $settings['site_name'] ? $settings['site_name'] : 'Keepnew')
+            : 'Blog — Conseils d\'entretien';
+        $canonicalUrl = $this->baseUrl() . '/blog' . ($activeCategory ? '?cat=' . urlencode($activeCategory['slug']) : '');
+
+        $breadcrumb = array(
+            array('@type' => 'ListItem', 'position' => 1, 'name' => 'Accueil', 'item' => $this->baseUrl() . '/'),
+            array('@type' => 'ListItem', 'position' => 2, 'name' => 'Blog', 'item' => $this->baseUrl() . '/blog'),
+        );
+        if ($activeCategory) {
+            $breadcrumb[] = array('@type' => 'ListItem', 'position' => 3, 'name' => $activeCategory['name'], 'item' => $canonicalUrl);
+        }
+        $structuredData = array(
+            array('@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $breadcrumb),
+        );
+
         $data = array_merge($this->commonPublicData($pdo, $settings, $lang), array(
-            'title'             => 'Blog — Conseils d\'entretien | ' . (isset($settings['site_name']) && $settings['site_name'] ? $settings['site_name'] : 'Keepnew'),
-            'meta_title'        => 'Blog — Conseils d\'entretien',
-            'meta_description'  => 'Conseils, astuces et actualités Keepnew pour l\'entretien de vos canapés, matelas et véhicules.',
+            'title'             => $metaTitle,
+            'meta_title'        => $metaTitle,
+            'meta_description'  => $activeCategory
+                ? 'Tous les articles Keepnew de la catégorie ' . $activeCategory['name'] . ' — conseils d\'entretien, actualités et coulisses de l\'atelier.'
+                : 'Conseils, astuces et actualités Keepnew pour l\'entretien de vos canapés, matelas et véhicules.',
+            'canonical_url'     => $canonicalUrl,
+            'structured_data'   => $structuredData,
             'posts'             => $posts,
             'categories'        => $categories,
             'active_category'   => $activeCategory,
@@ -456,11 +488,66 @@ class FrontController extends BaseController
         });
         $readingMinutes = max(1, (int) ceil($wordCount / 200));
 
+        $siteName     = isset($settings['site_name']) && $settings['site_name'] ? $settings['site_name'] : 'Keepnew';
+        $canonicalUrl = $this->baseUrl() . '/blog/' . $slug;
+        $ogImageUrl   = isset($post['og_image']) && $post['og_image'] ? $post['og_image'] : $post['image_url'];
+        $ogImageAbs   = $ogImageUrl ? $this->absUrl($ogImageUrl) : '';
+        $logoAbs      = !empty($settings['logo_url']) ? $this->absUrl($settings['logo_url']) : '';
+        $publishedIso = date('c', strtotime(!empty($post['published_at']) ? $post['published_at'] : $post['created_at']));
+        $modifiedIso  = date('c', strtotime(!empty($post['updated_at']) ? $post['updated_at'] : $publishedIso));
+        $metaDesc     = isset($post['meta_description']) && $post['meta_description'] ? $post['meta_description'] : $post['excerpt'];
+
+        // BlogPosting : les moteurs classiques comme les moteurs génératifs
+        // (GEO) s'appuient sur ces champs pour citer la page avec ses faits
+        // exacts — auteur, dates, temps de lecture, catégorie.
+        $blogPosting = array(
+            '@context'         => 'https://schema.org',
+            '@type'            => 'BlogPosting',
+            'headline'         => $post['title'],
+            'description'      => $metaDesc,
+            'mainEntityOfPage' => array('@type' => 'WebPage', '@id' => $canonicalUrl),
+            'url'              => $canonicalUrl,
+            'datePublished'    => $publishedIso,
+            'dateModified'     => $modifiedIso,
+            'inLanguage'       => $lang === 'nl' ? 'nl-BE' : 'fr-BE',
+            'author'           => array('@type' => 'Organization', 'name' => $siteName, 'url' => $this->baseUrl() . '/'),
+            'publisher'        => array_filter(array(
+                '@type' => 'Organization',
+                'name'  => $siteName,
+                'logo'  => $logoAbs ? array('@type' => 'ImageObject', 'url' => $logoAbs) : null,
+            )),
+            'wordCount'        => $wordCount,
+            'timeRequired'     => 'PT' . $readingMinutes . 'M',
+        );
+        if ($ogImageAbs) $blogPosting['image'] = $ogImageAbs;
+        if (!empty($post['category_name'])) $blogPosting['articleSection'] = $post['category_name'];
+
+        $breadcrumb = array(
+            array('@type' => 'ListItem', 'position' => 1, 'name' => 'Accueil', 'item' => $this->baseUrl() . '/'),
+            array('@type' => 'ListItem', 'position' => 2, 'name' => 'Blog', 'item' => $this->baseUrl() . '/blog'),
+        );
+        $pos = 3;
+        if (!empty($post['category_name'])) {
+            $breadcrumb[] = array('@type' => 'ListItem', 'position' => $pos++, 'name' => $post['category_name'], 'item' => $this->baseUrl() . '/blog?cat=' . urlencode($post['category_slug']));
+        }
+        $breadcrumb[] = array('@type' => 'ListItem', 'position' => $pos, 'name' => $post['title'], 'item' => $canonicalUrl);
+
+        $structuredData = array(
+            $blogPosting,
+            array('@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $breadcrumb),
+        );
+
         $data = array_merge($this->commonPublicData($pdo, $settings, $lang), array(
             'title'             => isset($post['meta_title']) && $post['meta_title'] ? $post['meta_title'] : $post['title'],
-            'meta_title'        => isset($post['meta_title']) ? $post['meta_title'] : '',
-            'meta_description'  => isset($post['meta_description']) ? $post['meta_description'] : $post['excerpt'],
-            'og_image'          => isset($post['og_image']) && $post['og_image'] ? $post['og_image'] : $post['image_url'],
+            'meta_title'        => isset($post['meta_title']) ? $post['meta_title'] : $post['title'],
+            'meta_description'  => $metaDesc,
+            'og_image'          => $ogImageAbs,
+            'og_type'           => 'article',
+            'canonical_url'     => $canonicalUrl,
+            'article_published_time' => $publishedIso,
+            'article_modified_time'  => $modifiedIso,
+            'article_section'        => isset($post['category_name']) ? $post['category_name'] : '',
+            'structured_data'   => $structuredData,
             'slug'              => $slug,
             'post'              => $post,
             'blocks'            => $blocks,

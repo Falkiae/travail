@@ -35,6 +35,19 @@ abstract class BaseController
         return Database::getInstance();
     }
 
+    /**
+     * Racine absolue du site (schéma + hôte), pour les URLs canoniques et
+     * les données structurées — sans slash final.
+     */
+    protected function baseUrl(): string
+    {
+        $https  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+        $scheme = $https ? 'https' : 'http';
+        $host   = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'keepnew.be';
+        return $scheme . '://' . $host;
+    }
+
     protected function requireLogin(): void
     {
         Auth::requireLogin();

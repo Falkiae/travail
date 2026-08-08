@@ -41,15 +41,49 @@
     <meta name="robots" content="<?php echo htmlspecialchars($robots_global); ?>">
     <?php endif; ?>
 
-    <?php if (isset($canonical) && $canonical): ?>
-    <link rel="canonical" href="<?php echo htmlspecialchars($canonical); ?>">
+    <?php
+    // Auto-référencée si aucune canonical_url explicite n'est fournie par le contrôleur
+    // (canonical_url est le nom utilisé par PageController/FrontController ; canonical
+    // est conservé en repli au cas où un bloc ou template plus ancien l'utiliserait encore).
+    $__canonical = isset($canonical_url) && $canonical_url ? $canonical_url : (isset($canonical) && $canonical ? $canonical : '');
+    if ($__canonical === '' && isset($_SERVER['REQUEST_URI'])) {
+        $__https  = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+        $__host   = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'keepnew.be';
+        $__canonical = ($__https ? 'https' : 'http') . '://' . $__host . strtok($_SERVER['REQUEST_URI'], '?');
+    }
+    ?>
+    <?php if ($__canonical !== ''): ?>
+    <link rel="canonical" href="<?php echo htmlspecialchars($__canonical); ?>">
     <?php endif; ?>
 
     <?php if (isset($og_image) && $og_image): ?>
     <meta property="og:image" content="<?php echo htmlspecialchars($og_image); ?>">
     <?php endif; ?>
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="<?php echo isset($og_type) && $og_type ? htmlspecialchars($og_type) : 'website'; ?>">
     <meta property="og:title" content="<?php echo isset($meta_title) && $meta_title ? htmlspecialchars($meta_title) : 'Keepnew — Nettoyage à domicile'; ?>">
+    <?php if ($__canonical !== ''): ?>
+    <meta property="og:url" content="<?php echo htmlspecialchars($__canonical); ?>">
+    <?php endif; ?>
+    <?php if (isset($meta_description) && $meta_description): ?>
+    <meta property="og:description" content="<?php echo htmlspecialchars($meta_description); ?>">
+    <?php endif; ?>
+    <meta name="twitter:card" content="<?php echo isset($og_image) && $og_image ? 'summary_large_image' : 'summary'; ?>">
+
+    <?php if (!empty($article_published_time)): ?>
+    <meta property="article:published_time" content="<?php echo htmlspecialchars($article_published_time); ?>">
+    <?php endif; ?>
+    <?php if (!empty($article_modified_time)): ?>
+    <meta property="article:modified_time" content="<?php echo htmlspecialchars($article_modified_time); ?>">
+    <?php endif; ?>
+    <?php if (!empty($article_section)): ?>
+    <meta property="article:section" content="<?php echo htmlspecialchars($article_section); ?>">
+    <?php endif; ?>
+
+    <?php if (!empty($structured_data)): ?>
+    <?php foreach ((array) $structured_data as $__ld): ?>
+    <script type="application/ld+json"><?php echo json_encode($__ld, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?></script>
+    <?php endforeach; ?>
+    <?php endif; ?>
 
     <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
