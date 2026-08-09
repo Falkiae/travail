@@ -374,6 +374,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.25rem;
+  margin-top: 2rem;
 }
 
 .kn-service-card {
@@ -407,6 +408,13 @@
 /* ── Domicile & Atelier ─────────────────────────────────────── */
 .kn-two-col {
   background: var(--kn-cream);
+}
+/* .kn-grid (colonnes du bloc) n'a pas de marge propre, pour rester
+   réutilisable ailleurs sans imposer d'espacement. Ici il suit
+   directement le titre : sans cette règle, ils étaient collés. */
+.kn-two-col .kn-section__title + .kn-grid,
+.kn-two-col .kn-eyebrow + .kn-grid {
+  margin-top: 2rem;
 }
 
 .kn-two-col__grid {
@@ -447,6 +455,7 @@
 .kn-how__steps {
   display: grid;
   gap: 2rem;
+  margin-top: 2rem;
   margin-bottom: 2.5rem;
 }
 
@@ -490,6 +499,7 @@
 .kn-reviews__grid {
   display: grid;
   gap: 1.25rem;
+  margin-top: 2rem;
   margin-bottom: 2rem;
 }
 
@@ -1231,7 +1241,7 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 
 .kn-sofa-intro {
   max-width: 640px;
-  margin: 0 auto 2rem;
+  margin: 1rem auto 2rem;
   text-align: center;
   font-size: 1.05rem;
   line-height: 1.65;
