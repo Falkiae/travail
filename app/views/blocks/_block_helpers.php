@@ -327,8 +327,12 @@ function knIcon(string $name, array $opts = array()): string
     // 2. Jeu Lucide intégré
     if ($resolved !== '') {
         $paths = knIconPaths();
+        // 'fill' => un tracé plein (étoile de notation, coche pleine…) plutôt
+        // que le contour par défaut — sans quoi une étoile "active" ne se
+        // distingue pas visuellement d'une étoile vide, juste un contour fin.
+        $filled = !empty($opts['fill']);
         return '<svg class="' . htmlspecialchars($class) . '" width="' . $size . '" height="' . $size . '"'
-             . ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"'
+             . ' viewBox="0 0 24 24" fill="' . ($filled ? 'currentColor' : 'none') . '" stroke="currentColor" stroke-width="1.5"'
              . ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
              . $paths[$resolved]
              . '</svg>';

@@ -155,8 +155,19 @@ class FrontController extends BaseController
      * Fetch Google reviews, using a 24h cache stored in kn_settings.
      * Returns array of up to 3 reviews with rating >= 4.
      */
+    /**
+     * Renvoie ['items' => [...avis...], 'rating' => 4.9, 'total' => 110].
+     *
+     * Limite dure de l'API Place Details (legacy) : Google ne renvoie
+     * jamais plus de 5 avis par appel, quel que soit le tri demandé —
+     * ce n'est pas un choix de ce code, impossible d'en obtenir plus par
+     * cette voie. « rating » et « total » en revanche portent sur
+     * l'intégralité des avis de la fiche, pas seulement les 5 renvoyés.
+     */
     private function fetchGoogleReviews(\PDO $pdo, array $settings): array
     {
+        $empty = array('items' => array(), 'rating' => null, 'total' => null);
+
         $cache    = isset($settings['google_reviews_cache']) ? $settings['google_reviews_cache'] : '';
         $cache_at = isset($settings['google_reviews_cache_at']) ? $settings['google_reviews_cache_at'] : '';
         // Le formulaire des réglages enregistre la clé sous google_reviews_api_key —
@@ -177,15 +188,19 @@ class FrontController extends BaseController
 
         if ($cache_valid) {
             $data = json_decode($cache, true);
-            if (is_array($data)) {
-                return $this->filterReviews($data);
+            if (is_array($data) && isset($data['items'])) {
+                return array(
+                    'items'  => $this->filterReviews($data['items']),
+                    'rating' => isset($data['rating']) ? $data['rating'] : null,
+                    'total'  => isset($data['total']) ? $data['total'] : null,
+                );
             }
         }
 
         // Pas de cache valide : on retente l'API, mais seulement si les deux
         // réglages sont réellement configurés.
         if ($api_key === '' || $place_id === '') {
-            return array();
+            return $empty;
         }
 
         $url = 'https://maps.googleapis.com/maps/api/place/details/json'
@@ -206,27 +221,32 @@ class FrontController extends BaseController
         $response = @file_get_contents($url, false, $ctx);
         if ($response === false) {
             error_log('[Keepnew] Google Reviews : échec de connexion à l\'API Google Places.');
-            return array();
+            return $empty;
         }
 
         $decoded = json_decode($response, true);
         $status  = isset($decoded['status']) ? $decoded['status'] : 'UNKNOWN';
 
-        if (!is_array($decoded) || $status !== 'OK' || !isset($decoded['result']['reviews'])) {
+        if (!is_array($decoded) || $status !== 'OK' || !isset($decoded['result'])) {
             // Toujours renvoyé silencieusement au visiteur (le bloc affiche
             // simplement son message de repli), mais consigné pour pouvoir
             // diagnostiquer une clé invalide, une API non activée, un Place
             // ID incorrect ou un quota dépassé.
             $message = isset($decoded['error_message']) ? $decoded['error_message'] : '';
             error_log('[Keepnew] Google Reviews : réponse API status=' . $status . ($message !== '' ? ' — ' . $message : ''));
-            return array();
+            return $empty;
         }
 
-        $raw_reviews = $decoded['result']['reviews'];
+        $result = $decoded['result'];
+        $data   = array(
+            'items'  => isset($result['reviews']) && is_array($result['reviews']) ? $result['reviews'] : array(),
+            'rating' => isset($result['rating']) ? (float) $result['rating'] : null,
+            'total'  => isset($result['user_ratings_total']) ? (int) $result['user_ratings_total'] : null,
+        );
 
         // Persist to cache
         try {
-            $json_cache = json_encode($raw_reviews);
+            $json_cache = json_encode($data);
             $now        = date('Y-m-d H:i:s');
             $this->upsertSetting($pdo, 'google_reviews_cache', $json_cache);
             $this->upsertSetting($pdo, 'google_reviews_cache_at', $now);
@@ -234,11 +254,18 @@ class FrontController extends BaseController
             // Non-fatal — continue without caching
         }
 
-        return $this->filterReviews($raw_reviews);
+        return array(
+            'items'  => $this->filterReviews($data['items']),
+            'rating' => $data['rating'],
+            'total'  => $data['total'],
+        );
     }
 
     /**
-     * Filter reviews: rating >= 4, max 3, most recent first.
+     * Filtre les avis (note >= 4, les plus récents en premier). Le vrai
+     * plafond vient de Google (5 avis max par appel Place Details) : cette
+     * limite à 10 ne fait qu'éviter d'afficher un nombre déraisonnable si
+     * jamais l'API changeait de comportement, elle ne « débloque » rien.
      */
     private function filterReviews(array $reviews): array
     {
@@ -254,7 +281,7 @@ class FrontController extends BaseController
             $tb = isset($b['time']) ? (int)$b['time'] : 0;
             return $tb - $ta;
         });
-        return array_slice($filtered, 0, 3);
+        return array_slice($filtered, 0, 10);
     }
 
     /**
