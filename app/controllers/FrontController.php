@@ -47,12 +47,23 @@ class FrontController extends BaseController
         $lang      = isset($settings['lang']) ? $settings['lang'] : 'fr';
         $nav_items = $this->fetchNavItems($pdo, $lang);
 
+        $structuredData = array();
+        $hasReviewsBlock = false;
+        foreach ($blocks as $b) {
+            if (isset($b['type']) && $b['type'] === 'reviews') { $hasReviewsBlock = true; break; }
+        }
+        if ($hasReviewsBlock) {
+            $businessData = $this->buildReviewsStructuredData($settings, $reviews, $site_name, $this->baseUrl() . '/');
+            if ($businessData) $structuredData[] = $businessData;
+        }
+
         $this->view->render('home', [
             'title'       => 'Nettoyage à domicile — Canapés, Matelas &amp; Voitures | Keepnew',
             'meta_title'  => 'Nettoyage de canapés, matelas &amp; voitures à domicile | Keepnew',
             'meta_description' => 'Keepnew — Service de nettoyage professionnel à domicile en Belgique. Canapés, matelas, voitures, terrasses. Zone Liège, Namur, Bruxelles, Luxembourg. Devis gratuit.',
             'booking_url' => $booking_url,
             'site_name'   => $site_name,
+            'structured_data' => $structuredData,
             'logo_url'       => isset($settings['logo_url']) ? $settings['logo_url'] : '',
             'logo_light_url' => isset($settings['logo_light_url']) ? $settings['logo_light_url'] : '',
             'logo_rose_url'  => isset($settings['logo_rose_url'])  ? $settings['logo_rose_url']  : '',
@@ -330,6 +341,76 @@ class FrontController extends BaseController
             return $tb - $ta;
         });
         return array_slice($filtered, 0, self::REVIEWS_ARCHIVE_SIZE);
+    }
+
+    /**
+     * Construit le JSON-LD LocalBusiness + AggregateRating + Review pour la
+     * page d'accueil / une page contenant le bloc « avis ».
+     *
+     * Important — à savoir avant de s'attendre à voir des étoiles sous le
+     * lien bleu dans les résultats Google : depuis 2019, Google exclut
+     * explicitement LocalBusiness et Organization du rich snippet « étoiles »
+     * quand l'entité évaluée publie elle-même ses propres avis sur son
+     * propre site (« self-serving reviews ») — exactement notre cas ici.
+     * Cette règle ne s'applique PAS à Product, Recipe, Course, Event, etc.,
+     * mais s'applique bien à LocalBusiness. Cette structure reste ajoutée
+     * malgré tout car elle est correcte, utile au Knowledge Panel Google
+     * et surtout exploitable par les moteurs génératifs (GEO) — mais elle
+     * ne fera pas apparaître d'étoiles sous keepnew.be dans Google Search.
+     * Les étoiles déjà visibles sur Google Maps / le pack local viennent
+     * directement de la fiche Google Business Profile, indépendamment de
+     * tout code sur le site.
+     */
+    private function buildReviewsStructuredData(array $settings, array $reviews, string $siteName, string $canonicalUrl): ?array
+    {
+        $items  = isset($reviews['items']) && is_array($reviews['items']) ? $reviews['items'] : array();
+        $rating = isset($reviews['rating']) ? $reviews['rating'] : null;
+        $total  = isset($reviews['total']) ? $reviews['total'] : null;
+
+        // Sans note ni total, il n'y a rien de véridique à publier.
+        if ($rating === null || $total === null) return null;
+
+        $logo = !empty($settings['logo_url']) ? $this->absUrl($settings['logo_url']) : '';
+
+        $business = array_filter(array(
+            '@context'  => 'https://schema.org',
+            '@type'     => 'LocalBusiness',
+            '@id'       => $canonicalUrl . '#business',
+            'name'      => $siteName,
+            'url'       => $canonicalUrl,
+            'image'     => $logo !== '' ? $logo : null,
+            'telephone' => !empty($settings['footer_phone']) ? $settings['footer_phone'] : null,
+        ));
+
+        $business['aggregateRating'] = array(
+            '@type'       => 'AggregateRating',
+            'ratingValue' => $rating,
+            'reviewCount' => $total,
+            'bestRating'  => 5,
+            'worstRating' => 1,
+        );
+
+        if ($items) {
+            $reviewList = array();
+            foreach ($items as $r) {
+                if (!isset($r['author_name']) || !isset($r['rating'])) continue;
+                $reviewList[] = array_filter(array(
+                    '@type'         => 'Review',
+                    'author'        => array('@type' => 'Person', 'name' => $r['author_name']),
+                    'datePublished' => isset($r['time']) ? date('c', (int) $r['time']) : null,
+                    'reviewBody'    => isset($r['text']) && $r['text'] !== '' ? $r['text'] : null,
+                    'reviewRating'  => array(
+                        '@type'       => 'Rating',
+                        'ratingValue' => (int) $r['rating'],
+                        'bestRating'  => 5,
+                        'worstRating' => 1,
+                    ),
+                ));
+            }
+            if ($reviewList) $business['review'] = $reviewList;
+        }
+
+        return $business;
     }
 
     /**
@@ -708,6 +789,19 @@ class FrontController extends BaseController
 
         $reviews = $this->fetchGoogleReviews($pdo, $settings);
 
+        $pageStructuredData = array();
+        $hasReviewsBlock = false;
+        foreach ($blocks as $b) {
+            if (isset($b['type']) && $b['type'] === 'reviews') { $hasReviewsBlock = true; break; }
+        }
+        if ($hasReviewsBlock) {
+            $pageCanonical = isset($page_row['canonical_url']) && $page_row['canonical_url']
+                ? $page_row['canonical_url']
+                : $this->baseUrl() . '/' . $slug;
+            $businessData = $this->buildReviewsStructuredData($settings, $reviews, $site_name, $pageCanonical);
+            if ($businessData) $pageStructuredData[] = $businessData;
+        }
+
         $this->view->render($template, array(
             'title'       => isset($page_row['meta_title']) && $page_row['meta_title'] ? $page_row['meta_title'] : (isset($page_row['title']) ? $page_row['title'] : $slug),
             'meta_title'  => isset($page_row['meta_title']) ? $page_row['meta_title'] : '',
@@ -718,6 +812,7 @@ class FrontController extends BaseController
             'slug'        => $slug,
             'booking_url' => $booking_url,
             'site_name'   => $site_name,
+            'structured_data' => $pageStructuredData,
             'logo_url'       => isset($settings['logo_url']) ? $settings['logo_url'] : '',
             'logo_light_url' => isset($settings['logo_light_url']) ? $settings['logo_light_url'] : '',
             'logo_rose_url'  => isset($settings['logo_rose_url'])  ? $settings['logo_rose_url']  : '',
