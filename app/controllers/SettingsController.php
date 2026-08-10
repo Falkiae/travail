@@ -40,7 +40,7 @@ class SettingsController extends BaseController
             'maintenance_mode', 'maintenance_message', 'robots_global',
             'cookie_banner_enabled', 'cookie_banner_text', 'cookie_policy_url',
             'social_linkedin', 'social_twitter', 'social_facebook', 'social_instagram',
-            'booking_url', 'google_api_key', 'google_place_id',
+            'booking_url', 'google_place_id',
             'logo_url', 'logo_light_url', 'logo_rose_url', 'logo_alt',
             'google_reviews_api_key',
             'cache_enabled',
@@ -88,5 +88,67 @@ class SettingsController extends BaseController
             ->execute([$version, $version]);
         Auth::setFlash('success', 'Cache vidé — les navigateurs re-téléchargeront les fichiers.');
         $this->redirect('/' . ADMIN_PATH . '/settings');
+    }
+
+    /**
+     * Teste la connexion à l'API Google Places en direct, avec les valeurs
+     * du formulaire (pas forcément encore enregistrées) — pour valider une
+     * clé API et un Place ID sans attendre l'expiration du cache 24h.
+     */
+    public function testGoogleReviews(): void
+    {
+        $this->requireLogin();
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
+            $this->jsonResponse(['ok' => false, 'message' => 'Token CSRF invalide.'], 403);
+        }
+
+        $api_key  = trim(isset($_POST['api_key']) ? $_POST['api_key'] : '');
+        $place_id = trim(isset($_POST['place_id']) ? $_POST['place_id'] : '');
+
+        if ($api_key === '' || $place_id === '') {
+            $this->jsonResponse(['ok' => false, 'message' => 'Renseignez la clé API et le Place ID avant de tester.']);
+        }
+
+        $url = 'https://maps.googleapis.com/maps/api/place/details/json'
+             . '?place_id=' . rawurlencode($place_id)
+             . '&fields=reviews,rating,user_ratings_total,name'
+             . '&reviews_sort=newest'
+             . '&key=' . rawurlencode($api_key)
+             . '&language=fr';
+
+        $ctx = stream_context_create([
+            'http' => ['timeout' => 8, 'method' => 'GET', 'ignore_errors' => true],
+        ]);
+        $response = @file_get_contents($url, false, $ctx);
+
+        if ($response === false) {
+            $this->jsonResponse(['ok' => false, 'message' => 'Connexion à l\'API Google impossible (réseau ou délai dépassé).']);
+        }
+
+        $decoded = json_decode($response, true);
+        $status  = is_array($decoded) && isset($decoded['status']) ? $decoded['status'] : 'UNKNOWN';
+
+        if ($status !== 'OK') {
+            $hints = [
+                'REQUEST_DENIED'   => 'Clé refusée : vérifiez qu\'elle est valide, que l\'API « Places API » (legacy, pas « Places API (New) ») est activée sur ce projet Google Cloud, et qu\'un moyen de facturation y est associé.',
+                'INVALID_REQUEST'  => 'Requête invalide : le Place ID semble mal formé.',
+                'NOT_FOUND'        => 'Aucun établissement trouvé pour ce Place ID.',
+                'OVER_QUERY_LIMIT' => 'Quota de requêtes dépassé pour cette clé API.',
+            ];
+            $message = isset($decoded['error_message']) && $decoded['error_message']
+                ? $decoded['error_message']
+                : ($hints[$status] ?? ('Statut inattendu renvoyé par Google : ' . $status));
+            $this->jsonResponse(['ok' => false, 'status' => $status, 'message' => $message]);
+        }
+
+        $result = isset($decoded['result']) && is_array($decoded['result']) ? $decoded['result'] : [];
+        $this->jsonResponse([
+            'ok'           => true,
+            'status'       => 'OK',
+            'name'         => isset($result['name']) ? $result['name'] : '',
+            'rating'       => isset($result['rating']) ? $result['rating'] : null,
+            'total'        => isset($result['user_ratings_total']) ? $result['user_ratings_total'] : null,
+            'review_count' => isset($result['reviews']) && is_array($result['reviews']) ? count($result['reviews']) : 0,
+        ]);
     }
 }

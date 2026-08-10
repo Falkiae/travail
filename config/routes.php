@@ -62,6 +62,7 @@ return [
     'GET /admin/settings'                       => ['SettingsController', 'index'],
     'POST /admin/settings'                      => ['SettingsController', 'update'],
     'POST /admin/settings/clear-cache'          => ['SettingsController', 'clearCache'],
+    'POST /admin/settings/test-google-reviews'  => ['SettingsController', 'testGoogleReviews'],
 
     'GET /admin/sofa'                           => ['SofaController', 'index'],
     'POST /admin/sofa'                          => ['SofaController', 'update'],

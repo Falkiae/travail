@@ -159,7 +159,12 @@ class FrontController extends BaseController
     {
         $cache    = isset($settings['google_reviews_cache']) ? $settings['google_reviews_cache'] : '';
         $cache_at = isset($settings['google_reviews_cache_at']) ? $settings['google_reviews_cache_at'] : '';
-        $api_key  = isset($settings['google_api_key']) ? $settings['google_api_key'] : '';
+        // Le formulaire des réglages enregistre la clé sous google_reviews_api_key —
+        // c'était lu ici sous google_api_key, une clé qu'aucun champ n'a jamais
+        // écrite : l'appel API ne s'est donc jamais déclenché, quelle que soit la
+        // valeur saisie dans l'admin.
+        $api_key  = isset($settings['google_reviews_api_key']) ? trim($settings['google_reviews_api_key']) : '';
+        $place_id = isset($settings['google_place_id']) ? trim($settings['google_place_id']) : '';
 
         // Check whether cache is still valid (< 24h old)
         $cache_valid = false;
@@ -177,32 +182,43 @@ class FrontController extends BaseController
             }
         }
 
-        // No valid cache — try API
-        if (!$api_key) {
+        // Pas de cache valide : on retente l'API, mais seulement si les deux
+        // réglages sont réellement configurés.
+        if ($api_key === '' || $place_id === '') {
             return array();
         }
 
-        $place_id = 'ChIJ3eozWDz5wEcR8MOdpMxrwsY';
-        $url      = 'https://maps.googleapis.com/maps/api/place/details/json'
-                  . '?place_id=' . rawurlencode($place_id)
-                  . '&fields=reviews,rating,user_ratings_total'
-                  . '&key=' . rawurlencode($api_key)
-                  . '&language=fr';
+        $url = 'https://maps.googleapis.com/maps/api/place/details/json'
+             . '?place_id=' . rawurlencode($place_id)
+             . '&fields=reviews,rating,user_ratings_total'
+             . '&reviews_sort=newest'
+             . '&key=' . rawurlencode($api_key)
+             . '&language=fr';
 
         $ctx = stream_context_create(array(
             'http' => array(
-                'timeout' => 5,
-                'method'  => 'GET',
+                'timeout'       => 5,
+                'method'        => 'GET',
+                'ignore_errors' => true, // pour lire le corps même sur 4xx
             ),
         ));
 
         $response = @file_get_contents($url, false, $ctx);
         if ($response === false) {
+            error_log('[Keepnew] Google Reviews : échec de connexion à l\'API Google Places.');
             return array();
         }
 
         $decoded = json_decode($response, true);
-        if (!is_array($decoded) || !isset($decoded['result']['reviews'])) {
+        $status  = isset($decoded['status']) ? $decoded['status'] : 'UNKNOWN';
+
+        if (!is_array($decoded) || $status !== 'OK' || !isset($decoded['result']['reviews'])) {
+            // Toujours renvoyé silencieusement au visiteur (le bloc affiche
+            // simplement son message de repli), mais consigné pour pouvoir
+            // diagnostiquer une clé invalide, une API non activée, un Place
+            // ID incorrect ou un quota dépassé.
+            $message = isset($decoded['error_message']) ? $decoded['error_message'] : '';
+            error_log('[Keepnew] Google Reviews : réponse API status=' . $status . ($message !== '' ? ' — ' . $message : ''));
             return array();
         }
 

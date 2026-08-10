@@ -201,6 +201,7 @@ function s(array $settings, string $key, string $default = ''): string {
   <!-- Avis Google -->
   <div class="card">
     <div class="card-title">Avis Google (My Business)</div>
+    <p class="help-text">Récupère automatiquement vos 5 avis Google les plus récents (note ≥ 4/5, les 3 meilleurs affichés), mis en cache 24h. Nécessite les deux champs ci-dessous.</p>
     <div class="form-row">
       <div class="form-group">
         <label for="google_reviews_api_key">Clé API Google Places</label>
@@ -211,6 +212,10 @@ function s(array $settings, string $key, string $default = ''): string {
         <input type="text" id="google_place_id" name="google_place_id" value="<?= s($settings, 'google_place_id') ?>" placeholder="ChIJ…">
         <small style="color:var(--color-muted)">Trouvez votre Place ID sur <a href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener">developers.google.com</a></small>
       </div>
+    </div>
+    <div class="form-group">
+      <button type="button" id="test-google-reviews-btn" class="btn btn-secondary btn-sm">Tester la connexion</button>
+      <div id="test-google-reviews-result" style="margin-top:.75rem;font-size:.875rem;"></div>
     </div>
   </div>
 
@@ -349,5 +354,43 @@ document.getElementById('logo-rose-media-btn').addEventListener('click', functio
   openMediaModal(function(media) {
     document.getElementById('logo_rose_url').value = media.webp_path || media.path;
   });
+});
+
+document.getElementById('test-google-reviews-btn').addEventListener('click', function() {
+  var btn    = this;
+  var result = document.getElementById('test-google-reviews-result');
+  var apiKey  = document.getElementById('google_reviews_api_key').value.trim();
+  var placeId = document.getElementById('google_place_id').value.trim();
+
+  result.style.color = '';
+  result.textContent = 'Test en cours…';
+  btn.disabled = true;
+
+  var body = new URLSearchParams();
+  body.set('csrf_token', <?= json_encode($csrf_token) ?>);
+  body.set('api_key', apiKey);
+  body.set('place_id', placeId);
+
+  fetch('/admin/settings/test-google-reviews', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString(),
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      btn.disabled = false;
+      if (data.ok) {
+        result.style.color = 'var(--color-success, #16a34a)';
+        result.textContent = '✓ Connecté à « ' + data.name + ' » — note ' + data.rating + '/5 (' + data.total + ' avis au total), ' + data.review_count + ' avis récupérés par cet appel.';
+      } else {
+        result.style.color = 'var(--color-danger, #dc2626)';
+        result.textContent = '✗ ' + data.message;
+      }
+    })
+    .catch(function() {
+      btn.disabled = false;
+      result.style.color = 'var(--color-danger, #dc2626)';
+      result.textContent = '✗ Erreur réseau pendant le test.';
+    });
 });
 </script>
