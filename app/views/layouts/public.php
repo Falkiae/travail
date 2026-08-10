@@ -126,6 +126,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- ── Navigation ──────────────────────────────────────────── -->
 <?php
+// Trois variantes de logo possibles ; la version rose n'entre en jeu
+// que si elle est réellement configurée, sinon on garde le comportement
+// existant (logo sombre) sur un hero rose.
+$__logoAlt   = htmlspecialchars(isset($logo_alt) ? $logo_alt : (isset($site_name) ? $site_name : 'Keepnew'));
+$__logoDark  = !empty($logo_url)       ? htmlspecialchars($logo_url)       : '';
+$__logoLight = !empty($logo_light_url) ? htmlspecialchars($logo_light_url) : $__logoDark;
+$__logoRose  = !empty($logo_rose_url)  ? htmlspecialchars($logo_rose_url)  : $__logoDark;
+$__hasRoseLogo = ($__logoRose !== $__logoDark);
+
 $__navClass = 'kn-nav';
 if (!empty($blocks) && is_array($blocks)) {
     $__firstBlock = $blocks[0];
@@ -135,6 +144,10 @@ if (!empty($blocks) && is_array($blocks)) {
         $__heroVideoBg = (isset($__firstBlock['visual_type']) && $__firstBlock['visual_type'] === 'video_bg');
         if ($__heroBg === 'blue' || $__heroBg === 'night' || $__heroVideoBg) {
             $__navClass .= ' kn-nav--light';
+        } elseif ($__heroBg === 'rose' && $__hasRoseLogo) {
+            // Uniquement si un logo rose distinct est configuré : sinon on
+            // reste dans l'état par défaut, qui affiche déjà le logo sombre.
+            $__navClass .= ' kn-nav--rose';
         }
     }
 }
@@ -143,14 +156,13 @@ if (!empty($blocks) && is_array($blocks)) {
   <div class="container">
     <div class="kn-nav__inner">
       <a class="kn-nav__logo" href="/">
-        <?php
-          $__logoAlt   = htmlspecialchars(isset($logo_alt) ? $logo_alt : (isset($site_name) ? $site_name : 'Keepnew'));
-          $__logoDark  = !empty($logo_url)       ? htmlspecialchars($logo_url)       : '';
-          $__logoLight = !empty($logo_light_url) ? htmlspecialchars($logo_light_url) : $__logoDark;
-          if ($__logoDark !== ''): ?>
+        <?php if ($__logoDark !== ''): ?>
           <img src="<?php echo $__logoDark; ?>" alt="<?php echo $__logoAlt; ?>" class="kn-nav__logo-img kn-nav__logo-img--dark">
           <?php if ($__logoLight !== $__logoDark): ?>
           <img src="<?php echo $__logoLight; ?>" alt="<?php echo $__logoAlt; ?>" class="kn-nav__logo-img kn-nav__logo-img--light">
+          <?php endif; ?>
+          <?php if ($__hasRoseLogo): ?>
+          <img src="<?php echo $__logoRose; ?>" alt="<?php echo $__logoAlt; ?>" class="kn-nav__logo-img kn-nav__logo-img--rose">
           <?php endif; ?>
         <?php else: ?>
           <?php echo htmlspecialchars(isset($site_name) ? $site_name : 'Keepnew'); ?>

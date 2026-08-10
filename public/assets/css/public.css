@@ -112,17 +112,29 @@
   .kn-nav__logo-img { max-height: 100px; }
 }
 
-/* Logo sombre → visible sur fond clair, caché sur fond sombre */
+/* Logo sombre → visible par défaut (fond clair : blanc / ivoire / crème) */
 .kn-nav__logo-img--dark  { display: block; }
 .kn-nav__logo-img--light { display: none; }
+.kn-nav__logo-img--rose  { display: none; }
 
-/* Quand la nav est en mode light (hero dark/video) */
+/* Hero navy / navy foncé / vidéo → logo clair */
 .kn-nav--light .kn-nav__logo-img--dark  { display: none; }
 .kn-nav--light .kn-nav__logo-img--light { display: block; }
+.kn-nav--light .kn-nav__logo-img--rose  { display: none; }
 
-/* Une fois scrollé (retour fond clair), reprendre le logo sombre */
+/* Hero rose → logo dédié (seulement s'il est configuré, sinon .kn-nav--rose
+   n'est jamais posée et le logo sombre par défaut reste affiché) */
+.kn-nav--rose .kn-nav__logo-img--dark  { display: none; }
+.kn-nav--rose .kn-nav__logo-img--light { display: none; }
+.kn-nav--rose .kn-nav__logo-img--rose  { display: block; }
+
+/* Une fois la nav défilée, son fond redevient crème quel que soit le hero
+   d'origine : le logo sombre doit systématiquement reprendre le dessus,
+   y compris sur une variante rose ou claire. */
 .kn-nav--light.kn-nav--scrolled .kn-nav__logo-img--dark  { display: block; }
 .kn-nav--light.kn-nav--scrolled .kn-nav__logo-img--light { display: none; }
+.kn-nav--rose.kn-nav--scrolled .kn-nav__logo-img--dark  { display: block; }
+.kn-nav--rose.kn-nav--scrolled .kn-nav__logo-img--rose  { display: none; }
 
 .kn-nav__menu {
   display: none;

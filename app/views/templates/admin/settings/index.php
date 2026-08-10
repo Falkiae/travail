@@ -63,6 +63,7 @@ function s(array $settings, string $key, string $default = ''): string {
   <!-- Logo -->
   <div class="card">
     <div class="card-title">Logo</div>
+    <p class="help-text">Trois versions du logo, choisies automatiquement selon le fond du hero. Une fois la navigation défilée (fond crème fixe), c'est toujours la version sombre qui s'affiche — quel que soit le hero en dessous.</p>
     <div class="form-row">
       <div class="form-group">
         <label for="logo_url">Logo version sombre</label>
@@ -70,7 +71,7 @@ function s(array $settings, string $key, string $default = ''): string {
           <input type="text" id="logo_url" name="logo_url" value="<?= s($settings, 'logo_url') ?>" placeholder="/uploads/logo.svg" style="flex:1">
           <button type="button" class="btn btn-secondary btn-sm" id="logo-media-btn">Médiathèque</button>
         </div>
-        <small style="color:var(--color-muted)">Affiché sur fond clair (nav blanche/crème). Laissez vide pour afficher le nom du site en texte.</small>
+        <small style="color:var(--color-muted)">Affiché sur fond clair (blanc, ivoire, crème) et une fois la navigation défilée. Laissez vide pour afficher le nom du site en texte.</small>
       </div>
       <div class="form-group">
         <label for="logo_light_url">Logo version claire</label>
@@ -78,18 +79,28 @@ function s(array $settings, string $key, string $default = ''): string {
           <input type="text" id="logo_light_url" name="logo_light_url" value="<?= s($settings, 'logo_light_url') ?>" placeholder="/uploads/logo-light.svg" style="flex:1">
           <button type="button" class="btn btn-secondary btn-sm" id="logo-light-media-btn">Médiathèque</button>
         </div>
-        <small style="color:var(--color-muted)">Affiché sur hero sombre / vidéo. Si vide, le logo sombre est utilisé partout.</small>
+        <small style="color:var(--color-muted)">Affiché sur hero navy / navy foncé / vidéo. Si vide, le logo sombre est utilisé partout.</small>
       </div>
     </div>
-    <div class="form-group">
-      <label for="logo_alt">Texte alternatif du logo</label>
-      <input type="text" id="logo_alt" name="logo_alt" value="<?= s($settings, 'logo_alt') ?>" placeholder="Keepnew — Nettoyage à domicile">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="logo_rose_url">Logo version rose <small style="font-weight:400;opacity:.6">(optionnel)</small></label>
+        <div class="input-row">
+          <input type="text" id="logo_rose_url" name="logo_rose_url" value="<?= s($settings, 'logo_rose_url') ?>" placeholder="/uploads/logo-rose.svg" style="flex:1">
+          <button type="button" class="btn btn-secondary btn-sm" id="logo-rose-media-btn">Médiathèque</button>
+        </div>
+        <small style="color:var(--color-muted)">Affiché uniquement sur hero à fond rose poudré. Si vide, le logo sombre est utilisé (comportement actuel).</small>
+      </div>
+      <div class="form-group">
+        <label for="logo_alt">Texte alternatif du logo</label>
+        <input type="text" id="logo_alt" name="logo_alt" value="<?= s($settings, 'logo_alt') ?>" placeholder="Keepnew — Nettoyage à domicile">
+      </div>
     </div>
-    <?php if (!empty($settings['logo_url']) || !empty($settings['logo_light_url'])): ?>
+    <?php if (!empty($settings['logo_url']) || !empty($settings['logo_light_url']) || !empty($settings['logo_rose_url'])): ?>
     <div class="form-row">
       <?php if (!empty($settings['logo_url'])): ?>
       <div class="form-group">
-        <label>Aperçu — fond clair</label>
+        <label>Aperçu — fond clair / défilé</label>
         <div style="background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius);padding:1rem;display:inline-flex;align-items:center">
           <img src="<?= htmlspecialchars($settings['logo_url']) ?>" alt="" style="max-height:50px;max-width:180px;object-fit:contain">
         </div>
@@ -97,9 +108,17 @@ function s(array $settings, string $key, string $default = ''): string {
       <?php endif; ?>
       <?php if (!empty($settings['logo_light_url'])): ?>
       <div class="form-group">
-        <label>Aperçu — fond sombre</label>
+        <label>Aperçu — fond navy</label>
         <div style="background:#24355C;border:1px solid #24355C;border-radius:var(--radius);padding:1rem;display:inline-flex;align-items:center">
           <img src="<?= htmlspecialchars($settings['logo_light_url']) ?>" alt="" style="max-height:50px;max-width:180px;object-fit:contain">
+        </div>
+      </div>
+      <?php endif; ?>
+      <?php if (!empty($settings['logo_rose_url'])): ?>
+      <div class="form-group">
+        <label>Aperçu — fond rose</label>
+        <div style="background:#F8E7E9;border:1px solid #EFC6CB;border-radius:var(--radius);padding:1rem;display:inline-flex;align-items:center">
+          <img src="<?= htmlspecialchars($settings['logo_rose_url']) ?>" alt="" style="max-height:50px;max-width:180px;object-fit:contain">
         </div>
       </div>
       <?php endif; ?>
@@ -324,6 +343,11 @@ document.getElementById('logo-media-btn').addEventListener('click', function() {
 document.getElementById('logo-light-media-btn').addEventListener('click', function() {
   openMediaModal(function(media) {
     document.getElementById('logo_light_url').value = media.webp_path || media.path;
+  });
+});
+document.getElementById('logo-rose-media-btn').addEventListener('click', function() {
+  openMediaModal(function(media) {
+    document.getElementById('logo_rose_url').value = media.webp_path || media.path;
   });
 });
 </script>
