@@ -33,6 +33,27 @@ class SettingsController extends BaseController
         }
 
         $pdo = $this->db();
+
+        // Si le Place ID ou la clé API change, le cache d'avis en place (jusqu'à
+        // 24h) correspond encore à l'ancienne fiche : on le purge pour que le
+        // changement soit visible immédiatement plutôt que dans jusqu'à 24h.
+        $reviewKeys = ['google_place_id', 'google_reviews_api_key'];
+        $stmt = $pdo->prepare("SELECT `value` FROM kn_settings WHERE `key` = ? LIMIT 1");
+        $reviewSettingChanged = false;
+        foreach ($reviewKeys as $key) {
+            if (!isset($_POST[$key])) continue;
+            $stmt->execute([$key]);
+            $current = $stmt->fetchColumn();
+            if ($current === false) $current = '';
+            if (trim((string) $_POST[$key]) !== trim((string) $current)) {
+                $reviewSettingChanged = true;
+                break;
+            }
+        }
+        if ($reviewSettingChanged) {
+            $pdo->exec("DELETE FROM kn_settings WHERE `key` IN ('google_reviews_cache', 'google_reviews_cache_at')");
+        }
+
         $allowed = [
             'site_name', 'site_baseline', 'gtm_id', 'ga4_id',
             'head_custom_code', 'body_custom_code',
@@ -71,7 +92,9 @@ class SettingsController extends BaseController
             }
         }
 
-        Auth::setFlash('success', 'Réglages enregistrés.');
+        Auth::setFlash('success', $reviewSettingChanged
+            ? 'Réglages enregistrés. Le cache des avis Google a été vidé suite au changement de Place ID / clé API : les nouveaux avis apparaîtront dès le prochain chargement de la page.'
+            : 'Réglages enregistrés.');
         $this->redirect('/' . ADMIN_PATH . '/settings');
     }
 

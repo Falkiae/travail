@@ -210,7 +210,7 @@ function s(array $settings, string $key, string $default = ''): string {
       <div class="form-group">
         <label for="google_place_id">Place ID (établissement)</label>
         <input type="text" id="google_place_id" name="google_place_id" value="<?= s($settings, 'google_place_id') ?>" placeholder="ChIJ…">
-        <small style="color:var(--color-muted)">Trouvez votre Place ID sur <a href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener">developers.google.com</a></small>
+        <small style="color:var(--color-muted)">Trouvez votre Place ID sur <a href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener">developers.google.com</a>. Si votre compte Google gère plusieurs fiches établissement, veillez à choisir celle de la bonne adresse : cherchez son nom exact dans l'outil, vérifiez l'adresse affichée sur la carte, puis copiez le Place ID correspondant.</small>
       </div>
     </div>
     <div class="form-group">
