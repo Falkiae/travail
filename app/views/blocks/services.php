@@ -21,12 +21,26 @@ $items = isset($block['items']) && is_array($block['items']) ? $block['items'] :
     <?php else: ?>
     <h2 class="kn-section__title">On s'occupe de <span class="kn-tape">tout</span>.</h2>
     <?php endif; ?>
+    <?php if (!empty($block['intro'])): ?>
+    <p class="kn-services__intro"><?php echo $block['intro']; ?></p>
+    <?php endif; ?>
     <div class="kn-services__grid">
       <?php foreach ($items as $svc): ?>
-      <a class="kn-card kn-service-card" href="<?php echo htmlspecialchars(isset($svc['url']) ? $svc['url'] : '#'); ?>">
-        <div class="kn-service-card__icon"><?php echo knIcon(isset($svc['icon']) ? $svc['icon'] : 'sparkles', array('size' => 28, 'fallback' => 'sparkle')); ?></div>
-        <h3><?php echo htmlspecialchars(isset($svc['title']) ? $svc['title'] : (isset($svc['name']) ? $svc['name'] : '')); ?></h3>
-        <p><?php echo htmlspecialchars(isset($svc['desc']) ? $svc['desc'] : ''); ?></p>
+      <?php $svcImage = isset($svc['image_url']) ? trim($svc['image_url']) : ''; ?>
+      <a class="kn-service-card<?php echo $svcImage !== '' ? ' kn-service-card--photo' : ''; ?>" href="<?php echo htmlspecialchars(isset($svc['url']) ? $svc['url'] : '#'); ?>">
+        <?php if ($svcImage !== ''): ?>
+        <div class="kn-service-card__media">
+          <?php echo knImage($svcImage, htmlspecialchars(isset($svc['title']) ? $svc['title'] : ''), array('imgSizes' => '(max-width:768px) 100vw, 380px', 'style' => 'width:100%;height:100%;object-fit:cover')); ?>
+        </div>
+        <?php endif; ?>
+        <div class="kn-service-card__body">
+          <div class="kn-service-card__icon"><?php echo knIcon(isset($svc['icon']) ? $svc['icon'] : 'sparkles', array('size' => 24, 'fallback' => 'sparkle')); ?></div>
+          <h3 class="kn-service-card__title"><?php echo htmlspecialchars(isset($svc['title']) ? $svc['title'] : (isset($svc['name']) ? $svc['name'] : '')); ?></h3>
+          <?php if (!empty($svc['desc'])): ?>
+          <p class="kn-service-card__desc"><?php echo htmlspecialchars($svc['desc']); ?></p>
+          <?php endif; ?>
+          <span class="kn-service-card__cta"><?php echo htmlspecialchars(!empty($svc['cta_label']) ? $svc['cta_label'] : 'Découvrir'); ?></span>
+        </div>
       </a>
       <?php endforeach; ?>
     </div>

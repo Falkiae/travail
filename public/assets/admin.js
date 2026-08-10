@@ -380,15 +380,16 @@ function buildBlockForm(type, data) {
       d.innerHTML =
         fg('Eyebrow', inp('eyebrow', data.eyebrow, 'NOS SERVICES')) +
         fg('H2', inp('h2', data.h2, 'Nettoyage de canapés, matelas & voitures à domicile')) +
+        fg('Intro <small style="font-weight:400;opacity:.6">(optionnel, HTML autorisé)</small>', ta('intro', data.intro, 'Keepnew propose le <strong>nettoyage de canapé</strong>, de matelas et de voiture à domicile…', 3)) +
         bgField(data.bg) +
         visibilityField(data.visible) +
-        '<div class="form-group"><label>Services</label><div class="block-repeater" data-repeater="items"></div>'
+        '<div class="form-group"><label>Services <small style="font-weight:400;opacity:.6">(photo optionnelle — sans photo, la carte revient à l\'ancien format icône seule)</small></label><div class="block-repeater" data-repeater="items"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter un service</button></div>';
       (data.items || []).forEach(function(item) {
-        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['name','desc','icon'], ['Nom','Description','Icône'], item);
+        addServiceItem(d.querySelector('[data-repeater="items"]'), item);
       });
       d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
-        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['name','desc','icon'], ['Nom','Description','Icône'], {});
+        addServiceItem(d.querySelector('[data-repeater="items"]'), {});
       });
       break;
 
@@ -701,6 +702,40 @@ function addRepeaterRow(container, repeaterName, fields, labels, data) {
   row.innerHTML = html;
   row.querySelector('.remove-repeater-row').addEventListener('click', function() {
     row.remove();
+  });
+  container.appendChild(row);
+}
+
+function addServiceItem(container, data) {
+  data = data || {};
+  var row = document.createElement('div');
+  row.className = 'block-repeater-row';
+  row.innerHTML =
+    '<div class="block-repeater-row__fields">'
+    + '<label class="block-repeater-row__label">Nom<input type="text" data-rfield="title" value="' + esc(data.title || data.name || '') + '" placeholder="Ex : Canapé & fauteuil"></label>'
+    + '<label class="block-repeater-row__label">Description<input type="text" data-rfield="desc" value="' + esc(data.desc || '') + '" placeholder="Ex : Aspiration profonde, vapeur, anti-odeurs."></label>'
+    + '<label class="block-repeater-row__label">URL<input type="text" data-rfield="url" value="' + esc(data.url || '') + '" placeholder="/services/canape"></label>'
+    + '<label class="block-repeater-row__label">Texte du bouton <small style="font-weight:400;opacity:.6">(optionnel)</small><input type="text" data-rfield="cta_label" value="' + esc(data.cta_label || '') + '" placeholder="Découvrir"></label>'
+    + '<label class="block-repeater-row__label">Icône'
+    +   '<span class="input-row icon-field">'
+    +     '<input type="text" list="kn-icon-list" data-rfield="icon" placeholder="canape, voiture…" value="' + esc(data.icon || '') + '" style="flex:1;min-width:0">'
+    +     '<button type="button" class="btn btn-secondary btn-sm icon-pick-btn">Choisir</button>'
+    +     '<span class="icon-field__preview"></span>'
+    +   '</span></label>'
+    + '<label class="block-repeater-row__label">Photo <small style="font-weight:400;opacity:.6">(optionnel)</small>'
+    +   '<div class="input-row" style="gap:.35rem">'
+    +     '<input type="text" data-rfield="image_url" value="' + esc(data.image_url || '') + '" placeholder="/uploads/…" style="flex:1;min-width:0">'
+    +     '<button type="button" class="btn btn-secondary btn-sm service-media-btn">Médiathèque</button>'
+    +   '</div>'
+    + '</label>'
+    + '</div>'
+    + '<button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
+  row.querySelector('.remove-repeater-row').addEventListener('click', function() { row.remove(); });
+  row.querySelector('.service-media-btn').addEventListener('click', function() {
+    var imgField = row.querySelector('[data-rfield="image_url"]');
+    openMediaModal(function(media) {
+      imgField.value = media.webp_path || media.path || '';
+    });
   });
   container.appendChild(row);
 }

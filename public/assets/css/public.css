@@ -382,6 +382,15 @@
   background: var(--kn-white);
 }
 
+.kn-services__intro {
+  max-width: 720px;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--kn-muted);
+  margin-top: .85rem;
+}
+.kn-services__intro strong { color: var(--kn-navy); font-weight: 700; }
+
 .kn-services__grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -392,29 +401,76 @@
 .kn-service-card {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  background: var(--kn-white);
+  border: 1px solid var(--kn-border);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--dur-base) var(--ease-classic),
+              transform  var(--dur-base) var(--ease-classic);
+}
+.kn-service-card:hover {
+  box-shadow: var(--shadow-raised);
+  transform: translateY(-2px);
 }
 
+/* Sans photo : le badge revient à sa taille d'origine et sert de repère
+   visuel principal de la carte, comme avant. */
+.kn-service-card__body { padding: 1.5rem; display: flex; flex-direction: column; gap: .5rem; }
+.kn-service-card:not(.kn-service-card--photo) .kn-service-card__body { padding: 2rem; gap: 1rem; }
+.kn-service-card:not(.kn-service-card--photo) .kn-service-card__icon { width: 64px; height: 64px; }
+
+.kn-service-card__media {
+  aspect-ratio: 4 / 3;
+  background: var(--kn-cream-soft);
+  overflow: hidden;
+}
+.kn-service-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
 .kn-service-card__icon {
-  width: 64px;
-  height: 64px;
+  width: 44px;
+  height: 44px;
   background: var(--kn-navy);
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: .25rem;
 }
 
 .kn-service-card__title {
-  font-weight: 700;
-  font-size: 1.0625rem;
-  margin-bottom: .25rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1875rem;
+  line-height: 1.3;
+  color: var(--kn-navy);
+  margin: 0;
 }
 
 .kn-service-card__desc {
   color: var(--kn-muted);
   font-size: .9375rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.kn-service-card__cta {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: .5rem;
+  padding: .4rem .9rem;
+  border-radius: var(--r-pill);
+  background: var(--kn-cream-soft);
+  color: var(--kn-rose-600);
+  font-size: .8125rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  transition: background .15s ease, color .15s ease;
+}
+.kn-service-card:hover .kn-service-card__cta {
+  background: var(--kn-navy);
+  color: var(--kn-cream);
 }
 
 /* ── Domicile & Atelier ─────────────────────────────────────── */
