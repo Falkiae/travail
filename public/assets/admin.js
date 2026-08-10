@@ -292,7 +292,7 @@ function buildBlockForm(type, data) {
 
     case 'hero':
       d.innerHTML =
-        fg('Ambiance de fond', sel('bg', [['cream','🟡 Cream (défaut)'],['white','⬜ Blanc'],['alt','🔲 Gris clair'],['blue','🔵 Bleu Keepnew'],['night','⬛ Night Ink (sombre)'],['rose','🌸 Rose (premium)']], data.bg || 'cream')) +
+        fg('Ambiance de fond', sel('bg', [['cream','🟡 Crème éditorial (défaut)'],['white','⬜ Blanc'],['alt','◽ Ivoire alterné (rythme de page)'],['blue','🔷 Navy (fond signature)'],['night','⬛ Navy profond (Night Ink)'],['rose','🌸 Rose poudré (premium)']], data.bg || 'cream')) +
         layoutField(data.layout || '1-1') +
         reverseFields(data) +
         visibilityField(data.visible) +
