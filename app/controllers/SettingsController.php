@@ -51,7 +51,7 @@ class SettingsController extends BaseController
             }
         }
         if ($reviewSettingChanged) {
-            $pdo->exec("DELETE FROM kn_settings WHERE `key` IN ('google_reviews_cache', 'google_reviews_cache_at')");
+            $pdo->exec("DELETE FROM kn_settings WHERE `key` IN ('google_reviews_cache', 'google_reviews_cache_at', 'google_reviews_archive')");
         }
 
         $allowed = [

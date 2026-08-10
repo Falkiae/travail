@@ -164,18 +164,40 @@ class FrontController extends BaseController
      * cette voie. « rating » et « total » en revanche portent sur
      * l'intégralité des avis de la fiche, pas seulement les 5 renvoyés.
      */
+    /** Nombre d'avis conservés dans l'archive glissante (voir plus bas). */
+    private const REVIEWS_ARCHIVE_SIZE = 15;
+
+    /**
+     * Renvoie ['items' => [...avis...], 'rating' => 4.9, 'total' => 110].
+     *
+     * Limite dure de l'API Place Details (legacy) : Google ne renvoie
+     * jamais plus de 5 avis par appel, quel que soit le tri demandé — ce
+     * n'est pas un choix de ce code. Pour afficher un historique plus
+     * large sans passer par l'API payante Business Profile (OAuth), on
+     * cumule une archive glissante : chaque rafraîchissement (au plus une
+     * fois par 24h grâce au cache) ajoute les avis pas encore vus à un
+     * historique conservé en base, jusqu'à REVIEWS_ARCHIVE_SIZE. Cette
+     * archive grossit donc progressivement (5 au départ, jusqu'à 15 au
+     * fil des semaines si de nouveaux avis arrivent), elle n'affiche pas
+     * 15 avis dès le premier chargement.
+     */
     private function fetchGoogleReviews(\PDO $pdo, array $settings): array
     {
         $empty = array('items' => array(), 'rating' => null, 'total' => null);
 
         $cache    = isset($settings['google_reviews_cache']) ? $settings['google_reviews_cache'] : '';
         $cache_at = isset($settings['google_reviews_cache_at']) ? $settings['google_reviews_cache_at'] : '';
+        $archive  = isset($settings['google_reviews_archive']) ? $settings['google_reviews_archive'] : '';
         // Le formulaire des réglages enregistre la clé sous google_reviews_api_key —
         // c'était lu ici sous google_api_key, une clé qu'aucun champ n'a jamais
         // écrite : l'appel API ne s'est donc jamais déclenché, quelle que soit la
         // valeur saisie dans l'admin.
         $api_key  = isset($settings['google_reviews_api_key']) ? trim($settings['google_reviews_api_key']) : '';
         $place_id = isset($settings['google_place_id']) ? trim($settings['google_place_id']) : '';
+
+        $archiveItems = array();
+        $decodedArchive = json_decode($archive, true);
+        if (is_array($decodedArchive)) $archiveItems = $decodedArchive;
 
         // Check whether cache is still valid (< 24h old)
         $cache_valid = false;
@@ -190,7 +212,7 @@ class FrontController extends BaseController
             $data = json_decode($cache, true);
             if (is_array($data) && isset($data['items'])) {
                 return array(
-                    'items'  => $this->filterReviews($data['items']),
+                    'items'  => $this->filterReviews($archiveItems ?: $data['items']),
                     'rating' => isset($data['rating']) ? $data['rating'] : null,
                     'total'  => isset($data['total']) ? $data['total'] : null,
                 );
@@ -221,7 +243,9 @@ class FrontController extends BaseController
         $response = @file_get_contents($url, false, $ctx);
         if ($response === false) {
             error_log('[Keepnew] Google Reviews : échec de connexion à l\'API Google Places.');
-            return $empty;
+            // On sert l'archive existante plutôt que de tout vider sur un
+            // simple accroc réseau.
+            return array('items' => $this->filterReviews($archiveItems), 'rating' => null, 'total' => null);
         }
 
         $decoded = json_decode($response, true);
@@ -234,38 +258,63 @@ class FrontController extends BaseController
             // ID incorrect ou un quota dépassé.
             $message = isset($decoded['error_message']) ? $decoded['error_message'] : '';
             error_log('[Keepnew] Google Reviews : réponse API status=' . $status . ($message !== '' ? ' — ' . $message : ''));
-            return $empty;
+            return array('items' => $this->filterReviews($archiveItems), 'rating' => null, 'total' => null);
         }
 
-        $result = $decoded['result'];
-        $data   = array(
-            'items'  => isset($result['reviews']) && is_array($result['reviews']) ? $result['reviews'] : array(),
-            'rating' => isset($result['rating']) ? (float) $result['rating'] : null,
-            'total'  => isset($result['user_ratings_total']) ? (int) $result['user_ratings_total'] : null,
-        );
+        $result   = $decoded['result'];
+        $freshRaw = isset($result['reviews']) && is_array($result['reviews']) ? $result['reviews'] : array();
+        $rating   = isset($result['rating']) ? (float) $result['rating'] : null;
+        $total    = isset($result['user_ratings_total']) ? (int) $result['user_ratings_total'] : null;
+
+        $mergedArchive = $this->mergeReviewsArchive($archiveItems, $freshRaw);
 
         // Persist to cache
         try {
-            $json_cache = json_encode($data);
-            $now        = date('Y-m-d H:i:s');
-            $this->upsertSetting($pdo, 'google_reviews_cache', $json_cache);
+            $now = date('Y-m-d H:i:s');
+            $this->upsertSetting($pdo, 'google_reviews_cache', json_encode(array(
+                'items'  => $freshRaw,
+                'rating' => $rating,
+                'total'  => $total,
+            )));
             $this->upsertSetting($pdo, 'google_reviews_cache_at', $now);
+            $this->upsertSetting($pdo, 'google_reviews_archive', json_encode($mergedArchive));
         } catch (\Exception $e) {
             // Non-fatal — continue without caching
         }
 
         return array(
-            'items'  => $this->filterReviews($data['items']),
-            'rating' => $data['rating'],
-            'total'  => $data['total'],
+            'items'  => $this->filterReviews($mergedArchive),
+            'rating' => $rating,
+            'total'  => $total,
         );
     }
 
     /**
-     * Filtre les avis (note >= 4, les plus récents en premier). Le vrai
-     * plafond vient de Google (5 avis max par appel Place Details) : cette
-     * limite à 10 ne fait qu'éviter d'afficher un nombre déraisonnable si
-     * jamais l'API changeait de comportement, elle ne « débloque » rien.
+     * Fusionne un lot d'avis fraîchement récupéré dans l'archive existante :
+     * dédoublonne (auteur + horodatage — un même avis renvoyé deux jours de
+     * suite ne doit pas apparaître deux fois), trie du plus récent au plus
+     * ancien, et conserve au maximum REVIEWS_ARCHIVE_SIZE entrées.
+     */
+    private function mergeReviewsArchive(array $existing, array $fresh): array
+    {
+        $byKey = array();
+        foreach (array_merge($existing, $fresh) as $r) {
+            if (!isset($r['author_name']) || !isset($r['time'])) continue;
+            $key = $r['author_name'] . '|' . $r['time'];
+            $byKey[$key] = $r; // la version la plus récemment vue écrase l'ancienne
+        }
+        $merged = array_values($byKey);
+        usort($merged, function ($a, $b) {
+            return (int) $b['time'] - (int) $a['time'];
+        });
+        return array_slice($merged, 0, self::REVIEWS_ARCHIVE_SIZE);
+    }
+
+    /**
+     * Filtre les avis (note >= 4, les plus récents en premier, jusqu'à
+     * REVIEWS_ARCHIVE_SIZE). L'archive fait déjà ce tri/cette limite ; cette
+     * méthode reste le filet de sécurité pour toute source d'avis passée
+     * directement (cache legacy, réponse API brute non archivée…).
      */
     private function filterReviews(array $reviews): array
     {
@@ -275,13 +324,12 @@ class FrontController extends BaseController
                 $filtered[] = $r;
             }
         }
-        // Sort by time descending (Google already does this, but be safe)
         usort($filtered, function ($a, $b) {
             $ta = isset($a['time']) ? (int)$a['time'] : 0;
             $tb = isset($b['time']) ? (int)$b['time'] : 0;
             return $tb - $ta;
         });
-        return array_slice($filtered, 0, 10);
+        return array_slice($filtered, 0, self::REVIEWS_ARCHIVE_SIZE);
     }
 
     /**
