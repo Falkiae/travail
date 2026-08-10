@@ -31,10 +31,13 @@ $items = isset($block['items']) && is_array($block['items']) ? $block['items'] :
         <?php if ($svcImage !== ''): ?>
         <div class="kn-service-card__media">
           <?php echo knImage($svcImage, htmlspecialchars(isset($svc['title']) ? $svc['title'] : ''), array('imgSizes' => '(max-width:768px) 100vw, 380px', 'style' => 'width:100%;height:100%;object-fit:cover')); ?>
+          <div class="kn-service-card__icon kn-service-card__icon--overlay"><?php echo knIcon(isset($svc['icon']) ? $svc['icon'] : 'sparkles', array('size' => 22, 'fallback' => 'sparkle')); ?></div>
         </div>
         <?php endif; ?>
         <div class="kn-service-card__body">
+          <?php if ($svcImage === ''): ?>
           <div class="kn-service-card__icon"><?php echo knIcon(isset($svc['icon']) ? $svc['icon'] : 'sparkles', array('size' => 24, 'fallback' => 'sparkle')); ?></div>
+          <?php endif; ?>
           <h3 class="kn-service-card__title"><?php echo htmlspecialchars(isset($svc['title']) ? $svc['title'] : (isset($svc['name']) ? $svc['name'] : '')); ?></h3>
           <?php if (!empty($svc['desc'])): ?>
           <p class="kn-service-card__desc"><?php echo htmlspecialchars($svc['desc']); ?></p>

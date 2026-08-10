@@ -421,6 +421,7 @@
 .kn-service-card:not(.kn-service-card--photo) .kn-service-card__icon { width: 64px; height: 64px; }
 
 .kn-service-card__media {
+  position: relative;
   aspect-ratio: 4 / 3;
   background: var(--kn-cream-soft);
   overflow: hidden;
@@ -437,6 +438,16 @@
   align-items: center;
   justify-content: center;
   margin-bottom: .25rem;
+}
+
+/* Badge posé sur la photo plutôt qu'au-dessus du texte : ombre portée
+   pour rester lisible quelle que soit la couleur de la photo dessous. */
+.kn-service-card__icon--overlay {
+  position: absolute;
+  top: .875rem;
+  left: .875rem;
+  margin-bottom: 0;
+  box-shadow: 0 4px 14px rgba(20,31,56,.35);
 }
 
 .kn-service-card__title {
