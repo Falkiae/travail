@@ -37,8 +37,16 @@ $rawPills = isset($block['pills']) && is_array($block['pills']) ? $block['pills'
 ?>
 <section class="<?php echo $sectionClass; ?>">
   <?php if ($isVideoBg && !empty($block['video_bg_url'])): ?>
-  <video class="kn-hero__bg-video" autoplay muted loop playsinline aria-hidden="true">
-    <source src="<?php echo htmlspecialchars($block['video_bg_url']); ?>">
+  <video
+    class="kn-hero__bg-video"
+    autoplay muted loop playsinline aria-hidden="true"
+    preload="<?php echo !empty($block['video_bg_poster_url']) ? 'metadata' : 'auto'; ?>"
+    <?php if (!empty($block['video_bg_poster_url'])): ?>poster="<?php echo htmlspecialchars($block['video_bg_poster_url']); ?>"<?php endif; ?>
+  >
+    <?php if (!empty($block['video_bg_webm_url'])): ?>
+    <source src="<?php echo htmlspecialchars($block['video_bg_webm_url']); ?>" type="video/webm">
+    <?php endif; ?>
+    <source src="<?php echo htmlspecialchars($block['video_bg_url']); ?>" type="video/mp4">
   </video>
   <?php endif; ?>
   <div class="container">
@@ -85,13 +93,19 @@ $rawPills = isset($block['pills']) && is_array($block['pills']) ? $block['pills'
       <div class="kn-hero__visual">
         <?php if ($visualType === 'video' && !empty($block['video_url'])): ?>
           <video
-            src="<?php echo htmlspecialchars($block['video_url']); ?>"
             <?php echo !empty($block['video_autoplay']) ? 'autoplay' : ''; ?>
             <?php echo !empty($block['video_loop'])     ? 'loop'     : ''; ?>
             <?php echo !empty($block['video_muted'])    ? 'muted'    : ''; ?>
             <?php echo !empty($block['video_controls']) ? 'controls' : ''; ?>
+            preload="<?php echo !empty($block['video_poster_url']) ? 'metadata' : 'auto'; ?>"
+            <?php if (!empty($block['video_poster_url'])): ?>poster="<?php echo htmlspecialchars($block['video_poster_url']); ?>"<?php endif; ?>
             playsinline
-          ></video>
+          >
+            <?php if (!empty($block['video_webm_url'])): ?>
+            <source src="<?php echo htmlspecialchars($block['video_webm_url']); ?>" type="video/webm">
+            <?php endif; ?>
+            <source src="<?php echo htmlspecialchars($block['video_url']); ?>" type="video/mp4">
+          </video>
         <?php elseif (!empty($block['image_url'])): ?>
           <?php echo knImage($block['image_url'], isset($block['image_alt']) ? $block['image_alt'] : '', ['loading' => 'eager', 'imgSizes' => '50vw']); ?>
         <?php else: ?>

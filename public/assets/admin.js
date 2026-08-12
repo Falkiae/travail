@@ -316,6 +316,8 @@ function buildBlockForm(type, data) {
         '</div>' +
         '<div data-visual-section="video">' +
           fg('Vidéo (depuis médiathèque)', mediaBtnVideo('video_url', 'Choisir une vidéo')) +
+          fg('Image d\'attente (poster) <small style="font-weight:400;opacity:.6">— affichée le temps que la vidéo charge</small>', mediaBtn('video_poster_url', 'Choisir une image')) +
+          fg('Version WebM (optionnel) <small style="font-weight:400;opacity:.6">— plus légère, utilisée en priorité si fournie</small>', mediaBtnVideo('video_webm_url', 'Choisir une vidéo webm')) +
           fg('', '<label style="display:flex;align-items:center;gap:.4rem;font-weight:400"><input type="checkbox" data-field="video_autoplay"> Lecture auto</label>' +
              '<label style="display:flex;align-items:center;gap:.4rem;font-weight:400;margin-top:.25rem"><input type="checkbox" data-field="video_loop" checked> Boucle</label>' +
              '<label style="display:flex;align-items:center;gap:.4rem;font-weight:400;margin-top:.25rem"><input type="checkbox" data-field="video_muted" checked> Muet</label>' +
@@ -323,6 +325,8 @@ function buildBlockForm(type, data) {
         '</div>' +
         '<div data-visual-section="video_bg">' +
           fg('Vidéo arrière-plan (depuis médiathèque)', mediaBtnVideo('video_bg_url', 'Choisir une vidéo')) +
+          fg('Image d\'attente (poster) <small style="font-weight:400;opacity:.6">— affichée le temps que la vidéo charge</small>', mediaBtn('video_bg_poster_url', 'Choisir une image')) +
+          fg('Version WebM (optionnel) <small style="font-weight:400;opacity:.6">— plus légère, utilisée en priorité si fournie</small>', mediaBtnVideo('video_bg_webm_url', 'Choisir une vidéo webm')) +
           '<p style="margin:.25rem 0 0;font-size:.8rem;color:var(--color-muted)">La vidéo jouera en boucle, muette, en plein fond de section.</p>' +
         '</div>' +
         '<div class="form-group"><label>Pills <small style="font-weight:400;opacity:.6">(badges sous le H1)</small></label><div class="block-repeater" data-repeater="pills"></div>'
@@ -340,6 +344,11 @@ function buildBlockForm(type, data) {
         var heroVidBgField = d.querySelector('[data-field="video_bg_url"]');
         if (heroVidBgField) heroVidBgField.value = data.video_bg_url;
       }
+      ['video_poster_url', 'video_webm_url', 'video_bg_poster_url', 'video_bg_webm_url'].forEach(function(f) {
+        if (!data[f]) return;
+        var field = d.querySelector('[data-field="' + f + '"]');
+        if (field) field.value = data[f];
+      });
       // Restore checkboxes
       ['video_autoplay','video_loop','video_muted','video_controls'].forEach(function(f) {
         var cb = d.querySelector('[data-field="' + f + '"]');
