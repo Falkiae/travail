@@ -2437,3 +2437,15 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 }
 .kn-final .kn-reviews__star-on  { color: #E3B84B; }
 .kn-final .kn-reviews__star-off { color: rgba(247,244,236,.3); }
+.kn-final__reviews-label {
+  margin: 0;
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--kn-rose-mid);
+}
+.kn-cta-card--glass .kn-icon {
+  --kn-icon-stroke: var(--kn-navy);
+  --kn-icon-accent: var(--kn-rose-600);
+}

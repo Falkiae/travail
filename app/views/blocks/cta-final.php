@@ -72,6 +72,7 @@ $hasReviews = $showReviews && ($rvRating !== null || $rvPicked);
       </div>
       <?php if ($rvPicked): ?>
       <div class="kn-final__reviews">
+        <p class="kn-final__reviews-label">Les avis les plus récents</p>
         <?php foreach ($rvPicked as $r):
           $name  = isset($r['author_name']) ? $r['author_name'] : '';
           $photo = !empty($r['profile_photo_url']) ? $r['profile_photo_url'] : '';
