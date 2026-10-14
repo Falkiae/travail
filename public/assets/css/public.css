@@ -550,19 +550,17 @@
   flex: 1;
 }
 
-.kn-how__body p { margin-bottom: 1rem; }
+.kn-how__body p { margin-bottom: 1.75rem; }
 
 .kn-how__visual {
+  position: relative;
   margin-top: auto;
-  display: flex;
-  align-items: flex-end;
-  gap: 1rem;
+  width: 100%;
+  max-width: 220px;
 }
 
 .kn-how__photo {
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 220px;
+  width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: var(--r-md);
   overflow: hidden;
@@ -2479,15 +2477,11 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 .kn-blog-latest__link:hover { background: var(--kn-navy-ink); transform: translateY(-1px); }
 .kn-bg--blue .kn-blog-latest__link, .kn-bg--night .kn-blog-latest__link { background: var(--kn-cream); color: var(--kn-navy); }
 
-/* Numéros d'étape : grand chiffre à côté de la photo (desktop) */
+/* Numéros d'étape : médaillon navy accroché au coin haut-gauche de la photo */
 .kn-how__num {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(4rem, 6.5vw, 6rem);
-  line-height: .8;
-  letter-spacing: -.02em;
   color: var(--kn-rose-deep);
-  flex-shrink: 0;
   user-select: none;
 }
 .kn-how__num--solo {
@@ -2496,29 +2490,23 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
   line-height: 1;
   margin-bottom: .5rem;
 }
+.kn-how__visual .kn-how__num {
+  position: absolute;
+  top: -.75rem;
+  left: -.5rem;
+  padding: .55rem .95rem .45rem;
+  border-radius: var(--r-md);
+  background: var(--kn-navy);
+  color: var(--kn-cream);
+  font-size: 2.25rem;
+  line-height: 1;
+  box-shadow: 0 6px 16px rgba(20,31,56,.3);
+}
 
-/* Mobile : photo pleine largeur centrée, numéro en médaillon navy
-   accroché à son coin haut-gauche (la photo garde toute sa place) */
 @media (max-width: 767px) {
-  .kn-how__body p { margin-bottom: 1.75rem; }
   .kn-how__visual {
-    position: relative;
-    width: 100%;
     max-width: 420px;
     margin-left: auto;
     margin-right: auto;
-  }
-  .kn-how__photo { max-width: none; width: 100%; flex: 1 1 auto; }
-  .kn-how__visual .kn-how__num {
-    position: absolute;
-    top: -.75rem;
-    left: -.5rem;
-    padding: .55rem .95rem .45rem;
-    border-radius: var(--r-md);
-    background: var(--kn-navy);
-    color: var(--kn-cream);
-    font-size: 2.25rem;
-    line-height: 1;
-    box-shadow: 0 6px 16px rgba(20,31,56,.3);
   }
 }
