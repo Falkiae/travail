@@ -556,7 +556,7 @@
   position: relative;
   margin-top: auto;
   width: 100%;
-  max-width: 220px;
+  max-width: 420px;
 }
 
 .kn-how__photo {
@@ -2494,19 +2494,22 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
   position: absolute;
   top: -.75rem;
   left: -.5rem;
-  padding: .55rem .95rem .45rem;
+  padding: .45rem .8rem .35rem;
   border-radius: var(--r-md);
   background: var(--kn-navy);
   color: var(--kn-cream);
-  font-size: 2.25rem;
+  font-size: 1.75rem;
   line-height: 1;
   box-shadow: 0 6px 16px rgba(20,31,56,.3);
 }
 
 @media (max-width: 767px) {
   .kn-how__visual {
-    max-width: 420px;
     margin-left: auto;
     margin-right: auto;
+  }
+  .kn-how__visual .kn-how__num {
+    padding: .55rem .95rem .45rem;
+    font-size: 2.25rem;
   }
 }
