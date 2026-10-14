@@ -2392,3 +2392,48 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
   color: var(--kn-navy);
   margin: 2rem 0 1.5rem;
 }
+
+/* ── CTA final : titre, avis et réservation ─────────────────── */
+.kn-final__grid { display: grid; gap: 2.5rem; }
+.kn-final__main { display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+.kn-final:not(.kn-final--split) .kn-final__main { align-items: center; text-align: center; margin: 0 auto; max-width: 640px; }
+.kn-final__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.9rem, 4vw, 2.9rem);
+  line-height: 1.12;
+  color: var(--kn-cream);
+  margin: 0;
+}
+.kn-final__intro { color: rgba(247,244,236,.78); font-size: 1.0625rem; max-width: 520px; margin: 0; }
+.kn-final__rating { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; }
+.kn-final__stars { display: inline-flex; gap: .15rem; }
+.kn-final__rating-text { color: rgba(247,244,236,.85); font-size: .9375rem; }
+.kn-final__rating-text strong { color: var(--kn-cream); }
+.kn-final .kn-cta-card { width: 100%; max-width: 460px; margin-top: .5rem; }
+.kn-final .kn-cta-card__title { white-space: normal; }
+.kn-final .kn-cta-pave__phone { margin: 0; }
+
+.kn-final__reviews { display: flex; flex-direction: column; gap: 1rem; justify-content: center; }
+.kn-final__quote {
+  margin: 0;
+  padding: 1.5rem;
+  border-radius: var(--r-md);
+  background: rgba(247,244,236,.08);
+  border: 1px solid rgba(247,244,236,.18);
+  display: flex;
+  flex-direction: column;
+  gap: .85rem;
+}
+.kn-final__quote-stars { display: inline-flex; gap: .15rem; }
+.kn-final__quote blockquote { margin: 0; color: var(--kn-cream); font-size: 1rem; line-height: 1.55; }
+.kn-final__quote figcaption { display: flex; align-items: center; gap: .75rem; color: var(--kn-cream); }
+.kn-final__quote figcaption span { display: flex; flex-direction: column; line-height: 1.25; }
+.kn-final__quote figcaption small { color: rgba(247,244,236,.6); font-size: .78rem; }
+.kn-final__quote .kn-review-card__avatar { background: var(--kn-rose-mid); color: var(--kn-navy); flex-shrink: 0; }
+
+@media (min-width: 900px) {
+  .kn-final--split .kn-final__grid { grid-template-columns: 1.1fr 1fr; align-items: center; gap: 4rem; }
+}
+.kn-final .kn-reviews__star-on  { color: #E3B84B; }
+.kn-final .kn-reviews__star-off { color: rgba(247,244,236,.3); }
