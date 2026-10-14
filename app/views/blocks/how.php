@@ -16,15 +16,23 @@ $steps = isset($block['steps']) && is_array($block['steps']) ? $block['steps'] :
     <h2 class="kn-section__title">Trois étapes, <span class="kn-highlight">zéro stress</span>.</h2>
     <?php endif; ?>
     <div class="kn-how__steps">
-      <?php foreach ($steps as $step): ?>
+      <?php foreach ($steps as $i => $step):
+        $stepNum  = !empty($step['num']) ? $step['num'] : sprintf('%02d', $i + 1);
+        $hasPhoto = !empty($step['image_url']);
+      ?>
       <div class="kn-how__step">
-        <div class="kn-how__num"><?php echo htmlspecialchars(isset($step['num']) ? $step['num'] : (isset($step['title']) ? '' : '')); ?></div>
         <div class="kn-how__body">
+          <?php if (!$hasPhoto): ?>
+          <span class="kn-how__num kn-how__num--solo" aria-hidden="true"><?php echo htmlspecialchars($stepNum); ?></span>
+          <?php endif; ?>
           <h3><?php echo htmlspecialchars(isset($step['title']) ? $step['title'] : ''); ?></h3>
           <p><?php echo htmlspecialchars(isset($step['desc']) ? $step['desc'] : (isset($step['body']) ? $step['body'] : '')); ?></p>
-          <?php if (!empty($step['image_url'])): ?>
-          <div class="kn-how__photo">
-            <?php echo knImage($step['image_url'], htmlspecialchars(isset($step['title']) ? $step['title'] : ''), array('imgSizes' => '220px', 'style' => 'width:100%;height:100%;object-fit:cover')); ?>
+          <?php if ($hasPhoto): ?>
+          <div class="kn-how__visual">
+            <div class="kn-how__photo">
+              <?php echo knImage($step['image_url'], htmlspecialchars(isset($step['title']) ? $step['title'] : ''), array('imgSizes' => '220px', 'style' => 'width:100%;height:100%;object-fit:cover')); ?>
+            </div>
+            <span class="kn-how__num" aria-hidden="true"><?php echo htmlspecialchars($stepNum); ?></span>
           </div>
           <?php endif; ?>
         </div>
