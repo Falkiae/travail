@@ -19,7 +19,7 @@ $steps = isset($block['steps']) && is_array($block['steps']) ? $block['steps'] :
       <?php foreach ($steps as $step): ?>
       <div class="kn-how__step">
         <div class="kn-how__num"><?php echo htmlspecialchars(isset($step['num']) ? $step['num'] : (isset($step['title']) ? '' : '')); ?></div>
-        <div>
+        <div class="kn-how__body">
           <h3><?php echo htmlspecialchars(isset($step['title']) ? $step['title'] : ''); ?></h3>
           <p><?php echo htmlspecialchars(isset($step['desc']) ? $step['desc'] : (isset($step['body']) ? $step['body'] : '')); ?></p>
           <?php if (!empty($step['image_url'])): ?>
