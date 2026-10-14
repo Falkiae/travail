@@ -480,10 +480,10 @@ function buildBlockForm(type, data) {
         '<div class="form-group"><label>Étapes</label><div class="block-repeater" data-repeater="steps"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="steps">+ Ajouter une étape</button></div>';
       (data.steps || []).forEach(function(item) {
-        addRepeaterRow(d.querySelector('[data-repeater="steps"]'), 'steps', ['title','body'], ['Titre','Description'], item);
+        addHowStepItem(d.querySelector('[data-repeater="steps"]'), item);
       });
       d.querySelector('[data-repeater-add="steps"]').addEventListener('click', function() {
-        addRepeaterRow(d.querySelector('[data-repeater="steps"]'), 'steps', ['title','body'], ['Titre','Description'], {});
+        addHowStepItem(d.querySelector('[data-repeater="steps"]'), {});
       });
       break;
 
@@ -741,6 +741,32 @@ function addServiceItem(container, data) {
     + '<button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
   row.querySelector('.remove-repeater-row').addEventListener('click', function() { row.remove(); });
   row.querySelector('.service-media-btn').addEventListener('click', function() {
+    var imgField = row.querySelector('[data-rfield="image_url"]');
+    openMediaModal(function(media) {
+      imgField.value = media.webp_path || media.path || '';
+    });
+  });
+  container.appendChild(row);
+}
+
+function addHowStepItem(container, data) {
+  data = data || {};
+  var row = document.createElement('div');
+  row.className = 'block-repeater-row';
+  row.innerHTML =
+    '<div class="block-repeater-row__fields">'
+    + '<label class="block-repeater-row__label">Titre<input type="text" data-rfield="title" value="' + esc(data.title || '') + '" placeholder="Ex : Réservez en ligne"></label>'
+    + '<label class="block-repeater-row__label">Description<input type="text" data-rfield="body" value="' + esc(data.body || data.desc || '') + '" placeholder="Choisissez votre service et votre créneau…"></label>'
+    + '<label class="block-repeater-row__label">Photo <small style="font-weight:400;opacity:.6">(optionnel, petit format)</small>'
+    +   '<div class="input-row" style="gap:.35rem">'
+    +     '<input type="text" data-rfield="image_url" value="' + esc(data.image_url || '') + '" placeholder="/uploads/…" style="flex:1;min-width:0">'
+    +     '<button type="button" class="btn btn-secondary btn-sm how-media-btn">Médiathèque</button>'
+    +   '</div>'
+    + '</label>'
+    + '</div>'
+    + '<button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
+  row.querySelector('.remove-repeater-row').addEventListener('click', function() { row.remove(); });
+  row.querySelector('.how-media-btn').addEventListener('click', function() {
     var imgField = row.querySelector('[data-rfield="image_url"]');
     openMediaModal(function(media) {
       imgField.value = media.webp_path || media.path || '';
