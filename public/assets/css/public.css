@@ -2513,3 +2513,14 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
     font-size: 2.25rem;
   }
 }
+
+/* knImage() enveloppe l'<img> dans un <picture> (inline, hauteur auto) :
+   le height:100% de l'image ne s'appliquait pas, la photo ne remplissait
+   donc pas son cadre (bas arrondi invisible, bandeau de fond visible). */
+.kn-how__photo picture,
+.kn-service-card__media picture,
+.kn-blog-card__media picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
