@@ -503,19 +503,19 @@ p {
 }
 .kn-cta-card:hover .kn-cta-card__arrow { transform: translateX(3px); }
 
-/* — Variante glass (sur fond sombre) : carte rose pleine, texte navy.
-   Le verre dépoli translucide se fondait dans le fond navy ; le rose
-   (accent de la marque) fait ressortir clairement la prise de RDV. */
+/* — Variante glass (sur fond sombre) : carte crème pleine, texte navy.
+   Le verre dépoli translucide se fondait dans le fond navy ; la crème
+   fait ressortir clairement la prise de RDV. */
 .kn-cta-card--glass {
-  background: var(--kn-rose-mid);
-  border: 1px solid var(--kn-rose-deep);
+  background: var(--kn-cream);
+  border: 1px solid var(--kn-cream-deep);
   box-shadow: 0 8px 24px rgba(10,16,32,.35);
 }
-.kn-cta-card--glass .kn-eyebrow         { color: var(--kn-navy); }
+.kn-cta-card--glass .kn-eyebrow         { color: var(--kn-rose-600); }
 .kn-cta-card--glass .kn-cta-card__title { color: var(--kn-navy-ink); }
 .kn-cta-card--glass .kn-cta-card__arrow { background: var(--kn-navy); color: var(--kn-cream); }
-.kn-cta-card--glass:hover { background: var(--kn-rose-deep); box-shadow: 0 12px 28px rgba(10,16,32,.45); }
-.kn-cta-card--glass:hover .kn-cta-card__arrow { background: var(--kn-navy-ink); color: var(--kn-cream); }
+.kn-cta-card--glass:hover { background: var(--kn-white); box-shadow: 0 12px 28px rgba(10,16,32,.45); }
+.kn-cta-card--glass:hover .kn-cta-card__arrow { background: var(--kn-rose-600); color: var(--kn-cream); }
 
 /* — Variante navy (carte sombre, pour poser sur un fond clair)
    « --blue », « --night » et « --light » rendaient les trois exactement
