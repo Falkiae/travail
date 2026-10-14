@@ -97,6 +97,7 @@ const BLOCK_TYPES = {
   'domicile-vs-atelier': 'Domicile vs Atelier',
   'sofa-simulator':      'Simulateur canapé',
   'prestation':          'Prestation détaillée',
+  'blog-latest':         'Derniers articles',
 };
 
 let dragSrcEl = null;
@@ -524,6 +525,18 @@ function buildBlockForm(type, data) {
         visibilityField(data.visible);
       var ctaShowRev = d.querySelector('[data-field="show_reviews"]');
       if (ctaShowRev && data.show_reviews !== undefined) ctaShowRev.checked = !!data.show_reviews;
+      break;
+
+    case 'blog-latest':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'LE JOURNAL')) +
+        fg('Titre <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('h2', data.h2, 'Conseils d\'entretien & <span class="hl">actualités</span>', 2)) +
+        fg('Description', ta('intro', data.intro, 'Nos astuces d\'artisans pour prendre soin de vos canapés, matelas et véhicules.', 2)) +
+        fg('Nombre d\'articles', sel('count', [['3','3 (défaut)'],['2','2'],['4','4'],['6','6']], String(data.count || '3'))) +
+        fg('Texte du lien « tous les articles »', inp('cta_label', data.cta_label, 'Voir tous les articles')) +
+        bgField(data.bg || 'cream') +
+        visibilityField(data.visible) +
+        '<p style="color:var(--color-muted);font-size:.85em;margin:.5rem 0">Les articles affichés sont les derniers publiés du blog, automatiquement.</p>';
       break;
 
     case 'pricing':

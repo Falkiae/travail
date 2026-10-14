@@ -35,7 +35,7 @@ class FrontController extends BaseController
             $blocks = array();
         }
 
-        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation'];
+        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation','blog-latest'];
         $block_styles = '';
         foreach ($block_types as $bt) {
             $css_key = 'block_css_' . $bt;
@@ -46,6 +46,7 @@ class FrontController extends BaseController
 
         $lang      = isset($settings['lang']) ? $settings['lang'] : 'fr';
         $nav_items = $this->fetchNavItems($pdo, $lang);
+        $latestPosts = $this->fetchLatestPosts($pdo, $lang, $blocks);
 
         $structuredData = array();
         $hasReviewsBlock = false;
@@ -69,6 +70,7 @@ class FrontController extends BaseController
             'logo_rose_url'  => isset($settings['logo_rose_url'])  ? $settings['logo_rose_url']  : '',
             'logo_alt'       => isset($settings['logo_alt']) ? $settings['logo_alt'] : $site_name,
             'reviews'     => $reviews,
+            'latest_posts' => $latestPosts,
             'blocks'      => $blocks,
             'nav_items'   => $nav_items,
             'gtm_id'       => isset($settings['gtm_id']) ? $settings['gtm_id'] : null,
@@ -478,6 +480,31 @@ class FrontController extends BaseController
      * Ajoute l'URL de la vignette (webp de préférence) et le nom de la
      * catégorie à une liste d'articles issue de kn_posts.
      */
+    /**
+     * Derniers articles publiés pour le bloc « blog-latest » ; ne requête
+     * la base que si un tel bloc figure sur la page.
+     */
+    private function fetchLatestPosts(\PDO $pdo, string $lang, array $blocks): array
+    {
+        $limit = 0;
+        foreach ($blocks as $b) {
+            if (isset($b['type']) && $b['type'] === 'blog-latest') {
+                $n = isset($b['count']) ? (int) $b['count'] : 3;
+                $limit = max($limit, max(1, min(6, $n)));
+            }
+        }
+        if ($limit === 0) return array();
+        try {
+            $stmt = $pdo->prepare(
+                "SELECT * FROM kn_posts WHERE status = ? AND lang = ? ORDER BY COALESCE(published_at, created_at) DESC LIMIT $limit"
+            );
+            $stmt->execute(array('published', $lang));
+            return $this->hydratePosts($pdo, $stmt->fetchAll(\PDO::FETCH_ASSOC));
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
     private function hydratePosts(\PDO $pdo, array $posts): array
     {
         if (!$posts) return $posts;
@@ -778,7 +805,7 @@ class FrontController extends BaseController
             $blocks = array();
         }
 
-        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation'];
+        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation','blog-latest'];
         $block_styles = '';
         foreach ($block_types as $bt) {
             $css_key = 'block_css_' . $bt;
@@ -820,6 +847,7 @@ class FrontController extends BaseController
             'nav_items'   => $nav_items,
             'blocks'      => $blocks,
             'reviews'     => $reviews,
+            'latest_posts' => $this->fetchLatestPosts($pdo, $lang, $blocks),
             'gtm_id'      => isset($settings['gtm_id']) ? $settings['gtm_id'] : null,
             'noindex_all' => isset($settings['noindex_all']) && $settings['noindex_all'] === '1',
             'robots_global' => isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',

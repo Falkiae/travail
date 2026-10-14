@@ -2449,3 +2449,20 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
   --kn-icon-stroke: var(--kn-navy);
   --kn-icon-accent: var(--kn-rose-600);
 }
+
+/* ── Bloc « Derniers articles » ─────────────────────────────── */
+.kn-blog-latest__grid { margin-top: 2rem; }
+.kn-blog-latest__more { margin: 2rem 0 0; text-align: center; }
+.kn-blog-latest__link {
+  display: inline-flex;
+  align-items: center;
+  padding: .75rem 1.5rem;
+  border-radius: var(--r-pill);
+  background: var(--kn-navy);
+  color: var(--kn-cream);
+  font-weight: 600;
+  font-size: .9375rem;
+  transition: background .15s ease, transform .15s ease;
+}
+.kn-blog-latest__link:hover { background: var(--kn-navy-ink); transform: translateY(-1px); }
+.kn-bg--blue .kn-blog-latest__link, .kn-bg--night .kn-blog-latest__link { background: var(--kn-cream); color: var(--kn-navy); }
