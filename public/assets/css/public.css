@@ -550,9 +550,10 @@
   flex: 1;
 }
 
+.kn-how__body p { margin-bottom: 1rem; }
+
 .kn-how__photo {
   margin-top: auto;
-  padding-top: 1rem;
   width: 100%;
   max-width: 220px;
   aspect-ratio: 1 / 1;
