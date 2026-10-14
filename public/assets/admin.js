@@ -1243,17 +1243,20 @@ function invalidateMediaCache() {
   mediaModalOffset = 0;
 }
 
-(function initMediaModal() {
+// Délégation au niveau du document : admin.js est chargé avant le balisage
+// de #media-modal (layout admin), donc un getElementById exécuté ici
+// renvoyait null et le bouton de fermeture n'était jamais branché.
+document.addEventListener('click', function(e) {
   var overlay = document.getElementById('media-modal');
-  if (!overlay) return;
-
-  var closeBtn = overlay.querySelector('.modal-close');
-  if (closeBtn) closeBtn.addEventListener('click', closeMediaModal);
-
-  overlay.addEventListener('click', function(e) {
-    if (e.target === overlay) closeMediaModal();
-  });
-})();
+  if (!overlay || overlay.classList.contains('hidden')) return;
+  if (e.target === overlay || e.target.closest('#media-modal .modal-close')) {
+    closeMediaModal();
+  }
+});
+document.addEventListener('keydown', function(e) {
+  var overlay = document.getElementById('media-modal');
+  if (e.key === 'Escape' && overlay && !overlay.classList.contains('hidden')) closeMediaModal();
+});
 
 /* ── Menu drag & drop ── */
 (function initMenuDrag() {
