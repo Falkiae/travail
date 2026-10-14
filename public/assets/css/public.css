@@ -1401,6 +1401,17 @@
 .kn-nav__has-drop.open .kn-dropdown { display: block; }
 .kn-dropdown li a { display: block; padding: .6rem 1.25rem; color: var(--kn-navy-ink); font-size: .9rem; transition: background .15s; }
 .kn-dropdown li a:hover { background: var(--kn-cream-soft); color: var(--kn-navy); }
+/* Le panneau du dropdown/mega reste toujours sur fond beige, y compris
+   quand la nav est en mode "light" (texte blanc sur hero foncé) : son
+   propre texte doit donc toujours rester foncé, jamais hériter du blanc. */
+.kn-nav--transparent.kn-nav--light .kn-nav__menu .kn-dropdown a,
+.kn-nav--transparent.kn-nav--light .kn-nav__menu .kn-mega a {
+  color: var(--kn-navy-ink);
+}
+.kn-nav--transparent.kn-nav--light .kn-nav__menu .kn-dropdown a:hover,
+.kn-nav--transparent.kn-nav--light .kn-nav__menu .kn-mega__link:hover {
+  color: var(--kn-navy);
+}
 .kn-nav__arrow { font-size: .65em; opacity: .6; margin-left: .25rem; }
 
 /* Mega menu */
