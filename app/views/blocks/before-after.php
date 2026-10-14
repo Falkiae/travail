@@ -29,7 +29,7 @@ $items = isset($block['items']) && is_array($block['items']) && count($block['it
         $cap    = isset($item['caption'])           ? $item['caption']           : '';
       ?>
       <div class="kn-ba-item">
-        <div class="kn-ba-slider" data-ba-slider>
+        <div class="kn-ba-slider" data-ba-slider tabindex="0" role="slider" aria-label="Comparer avant et après" aria-valuemin="0" aria-valuemax="100">
           <?php if ($after): ?>
           <?php echo knImage($after, 'Après', ['class' => 'kn-ba-slider__after', 'imgSizes' => '(max-width:768px) 100vw, 50vw']); ?>
           <?php else: ?>
@@ -63,35 +63,38 @@ $items = isset($block['items']) && is_array($block['items']) && count($block['it
 <script>
 (function() {
   document.querySelectorAll('[data-ba-slider]').forEach(function(slider) {
-    var handle = slider.querySelector('.kn-ba-slider__handle');
-    var wrap   = slider.querySelector('.kn-ba-slider__before-wrap');
-    var pct = 50;
+    if (slider.dataset.baInit) return;
+    slider.dataset.baInit = '1';
 
-    function setPos(x) {
+    function setPos(clientX) {
       var rect = slider.getBoundingClientRect();
-      pct = Math.min(100, Math.max(0, ((x - rect.left) / rect.width) * 100));
-      wrap.style.width = pct + '%';
-      handle.style.left = pct + '%';
+      var pct = Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100));
+      slider.style.setProperty('--ba-pos', pct + '%');
     }
 
-    handle.addEventListener('mousedown', function(e) {
-      e.preventDefault();
-      function onMove(e) { setPos(e.clientX); }
-      function onUp()   { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
+    // Toute la zone est saisissable (pas seulement la poignée) ; le geste
+    // vertical reste un défilement de page grâce à touch-action: pan-y.
+    slider.addEventListener('pointerdown', function(e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      try { slider.setPointerCapture(e.pointerId); } catch (err) {}
+      slider.classList.add('is-dragging');
+      setPos(e.clientX);
     });
-
-    handle.addEventListener('touchstart', function(e) {
-      function onMove(e) { setPos(e.touches[0].clientX); }
-      function onEnd()   { document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onEnd); }
-      document.addEventListener('touchmove', onMove, { passive: true });
-      document.addEventListener('touchend', onEnd);
+    slider.addEventListener('pointermove', function(e) {
+      if (slider.classList.contains('is-dragging')) setPos(e.clientX);
     });
+    function end(e) {
+      slider.classList.remove('is-dragging');
+      try { slider.releasePointerCapture(e.pointerId); } catch (err) {}
+    }
+    slider.addEventListener('pointerup', end);
+    slider.addEventListener('pointercancel', end);
 
-    // Init
-    wrap.style.width = pct + '%';
-    handle.style.left = pct + '%';
+    slider.addEventListener('keydown', function(e) {
+      var cur = parseFloat(getComputedStyle(slider).getPropertyValue('--ba-pos')) || 50;
+      if (e.key === 'ArrowLeft')  { slider.style.setProperty('--ba-pos', Math.max(0, cur - 5) + '%'); e.preventDefault(); }
+      if (e.key === 'ArrowRight') { slider.style.setProperty('--ba-pos', Math.min(100, cur + 5) + '%'); e.preventDefault(); }
+    });
   });
 })();
 </script>
