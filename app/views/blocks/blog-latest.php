@@ -8,7 +8,7 @@ if (!$posts) return;
 <section class="<?php echo blockClasses($block, 'cream'); ?>">
   <div class="container">
     <span class="kn-eyebrow"><?php echo htmlspecialchars(isset($block['eyebrow']) ? $block['eyebrow'] : 'LE JOURNAL'); ?></span>
-    <h2 class="kn-section__title"><?php echo !empty($block['h2']) ? $block['h2'] : 'Conseils d\'entretien &amp; <span class="kn-tape">actualités</span>'; ?></h2>
+    <h2 class="kn-section__title"><?php echo !empty($block['h2']) ? $block['h2'] : 'Conseils d\'entretien &amp; <span class="hl">actualités</span>'; ?></h2>
     <?php if (!empty($block['intro'])): ?>
     <p class="kn-services__intro"><?php echo htmlspecialchars($block['intro']); ?></p>
     <?php endif; ?>

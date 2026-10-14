@@ -1453,10 +1453,15 @@
 .kn-nav__has-mega.open .kn-mega-overlay { display: block; }
 
 /* ── Zone (design charter) ───────────────────── */
-.kn-zone__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+.kn-zone__inner { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
+.kn-zone__inner > * { min-width: 0; }
+@media (min-width: 768px) {
+  .kn-zone__inner { grid-template-columns: 1fr 1fr; gap: 4rem; }
+  .kn-zone__map { height: 360px; }
+}
 .kn-zone__content { display: flex; flex-direction: column; gap: 1.25rem; }
 .kn-zone__pills { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
-.kn-zone__map { height: 360px; border-radius: var(--r-card); background: rgba(255,255,255,.08); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.4); font-size: .9rem; }
+.kn-zone__map { height: 260px; border-radius: var(--r-card); background: rgba(255,255,255,.08); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.4); font-size: .9rem; }
 
 /* ── Accordion (design charter) ─────────────── */
 .kn-section__intro { max-width: 640px; margin: .75rem auto 0; text-align: center; color: var(--kn-muted); line-height: 1.6; }
@@ -1501,7 +1506,7 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 /* ── How it works – step num colors ─────────── */
 .kn-bg--blue .kn-how__num, .kn-bg--night .kn-how__num { color: var(--kn-rose-mid); }
 
-/* .kn-two-col__inner and .kn-zone__inner mobile stacking now handled by .kn-grid--* */
+/* .kn-two-col__inner : empilement mobile géré par .kn-grid--* ; .kn-zone__inner : mobile-first (une colonne par défaut) */
 
 
 /* ═══════════════════════════════════════════

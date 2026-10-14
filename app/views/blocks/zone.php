@@ -19,7 +19,7 @@ if (isset($block['pills']) && is_array($block['pills']) && !isset($block['zones'
         <?php elseif (!empty($block['h2'])): ?>
         <h2 class="kn-section__title"><?php echo htmlspecialchars($block['h2']); ?></h2>
         <?php else: ?>
-        <h2 class="kn-section__title">On vient <span class="kn-tape" style="color:var(--kn-night);">chez vous</span>.</h2>
+        <h2 class="kn-section__title">On vient <span class="hl-inverse">chez vous</span>.</h2>
         <?php endif; ?>
         <p><?php echo htmlspecialchars(isset($block['desc']) ? $block['desc'] : (isset($block['body']) ? $block['body'] : 'Liège, Namur, Bruxelles, Luxembourg et toutes les communes alentours. Atelier à Visé pour les dépôts.')); ?></p>
         <div class="kn-zone__pills">
