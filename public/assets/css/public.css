@@ -2466,3 +2466,12 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 }
 .kn-blog-latest__link:hover { background: var(--kn-navy-ink); transform: translateY(-1px); }
 .kn-bg--blue .kn-blog-latest__link, .kn-bg--night .kn-blog-latest__link { background: var(--kn-cream); color: var(--kn-navy); }
+
+/* Comment ça marche — mobile : photo carrée centrée, pleine largeur de colonne */
+@media (max-width: 767px) {
+  .kn-how__photo {
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
