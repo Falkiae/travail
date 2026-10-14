@@ -24,7 +24,7 @@ $steps = isset($block['steps']) && is_array($block['steps']) ? $block['steps'] :
           <p><?php echo htmlspecialchars(isset($step['desc']) ? $step['desc'] : (isset($step['body']) ? $step['body'] : '')); ?></p>
           <?php if (!empty($step['image_url'])): ?>
           <div class="kn-how__photo">
-            <?php echo knImage($step['image_url'], htmlspecialchars(isset($step['title']) ? $step['title'] : ''), array('imgSizes' => '220px')); ?>
+            <?php echo knImage($step['image_url'], htmlspecialchars(isset($step['title']) ? $step['title'] : ''), array('imgSizes' => '220px', 'style' => 'width:100%;height:100%;object-fit:cover')); ?>
           </div>
           <?php endif; ?>
         </div>
