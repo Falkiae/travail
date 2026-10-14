@@ -919,7 +919,7 @@ function createBlockItem(type, data) {
   var item = document.createElement('div');
   item.className = 'block-item';
   item.dataset.blockType = type;
-  item.draggable = true;
+  item.draggable = false;
 
   var header = document.createElement('div');
   header.className = 'block-header';
@@ -940,6 +940,16 @@ function createBlockItem(type, data) {
 
   item.appendChild(header);
   item.appendChild(form);
+
+  // Le bloc entier n'est "draggable" qu'au moment où on clique sur la
+  // poignée : sinon avoir draggable=true sur tout le bloc empêche de
+  // sélectionner du texte à la souris dans les champs du formulaire
+  // (le navigateur démarre un drag natif dès le mousedown).
+  header.querySelector('.block-handle').addEventListener('mousedown', function() {
+    item.draggable = true;
+  });
+  item.addEventListener('dragend', function() { item.draggable = false; });
+  document.addEventListener('mouseup', function() { item.draggable = false; });
 
   header.querySelector('.toggle-block-btn').addEventListener('click', function() {
     var collapsed = item.classList.toggle('collapsed');
@@ -1236,7 +1246,12 @@ function invalidateMediaCache() {
   var menuDragSrc = null;
 
   function bindDrag(row) {
-    row.draggable = true;
+    row.draggable = false;
+    var handle = row.querySelector('.block-handle');
+    if (handle) {
+      handle.addEventListener('mousedown', function() { row.draggable = true; });
+    }
+    document.addEventListener('mouseup', function() { row.draggable = false; });
     row.addEventListener('dragstart', function(e) {
       menuDragSrc = row;
       row.classList.add('dragging');
