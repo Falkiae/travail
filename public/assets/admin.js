@@ -566,10 +566,10 @@ function buildBlockForm(type, data) {
         '<div class="form-group"><label>Paires d\'images</label><div class="block-repeater" data-repeater="items"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter une paire</button></div>';
       (data.items || []).forEach(function(item) {
-        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['image_before_url','image_after_url','caption'], ['Image Avant (/uploads/…)','Image Apres (/uploads/…)','Légende'], item);
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['image_before_url','image_after_url','caption'], ['Image avant','Image après','Légende'], item);
       });
       d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
-        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['image_before_url','image_after_url','caption'], ['Image Avant (/uploads/…)','Image Apres (/uploads/…)','Légende'], {});
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['image_before_url','image_after_url','caption'], ['Image avant','Image après','Légende'], {});
       });
       break;
 
@@ -582,10 +582,10 @@ function buildBlockForm(type, data) {
         '<div class="form-group"><label>Logos</label><div class="block-repeater" data-repeater="items"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter un logo</button></div>';
       (data.items || []).forEach(function(item) {
-        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['image_url','alt','url'], ['Image (/uploads/…)','Texte alternatif','URL (optionnel)'], item);
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['image_url','alt','url'], ['Image','Texte alternatif','URL (optionnel)'], item);
       });
       d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
-        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['image_url','alt','url'], ['Image (/uploads/…)','Texte alternatif','URL (optionnel)'], {});
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['image_url','alt','url'], ['Image','Texte alternatif','URL (optionnel)'], {});
       });
       break;
 
@@ -720,12 +720,26 @@ function addRepeaterRow(container, repeaterName, fields, labels, data) {
         +   '<button type="button" class="btn btn-secondary btn-sm icon-pick-btn">Choisir</button>'
         +   '<span class="icon-field__preview"></span>'
         + '</span></label>';
+    } else if (/^image(_\w+)?_url$/.test(f)) {
+      html += '<label class="block-repeater-row__label">' + esc(l)
+        + '<div class="input-row" style="gap:.35rem">'
+        +   '<input type="text" data-rfield="' + esc(f) + '" placeholder="/uploads/…" value="' + esc(data[f] || '') + '" style="flex:1;min-width:0">'
+        +   '<button type="button" class="btn btn-secondary btn-sm repeater-media-btn" data-target="' + esc(f) + '">Médiathèque</button>'
+        + '</div></label>';
     } else {
       html += '<label class="block-repeater-row__label">' + esc(l) + '<input type="text" data-rfield="' + esc(f) + '" placeholder="' + esc(l) + '" value="' + esc(data[f] || '') + '"></label>';
     }
   }
   html += '</div><button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
   row.innerHTML = html;
+  row.querySelectorAll('.repeater-media-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var field = row.querySelector('[data-rfield="' + btn.dataset.target + '"]');
+      openMediaModal(function(media) {
+        field.value = media.webp_path || media.path || '';
+      });
+    });
+  });
   row.querySelector('.remove-repeater-row').addEventListener('click', function() {
     row.remove();
   });
