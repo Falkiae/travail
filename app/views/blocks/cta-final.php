@@ -46,7 +46,7 @@ $hasReviews = $showReviews && ($rvRating !== null || $rvPicked);
   <div class="container">
     <div class="kn-final__grid">
       <div class="kn-final__main">
-        <span class="kn-eyebrow"><?php echo knIcon('calendar', array('size' => 14, 'class' => 'kn-icon--eyebrow')); ?><?php echo htmlspecialchars($eyebrow); ?></span>
+        <span class="kn-eyebrow"><?php echo htmlspecialchars($eyebrow); ?></span>
         <h2 class="kn-final__title"><?php echo $title; ?></h2>
         <?php if ($intro !== ''): ?>
         <p class="kn-final__intro"><?php echo htmlspecialchars($intro); ?></p>
