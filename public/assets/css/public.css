@@ -2676,3 +2676,23 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 .kn-vp-sum__plus { margin-left: 0; white-space: nowrap; }
 .kn-vp-more__inclall { display: flex; gap: .6rem; margin: .9rem 0 0; padding: .7rem .8rem; background: var(--kn-cream-soft); border-radius: var(--r-sm); font-size: .875rem; line-height: 1.4; font-weight: 600; color: var(--kn-navy); }
 .kn-vp-more__inclall small { display: block; font-weight: 400; color: var(--kn-muted); }
+
+/* Contenu SEO : CTA personnalisable */
+.kn-seo-content__cta { display: flex; flex-direction: column; gap: .6rem; margin-top: 1.75rem; }
+.kn-seo-content__cta--left   { align-items: flex-start; text-align: left; }
+.kn-seo-content__cta--center { align-items: center; text-align: center; }
+.kn-seo-content__cta--right  { align-items: flex-end; text-align: right; }
+.kn-seo-content__cta--card .kn-seo-content__cta-card { width: 100%; max-width: 460px; }
+.kn-seo-content__cta--card .kn-cta-card__title { white-space: normal; }
+.kn-seo-content__cta-note { margin: 0; font-size: .875rem; color: var(--kn-muted); }
+.kn-bg--blue .kn-seo-content__cta-note, .kn-bg--night .kn-seo-content__cta-note { color: rgba(247,244,236,.7); }
+.kn-seo-content__link { display: inline-flex; align-items: center; gap: .5rem; font-weight: 600; color: var(--kn-rose-600); text-decoration: none; border-bottom: 1.5px solid currentColor; padding-bottom: .1rem; transition: gap .15s ease, color .15s ease; }
+.kn-seo-content__link:hover { gap: .8rem; color: var(--kn-navy); }
+.kn-bg--blue .kn-seo-content__link, .kn-bg--night .kn-seo-content__link { color: var(--kn-rose-mid); }
+.kn-bg--blue .kn-seo-content__link:hover, .kn-bg--night .kn-seo-content__link:hover { color: var(--kn-cream); }
+/* Boutons sur fond sombre : inversés pour rester visibles */
+.kn-bg--blue .kn-seo-content__btn.kn-btn, .kn-bg--night .kn-seo-content__btn.kn-btn { background: var(--kn-cream); color: var(--kn-navy); }
+.kn-bg--blue .kn-seo-content__btn.kn-btn:hover, .kn-bg--night .kn-seo-content__btn.kn-btn:hover { background: var(--kn-white); }
+.kn-bg--blue .kn-seo-content__btn.kn-btn-outline, .kn-bg--night .kn-seo-content__btn.kn-btn-outline { color: var(--kn-cream); border-color: var(--kn-cream); }
+.kn-bg--blue .kn-seo-content__btn.kn-btn-outline:hover, .kn-bg--night .kn-seo-content__btn.kn-btn-outline:hover { background: var(--kn-cream); color: var(--kn-navy); }
+.kn-seo-content__btn .kn-icon { flex-shrink: 0; }

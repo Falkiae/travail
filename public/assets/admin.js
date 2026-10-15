@@ -721,6 +721,14 @@ function buildBlockForm(type, data) {
         fg('Disposition', sel('layout', [['text-only','Texte seul (pleine largeur)'],['image-right','Image à droite'],['image-left','Image à gauche']], data.layout || 'text-only')) +
         fg('Image', mediaBtn('image_url', 'Choisir une image')) +
         fg('Alt texte image', inp('image_alt', data.image_alt, 'Description de l\'image')) +
+        '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem;margin-top:.5rem"><label style="font-weight:700">Bouton d\'appel à l\'action <small style="font-weight:400;opacity:.6">(optionnel — laisser le libellé vide pour ne pas en afficher)</small></label></div>' +
+        fg('Libellé du bouton', inp('cta_label', data.cta_label, 'Ex : Demander un devis gratuit')) +
+        fg('Lien <small style="font-weight:400;opacity:.6">(vide = lien de réservation du site)</small>', inp('cta_url', data.cta_url, '/reserver ou https://…')) +
+        fg('Ouverture', sel('cta_target', [['_self','Même onglet'],['_blank','Nouvel onglet']], data.cta_target || '_self')) +
+        fg('Style', sel('cta_style', [['primary','Bouton plein'],['outline','Bouton contour'],['card','Carte de réservation (grande, avec flèche)'],['link','Lien texte avec flèche']], data.cta_style || 'primary')) +
+        fg('Alignement', sel('cta_align', [['left','À gauche'],['center','Centré'],['right','À droite']], data.cta_align || 'left')) +
+        fg('Icône <small style="font-weight:400;opacity:.6">(optionnel)</small>', iconInp('cta_icon', data.cta_icon, 'calendar')) +
+        fg('Mention sous le bouton <small style="font-weight:400;opacity:.6">(optionnel)</small>', inp('cta_note', data.cta_note, 'Ex : Devis gratuit, réponse en moins de 2 heures')) +
         bgField(data.bg) +
         visibilityField(data.visible);
       if (data.image_url) {
