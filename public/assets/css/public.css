@@ -2661,3 +2661,16 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 .kn-vp-more__zone li { display: flex; gap: .6rem; font-size: .875rem; line-height: 1.35; color: var(--kn-navy-ink); }
 .kn-vp__ozone { margin: 1.5rem 0 0; padding: .9rem 1.1rem; background: var(--kn-white); border: 1px dashed var(--kn-rose-400); border-radius: var(--r-md); font-size: .9375rem; color: var(--kn-navy-ink); text-align: center; }
 .kn-vp-card__cta { margin-top: auto; }
+
+/* Tarifs véhicules : héritage de formule (« tout de X, plus ») */
+.kn-vp__grid { align-items: start; }
+.kn-vp-card__incl { margin: .25rem 0 0; font-size: .875rem; color: var(--kn-navy); }
+.kn-vp-card__incl strong { color: var(--kn-rose-600); }
+.kn-vp-sum__plus { font-style: normal; font-weight: 700; letter-spacing: .04em; text-transform: none; color: var(--kn-rose-600); margin-left: .35rem; }
+.kn-vp-more__title { margin: .9rem 0 0; font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--kn-navy); }
+.kn-vp-more__inherit .kn-vp-more__zone li { color: var(--kn-muted); }
+.kn-vp-more__extra { margin-top: 1rem; padding: .25rem .9rem .9rem; background: var(--kn-rose); border-left: 3px solid var(--kn-rose-400); border-radius: var(--r-sm); }
+.kn-vp-more__extra .kn-vp-more__title { color: var(--kn-rose-600); }
+.kn-vp-card__check--plus { background: var(--kn-rose-mid); color: var(--kn-rose-600); font-size: .9rem; font-weight: 700; line-height: 1; }
+.kn-vp-sum__txt strong { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .45rem; }
+.kn-vp-sum__plus { margin-left: 0; white-space: nowrap; }

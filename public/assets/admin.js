@@ -584,10 +584,15 @@ function buildBlockForm(type, data) {
           if (row) used.push(row);
           if (!row) { addVehiclePriceItem(box, def); return; }
           Object.keys(def).forEach(function(k) {
-            if (!/^(sum|det)_/.test(k) && k !== 'badge' && k !== 'desc' && k !== 'note') return;
+            if (!/^(sum|det)_/.test(k) && k !== 'badge' && k !== 'desc' && k !== 'note' && k !== 'base') return;
             var f = row.querySelector('[data-rfield="' + k + '"]');
-            if (f) f.value = def[k];
+            if (!f) return;
+            if (f.tagName === 'SELECT' && !Array.prototype.some.call(f.options, function(o) { return o.value === def[k]; })) {
+              f.insertAdjacentHTML('beforeend', '<option value="' + esc(def[k]) + '">' + esc(def[k]) + '</option>');
+            }
+            f.value = def[k];
           });
+          if (def.base === undefined) { var bf = row.querySelector('[data-rfield="base"]'); if (bf) bf.value = ''; }
           ['sieges','habitacle','ext','finitions'].forEach(function(z) {
             ['sum_', 'det_'].forEach(function(pre) {
               var f = row.querySelector('[data-rfield="' + pre + z + '"]');
@@ -881,22 +886,21 @@ var VEHICLE_PRICING_DEFAULTS = [
     det_ext: 'Prélavage mousse active et rinçage\nNettoyage jantes et passages de roues\nLavage manuel délicat\nSéchage complet + seuils de portes\nProtection hydrophobe',
     det_finitions: 'Application brillant pneus\nParfum d\'ambiance',
     price_citadine_domicile: '95' },
-  { title: 'Remise à neuf Intérieur', badge: '', featured: 'no',
+  { title: 'Remise à neuf Intérieur', badge: '', featured: 'no', base: 'Intérieur & Extérieur',
     desc: 'Retrouvez un intérieur de véhicule comme neuf !',
-    sum_sieges: 'Shampoing sièges, cuirs et carpettes', sum_habitacle: 'Aspiration, habitacle, vitres + pare-brise',
-    sum_finitions: 'Parfum longue durée',
-    det_sieges: 'Aspiration du véhicule\nShampoing des sièges\nNettoyage des cuirs\nShampoing des carpettes',
+    sum_sieges: 'Shampoing des sièges, cuirs et carpettes', sum_habitacle: 'Nettoyage complet, vitres + pare-brise',
+    sum_ext: 'Lavage manuel, jantes, protection hydrophobe', sum_finitions: 'Brillant pneus + parfum longue durée',
+    det_sieges: 'Shampoing des sièges\nNettoyage des cuirs\nShampoing des carpettes',
     det_habitacle: 'Nettoyage de l\'habitacle\nNettoyage des vitres + pare-brise',
     det_finitions: 'Parfum longue durée',
     price_citadine_domicile: '180' },
-  { title: 'Remise à neuf complète', badge: 'IDÉAL FINS DE LEASING', featured: 'no',
+  { title: 'Remise à neuf complète', badge: 'IDÉAL FINS DE LEASING', featured: 'no', base: 'Intérieur & Extérieur',
     desc: 'Formule pour rendre votre véhicule comme neuf.',
-    sum_sieges: 'Sièges, cuirs et tapis', sum_habitacle: 'Habitacle complet, volant dégraissé',
-    sum_ext: 'Lavage, jantes, plastiques ext., hydrophobe', sum_finitions: 'Brillant pneus + parfum longue durée',
+    sum_sieges: 'Sièges et tapis', sum_habitacle: 'Aspiration, vitres, plastiques + volant dégraissé',
+    sum_ext: 'Lavage, jantes, hydrophobe + plastiques ext.', sum_finitions: 'Brillant pneus + parfum d\'ambiance',
     det_sieges: 'Nettoyage des sièges\nShampoing des tapis',
-    det_habitacle: 'Formule intérieur - extérieur\nDégraissage du volant',
-    det_ext: 'Traitement des plastiques extérieurs\nProtection hydrophobe',
-    det_finitions: 'Brillant pneus\nParfum longue durée',
+    det_habitacle: 'Dégraissage du volant',
+    det_ext: 'Traitement des plastiques extérieurs',
     price_citadine_domicile: '240' }
 ];
 
@@ -935,6 +939,8 @@ function addVehiclePriceItem(container, data) {
     +   '<select data-rfield="featured"><option value="no"' + (data.featured === 'yes' ? '' : ' selected') + '>Non</option><option value="yes"' + (data.featured === 'yes' ? ' selected' : '') + '>Oui (cadre marqué)</option></select></label>'
     + '<label class="block-repeater-row__label">Description<textarea data-rfield="desc" rows="2">' + esc(data.desc || '') + '</textarea></label>'
     + '<label class="block-repeater-row__label">Note en italique <small style="font-weight:400;opacity:.6">(optionnel)</small><input type="text" data-rfield="note" value="' + esc(data.note || '') + '" placeholder="Idéal pour les fins de leasing"></label>'
+    + '<label class="block-repeater-row__label">Reprend le contenu d\'une autre formule <small style="font-weight:400;opacity:.6">(optionnel : la carte affichera « Tout de … plus : » et marquera ce qui s\'ajoute ; ne listez alors dans les zones que ce qui est EN PLUS)</small>'
+    +   '<select data-rfield="base"><option value="">— Aucune —</option>' + (data.base ? '<option value="' + esc(data.base) + '" selected>' + esc(data.base) + '</option>' : '') + '</select></label>'
     + zoneFields
     + '<div class="block-repeater-row__label">Prix « à partir de »' + grid + '</div>'
     + '<label class="block-repeater-row__label">Texte du bouton<input type="text" data-rfield="cta_text" value="' + esc(data.cta_text || '') + '" placeholder="Prenez RDV"></label>'
@@ -942,6 +948,22 @@ function addVehiclePriceItem(container, data) {
     + '</div>'
     + '<button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
   row.querySelector('.remove-repeater-row').addEventListener('click', function() { row.remove(); });
+  var baseSel = row.querySelector('[data-rfield="base"]');
+  function refreshBaseOptions() {
+    var own = row.querySelector('[data-rfield="title"]').value.trim().toLowerCase();
+    var cur = baseSel.value;
+    var titles = [];
+    container.querySelectorAll('[data-rfield="title"]').forEach(function(t) {
+      var v = t.value.trim();
+      if (v && v.toLowerCase() !== own && titles.indexOf(v) === -1) titles.push(v);
+    });
+    if (cur && titles.indexOf(cur) === -1) titles.push(cur);
+    baseSel.innerHTML = '<option value="">— Aucune —</option>' + titles.map(function(t) {
+      return '<option value="' + esc(t) + '"' + (t === cur ? ' selected' : '') + '>' + esc(t) + '</option>';
+    }).join('');
+  }
+  baseSel.addEventListener('focus', refreshBaseOptions);
+  baseSel.addEventListener('mousedown', refreshBaseOptions);
   container.appendChild(row);
 }
 

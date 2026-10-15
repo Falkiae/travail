@@ -50,6 +50,56 @@ if (!function_exists('knVpPrice')) {
         return isset($item[$k]) ? trim((string) $item[$k]) : '';
     }
 }
+
+if (!function_exists('knVpLines')) {
+    function knVpLines($text): array
+    {
+        $parts = preg_split('/\r\n|\r|\n/', (string) $text);
+        return array_values(array_filter(array_map('trim', $parts), 'strlen'));
+    }
+}
+if (!function_exists('knVpOwn')) {
+    function knVpOwn(array $item, array $zones): array
+    {
+        $out = array();
+        foreach ($zones as $zk => $_) $out[$zk] = knVpLines(isset($item['det_' . $zk]) ? $item['det_' . $zk] : '');
+        return $out;
+    }
+}
+if (!function_exists('knVpFindBase')) {
+    function knVpFindBase(array $items, array $item, array $seen)
+    {
+        $want = mb_strtolower(trim(isset($item['base']) ? (string) $item['base'] : ''));
+        if ($want === '' || in_array($want, $seen, true)) return null;
+        foreach ($items as $cand) {
+            if (mb_strtolower(trim(isset($cand['title']) ? (string) $cand['title'] : '')) === $want) return $cand;
+        }
+        return null;
+    }
+}
+if (!function_exists('knVpInherited')) {
+    // Prestations héritées des formules « de base » (chaînables), par zone.
+    function knVpInherited(array $items, array $item, array $zones, array $seen = array()): array
+    {
+        $out = array();
+        foreach ($zones as $zk => $_) $out[$zk] = array();
+        $seen[] = mb_strtolower(trim(isset($item['title']) ? (string) $item['title'] : ''));
+        $base = knVpFindBase($items, $item, $seen);
+        if (!$base) return $out;
+        $up  = knVpInherited($items, $base, $zones, $seen);
+        $own = knVpOwn($base, $zones);
+        foreach ($zones as $zk => $_) {
+            $merged = $up[$zk];
+            foreach ($own[$zk] as $f) {
+                $dup = false;
+                foreach ($merged as $m) if (mb_strtolower($m) === mb_strtolower($f)) { $dup = true; break; }
+                if (!$dup) $merged[] = $f;
+            }
+            $out[$zk] = $merged;
+        }
+        return $out;
+    }
+}
 ?>
 <section class="<?php echo blockClasses($block, 'cream', 'kn-vp'); ?>" id="<?php echo $uid; ?>" data-vp>
   <div class="container">
@@ -114,13 +164,24 @@ if (!function_exists('knVpPrice')) {
         $features  = isset($item['features']) ? preg_split('/\r\n|\r|\n/', (string) $item['features']) : array();
         $features  = array_values(array_filter(array_map('trim', $features), 'strlen'));
         $zoneSum   = array();
-        $zoneDet   = array();
+        $zoneDet   = knVpOwn($item, $zones);
+        $inherited = knVpInherited($items, $item, $zones);
+        $baseItem  = knVpFindBase($items, $item, array(mb_strtolower(trim(isset($item['title']) ? (string) $item['title'] : ''))));
+        $hasBase   = $baseItem && array_filter($inherited);
+        $extras    = array();
         $hasZones  = false;
         foreach ($zones as $zk => $_z) {
             $zoneSum[$zk] = isset($item['sum_' . $zk]) ? trim((string) $item['sum_' . $zk]) : '';
-            $d = isset($item['det_' . $zk]) ? preg_split('/\r\n|\r|\n/', (string) $item['det_' . $zk]) : array();
-            $zoneDet[$zk] = array_values(array_filter(array_map('trim', $d), 'strlen'));
-            if ($zoneSum[$zk] !== '' || $zoneDet[$zk]) $hasZones = true;
+            $extras[$zk]  = array();
+            foreach ($zoneDet[$zk] as $f) {
+                $dup = false;
+                foreach ($inherited[$zk] as $m) if (mb_strtolower($m) === mb_strtolower($f)) { $dup = true; break; }
+                if (!$dup) $extras[$zk][] = $f;
+            }
+            if ($zoneSum[$zk] === '' && ($inherited[$zk] || $zoneDet[$zk])) {
+                $zoneSum[$zk] = implode(', ', array_slice(array_merge($inherited[$zk], $extras[$zk]), 0, 3));
+            }
+            if ($zoneSum[$zk] !== '' || $zoneDet[$zk] || $inherited[$zk]) $hasZones = true;
         }
         $ctaUrl    = !empty($item['cta_url']) ? $item['cta_url'] : $booking_url;
         $ctaText   = !empty($item['cta_text']) ? $item['cta_text'] : 'Prenez RDV';
@@ -141,17 +202,52 @@ if (!function_exists('knVpPrice')) {
           <p class="kn-vp-card__note"><?php echo htmlspecialchars($item['note']); ?></p>
           <?php endif; ?>
           <?php if ($hasZones): ?>
+          <?php if ($hasBase): ?>
+          <p class="kn-vp-card__incl">Tout de « <?php echo htmlspecialchars($baseItem['title']); ?> », <strong>plus&nbsp;:</strong></p>
+          <?php endif; ?>
           <ul class="kn-vp-sum">
-            <?php foreach ($zones as $zk => $z): ?>
-            <li<?php echo $zoneSum[$zk] === '' && !$zoneDet[$zk] ? ' class="is-off"' : ''; ?>>
+            <?php foreach ($zones as $zk => $z):
+              $off = $zoneSum[$zk] === '' && !$zoneDet[$zk] && !$inherited[$zk];
+            ?>
+            <li<?php echo $off ? ' class="is-off"' : ''; ?>>
               <span class="kn-vp-sum__ico"><?php echo knIcon($z[1], array('size' => 18)); ?></span>
-              <span class="kn-vp-sum__txt"><strong><?php echo htmlspecialchars($z[0]); ?></strong><?php echo $zoneSum[$zk] === '' && !$zoneDet[$zk] ? 'Non inclus' : htmlspecialchars($zoneSum[$zk]); ?></span>
+              <span class="kn-vp-sum__txt"><strong><?php echo htmlspecialchars($z[0]); ?><?php if ($hasBase && $extras[$zk]): ?> <em class="kn-vp-sum__plus">+ en plus</em><?php endif; ?></strong><?php echo $off ? 'Non inclus' : htmlspecialchars($zoneSum[$zk]); ?></span>
             </li>
             <?php endforeach; ?>
           </ul>
-          <?php if (array_filter($zoneDet)): ?>
+          <?php if (array_filter($zoneDet) || array_filter($inherited)): ?>
           <details class="kn-vp-more">
             <summary><?php echo htmlspecialchars($detailLabel); ?></summary>
+            <?php if ($hasBase): ?>
+            <div class="kn-vp-more__inherit">
+              <p class="kn-vp-more__title">Inclus — « <?php echo htmlspecialchars($baseItem['title']); ?> »</p>
+              <?php foreach ($zones as $zk => $z): if (!$inherited[$zk]) continue; ?>
+              <div class="kn-vp-more__zone">
+                <h4><?php echo htmlspecialchars($z[0]); ?></h4>
+                <ul>
+                  <?php foreach ($inherited[$zk] as $f): ?>
+                  <li><span class="kn-vp-card__check" aria-hidden="true"><?php echo knIcon('check', array('size' => 12)); ?></span><span><?php echo htmlspecialchars($f); ?></span></li>
+                  <?php endforeach; ?>
+                </ul>
+              </div>
+              <?php endforeach; ?>
+            </div>
+            <?php if (array_filter($extras)): ?>
+            <div class="kn-vp-more__extra">
+              <p class="kn-vp-more__title">En plus</p>
+              <?php foreach ($zones as $zk => $z): if (!$extras[$zk]) continue; ?>
+              <div class="kn-vp-more__zone">
+                <h4><?php echo htmlspecialchars($z[0]); ?></h4>
+                <ul>
+                  <?php foreach ($extras[$zk] as $f): ?>
+                  <li><span class="kn-vp-card__check kn-vp-card__check--plus" aria-hidden="true">+</span><span><?php echo htmlspecialchars($f); ?></span></li>
+                  <?php endforeach; ?>
+                </ul>
+              </div>
+              <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+            <?php else: ?>
             <?php foreach ($zones as $zk => $z): if (!$zoneDet[$zk]) continue; ?>
             <div class="kn-vp-more__zone">
               <h4><?php echo htmlspecialchars($z[0]); ?></h4>
@@ -162,6 +258,7 @@ if (!function_exists('knVpPrice')) {
               </ul>
             </div>
             <?php endforeach; ?>
+            <?php endif; ?>
           </details>
           <?php endif; ?>
           <?php elseif ($features): ?>
