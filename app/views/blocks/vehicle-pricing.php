@@ -172,6 +172,7 @@ if (!function_exists('knVpInherited')) {
         $hasBase   = $baseItem && array_filter($inherited);
         $extras    = array();
         $hasZones  = false;
+        $scopeInt  = isset($item['base_scope']) && $item['base_scope'] === 'interior';
         $hasIn     = !empty($inherited['sieges']) || !empty($inherited['habitacle']);
         $hasOut    = !empty($inherited['ext']);
         $baseScope = ($hasIn && $hasOut) ? 'nettoyage intérieur et extérieur' : ($hasIn ? 'nettoyage intérieur' : ($hasOut ? 'nettoyage extérieur' : ''));
@@ -208,7 +209,7 @@ if (!function_exists('knVpInherited')) {
           <?php endif; ?>
           <?php if ($hasZones): ?>
           <?php if ($hasBase): ?>
-          <p class="kn-vp-card__incl">Tout de « <?php echo htmlspecialchars($baseItem['title']); ?> », <strong>plus&nbsp;:</strong></p>
+          <p class="kn-vp-card__incl"><?php echo $scopeInt ? 'La partie intérieure de' : 'Tout de'; ?> « <?php echo htmlspecialchars($baseItem['title']); ?> », <strong>plus&nbsp;:</strong></p>
           <?php endif; ?>
           <ul class="kn-vp-sum">
             <?php foreach ($zones as $zk => $z):
@@ -227,7 +228,11 @@ if (!function_exists('knVpInherited')) {
             <div class="kn-vp-more__inherit">
               <p class="kn-vp-more__inclall">
                 <span class="kn-vp-card__check" aria-hidden="true"><?php echo knIcon('check', array('size' => 12)); ?></span>
+                <?php if ($scopeInt): ?>
+                <span>Tout le nettoyage intérieur de la formule « <?php echo htmlspecialchars($baseItem['title']); ?> » <small>(sans le nettoyage extérieur)</small></span>
+                <?php else: ?>
                 <span>Tout ce qui est compris dans la formule « <?php echo htmlspecialchars($baseItem['title']); ?> »<?php if ($baseScope !== ''): ?> <small>(<?php echo htmlspecialchars($baseScope); ?>)</small><?php endif; ?></span>
+                <?php endif; ?>
               </p>
             </div>
             <?php if (array_filter($extras)): ?>
