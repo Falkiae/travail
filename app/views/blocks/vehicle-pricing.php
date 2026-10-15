@@ -88,7 +88,9 @@ if (!function_exists('knVpInherited')) {
         if (!$base) return $out;
         $up  = knVpInherited($items, $base, $zones, $seen);
         $own = knVpOwn($base, $zones);
+        $interiorOnly = isset($item['base_scope']) && $item['base_scope'] === 'interior';
         foreach ($zones as $zk => $_) {
+            if ($interiorOnly && $zk === 'ext') continue; // on ne reprend pas la partie extérieure
             $merged = $up[$zk];
             foreach ($own[$zk] as $f) {
                 $dup = false;

@@ -584,7 +584,7 @@ function buildBlockForm(type, data) {
           if (row) used.push(row);
           if (!row) { addVehiclePriceItem(box, def); return; }
           Object.keys(def).forEach(function(k) {
-            if (!/^(sum|det)_/.test(k) && k !== 'badge' && k !== 'desc' && k !== 'note' && k !== 'base') return;
+            if (!/^(sum|det)_/.test(k) && k !== 'badge' && k !== 'desc' && k !== 'note' && k !== 'base' && k !== 'base_scope') return;
             var f = row.querySelector('[data-rfield="' + k + '"]');
             if (!f) return;
             if (f.tagName === 'SELECT' && !Array.prototype.some.call(f.options, function(o) { return o.value === def[k]; })) {
@@ -871,36 +871,34 @@ function addHowStepItem(container, data) {
 }
 
 var VEHICLE_PRICING_DEFAULTS = [
-  { title: 'Shampoing des sièges', badge: 'NOUVEAU', featured: 'no',
+  { title: 'Shampoing des sièges', badge: 'NOUVEAU', featured: 'no', base: '', base_scope: 'all',
     desc: 'La formule parfaite pour nettoyer en profondeur vos sièges et faire disparaître les tâches.',
     sum_sieges: 'Aspiration + shampoing des sièges', sum_finitions: 'Parfum longue durée',
     det_sieges: 'Aspiration des sièges\nShampoing des sièges\nShampoing des carpettes (supplément)',
     det_finitions: 'Parfum longue durée',
     price_citadine_domicile: '80' },
-  { title: 'Intérieur & Extérieur', badge: 'LE PLUS DEMANDÉ', featured: 'yes',
+  { title: 'Intérieur & Extérieur', badge: 'LE PLUS DEMANDÉ', featured: 'yes', base: '', base_scope: 'all',
     desc: 'Nettoyage intérieur et extérieur pour préserver votre véhicule dans les meilleures conditions.',
     sum_sieges: 'Aspiration des sièges', sum_habitacle: 'Aspiration complète, vitres, plastiques',
-    sum_ext: 'Lavage manuel, jantes, protection hydrophobe', sum_finitions: 'Brillant pneus + parfum d\'ambiance',
+    sum_ext: 'Lavage manuel, jantes, brillant pneus, protection hydrophobe', sum_finitions: 'Parfum d\'ambiance',
     det_sieges: 'Aspiration des sièges',
     det_habitacle: 'Dépoussiérage minutieux & aspiration complète de l\'habitacle\nTraitement léger des plastiques intérieurs\nNettoyage intérieur des vitres sans traces',
-    det_ext: 'Prélavage mousse active et rinçage\nNettoyage jantes et passages de roues\nLavage manuel délicat\nSéchage complet + seuils de portes\nProtection hydrophobe',
-    det_finitions: 'Application brillant pneus\nParfum d\'ambiance',
+    det_ext: 'Prélavage mousse active et rinçage\nNettoyage jantes et passages de roues\nLavage manuel délicat\nSéchage complet + seuils de portes\nApplication brillant pneus\nProtection hydrophobe',
+    det_finitions: 'Parfum d\'ambiance',
     price_citadine_domicile: '95' },
-  { title: 'Remise à neuf Intérieur', badge: '', featured: 'no', base: 'Intérieur & Extérieur',
+  { title: 'Remise à neuf Intérieur', badge: '', featured: 'no', base: 'Intérieur & Extérieur', base_scope: 'interior',
     desc: 'Retrouvez un intérieur de véhicule comme neuf !',
-    sum_sieges: 'Shampoing des sièges, cuirs et carpettes', sum_habitacle: 'Nettoyage complet, vitres + pare-brise',
-    sum_ext: 'Lavage manuel, jantes, protection hydrophobe', sum_finitions: 'Brillant pneus + parfum longue durée',
+    sum_sieges: 'Shampoing des sièges, cuirs et carpettes', sum_habitacle: 'Nettoyage complet, vitres + pare-brise, volant dégraissé',
+    sum_finitions: 'Parfum longue durée',
     det_sieges: 'Shampoing des sièges\nNettoyage des cuirs\nShampoing des carpettes',
-    det_habitacle: 'Nettoyage de l\'habitacle\nNettoyage des vitres + pare-brise',
+    det_habitacle: 'Nettoyage de l\'habitacle\nNettoyage des vitres + pare-brise\nDégraissage du volant',
     det_finitions: 'Parfum longue durée',
     price_citadine_domicile: '180' },
-  { title: 'Remise à neuf complète', badge: 'IDÉAL FINS DE LEASING', featured: 'no', base: 'Intérieur & Extérieur',
-    desc: 'Formule pour rendre votre véhicule comme neuf.',
-    sum_sieges: 'Sièges et tapis', sum_habitacle: 'Aspiration, vitres, plastiques + volant dégraissé',
-    sum_ext: 'Lavage, jantes, hydrophobe + plastiques ext.', sum_finitions: 'Brillant pneus + parfum d\'ambiance',
-    det_sieges: 'Nettoyage des sièges\nShampoing des tapis',
-    det_habitacle: 'Dégraissage du volant',
-    det_ext: 'Traitement des plastiques extérieurs',
+  { title: 'Remise à neuf complète', badge: 'IDÉAL FINS DE LEASING', featured: 'no', base: 'Remise à neuf Intérieur', base_scope: 'all',
+    desc: 'La remise à neuf intérieur, plus le nettoyage extérieur complet.',
+    sum_sieges: 'Shampoing des sièges, cuirs et carpettes', sum_habitacle: 'Nettoyage complet, vitres + pare-brise, volant dégraissé',
+    sum_ext: 'Lavage complet, jantes, brillant pneus, plastiques ext., hydrophobe', sum_finitions: 'Parfum longue durée',
+    det_ext: 'Prélavage mousse active et rinçage\nNettoyage jantes et passages de roues\nLavage manuel délicat\nSéchage complet + seuils de portes\nApplication brillant pneus\nTraitement des plastiques extérieurs\nProtection hydrophobe',
     price_citadine_domicile: '240' }
 ];
 
@@ -941,6 +939,8 @@ function addVehiclePriceItem(container, data) {
     + '<label class="block-repeater-row__label">Note en italique <small style="font-weight:400;opacity:.6">(optionnel)</small><input type="text" data-rfield="note" value="' + esc(data.note || '') + '" placeholder="Idéal pour les fins de leasing"></label>'
     + '<label class="block-repeater-row__label">Reprend le contenu d\'une autre formule <small style="font-weight:400;opacity:.6">(optionnel : la carte affichera « Tout de … plus : » et marquera ce qui s\'ajoute ; ne listez alors dans les zones que ce qui est EN PLUS)</small>'
     +   '<select data-rfield="base"><option value="">— Aucune —</option>' + (data.base ? '<option value="' + esc(data.base) + '" selected>' + esc(data.base) + '</option>' : '') + '</select></label>'
+    + '<label class="block-repeater-row__label">Ce qui est repris de cette formule'
+    +   '<select data-rfield="base_scope"><option value="all"' + (data.base_scope === 'interior' ? '' : ' selected') + '>Tout (intérieur et extérieur)</option><option value="interior"' + (data.base_scope === 'interior' ? ' selected' : '') + '>La partie intérieure seulement</option></select></label>'
     + zoneFields
     + '<div class="block-repeater-row__label">Prix « à partir de »' + grid + '</div>'
     + '<label class="block-repeater-row__label">Texte du bouton<input type="text" data-rfield="cta_text" value="' + esc(data.cta_text || '') + '" placeholder="Prenez RDV"></label>'
