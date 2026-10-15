@@ -549,6 +549,10 @@ function buildBlockForm(type, data) {
         fg('Libellé « véhicule »', inp('label_vehicle', data.label_vehicle, 'Mon véhicule')) +
         fg('Libellé « lieu »', inp('label_place', data.label_place, 'Lieu du nettoyage')) +
         fg('Mention devant le prix', inp('price_prefix', data.price_prefix, 'à partir de')) +
+        fg('Libellé du détail déroulant', inp('detail_label', data.detail_label, 'Voir le détail')) +
+        fg('Détail des prestations', sel('details_default', [['closed','Fermé par défaut'],['open_desktop','Ouvert sur ordinateur, fermé sur mobile']], data.details_default || 'closed')) +
+        fg('Option ozone — titre <small style="font-weight:400;opacity:.6">(optionnel)</small>', inp('ozone_title', data.ozone_title === undefined ? 'Option ozone' : data.ozone_title, 'Option ozone')) +
+        fg('Option ozone — texte <small style="font-weight:400;opacity:.6">(vide = bandeau masqué)</small>', ta('ozone_text', data.ozone_text === undefined ? 'désodorisation et suppression des odeurs, disponible sur toutes les formules. Tarif sur demande.' : data.ozone_text, '', 2)) +
         fg('Mention sous la grille <small style="font-weight:400;opacity:.6">(optionnel)</small>', ta('note', data.note, 'Ex : Prix TVAC. Supplément possible selon l\'état du véhicule.', 2)) +
         bgField(data.bg || 'cream') +
         visibilityField(data.visible) +
@@ -832,20 +836,35 @@ function addHowStepItem(container, data) {
 var VEHICLE_PRICING_DEFAULTS = [
   { title: 'Shampoing des sièges', badge: 'NOUVEAU', featured: 'no',
     desc: 'La formule parfaite pour nettoyer en profondeur vos sièges et faire disparaître les tâches.',
-    features: 'Aspiration des sièges\nShampoing des sièges\nParfum longue durée\nShampoing des carpettes (supplément)',
+    sum_sieges: 'Aspiration + shampoing des sièges', sum_finitions: 'Parfum longue durée',
+    det_sieges: 'Aspiration des sièges\nShampoing des sièges\nShampoing des carpettes (supplément)',
+    det_finitions: 'Parfum longue durée',
     price_citadine_domicile: '80' },
   { title: 'Intérieur & Extérieur', badge: 'LE PLUS DEMANDÉ', featured: 'yes',
-    desc: 'Nettoyage intérieur et extérieur de votre voiture pour préserver votre véhicule dans les meilleures conditions.',
-    features: 'Dépoussiérage minutieux & aspiration complète de l\'habitacle\nTraitement léger plastiques intérieurs\nNettoyage intérieur vitres sans traces\nPrélavage mousse active et rinçage\nNettoyage jantes et passages de roues\nLavage manuel délicat\nSéchage complet véhicule + seuils de portes\nApplication brillant pneus\nParfum d\'ambiance',
+    desc: 'Nettoyage intérieur et extérieur pour préserver votre véhicule dans les meilleures conditions.',
+    sum_sieges: 'Aspiration des sièges', sum_habitacle: 'Aspiration complète, vitres, plastiques',
+    sum_ext: 'Lavage manuel, jantes, protection hydrophobe', sum_finitions: 'Brillant pneus + parfum d\'ambiance',
+    det_sieges: 'Aspiration des sièges',
+    det_habitacle: 'Dépoussiérage minutieux & aspiration complète de l\'habitacle\nTraitement léger des plastiques intérieurs\nNettoyage intérieur des vitres sans traces',
+    det_ext: 'Prélavage mousse active et rinçage\nNettoyage jantes et passages de roues\nLavage manuel délicat\nSéchage complet + seuils de portes\nProtection hydrophobe',
+    det_finitions: 'Application brillant pneus\nParfum d\'ambiance',
     price_citadine_domicile: '95' },
   { title: 'Remise à neuf Intérieur', badge: '', featured: 'no',
-    desc: 'Cette formule permettra de retrouver un intérieur de véhicule comme neuf !',
-    features: 'Aspiration du véhicule\nNettoyage de l\'habitacle\nShampoing sièges\nShampoing des carpettes\nNettoyage des cuirs\nNettoyage des vitres + pare-brise\nParfum longue durée',
+    desc: 'Retrouvez un intérieur de véhicule comme neuf !',
+    sum_sieges: 'Shampoing sièges, cuirs et carpettes', sum_habitacle: 'Aspiration, habitacle, vitres + pare-brise',
+    sum_finitions: 'Parfum longue durée',
+    det_sieges: 'Aspiration du véhicule\nShampoing des sièges\nNettoyage des cuirs\nShampoing des carpettes',
+    det_habitacle: 'Nettoyage de l\'habitacle\nNettoyage des vitres + pare-brise',
+    det_finitions: 'Parfum longue durée',
     price_citadine_domicile: '180' },
-  { title: 'Remise à neuf complète', badge: '', featured: 'no',
-    desc: 'Formule pour rendre votre véhicule comme neuf',
-    note: 'Idéal pour les fins de leasing',
-    features: 'Formule intérieur - extérieur\nNettoyage Sièges\nShampoing tapis\nCire de protection\nDégraissage du volant\nTraitement des plastiques extérieur\nSuppression des odeurs*',
+  { title: 'Remise à neuf complète', badge: 'IDÉAL FINS DE LEASING', featured: 'no',
+    desc: 'Formule pour rendre votre véhicule comme neuf.',
+    sum_sieges: 'Sièges, cuirs et tapis', sum_habitacle: 'Habitacle complet, volant dégraissé',
+    sum_ext: 'Lavage, jantes, plastiques ext., hydrophobe', sum_finitions: 'Brillant pneus + parfum longue durée',
+    det_sieges: 'Nettoyage des sièges\nShampoing des tapis',
+    det_habitacle: 'Formule intérieur - extérieur\nDégraissage du volant',
+    det_ext: 'Traitement des plastiques extérieurs\nProtection hydrophobe',
+    det_finitions: 'Brillant pneus\nParfum longue durée',
     price_citadine_domicile: '240' }
 ];
 
@@ -863,6 +882,17 @@ function addVehiclePriceItem(container, data) {
     });
   });
   grid += '</div>';
+  var zonesDef = [['sieges','Sièges & textiles'],['habitacle','Habitacle'],['ext','Extérieur'],['finitions','Finitions']];
+  var zoneFields = '';
+  zonesDef.forEach(function(z) {
+    zoneFields += '<div class="block-repeater-row__label" style="border-top:1px solid var(--color-border);padding-top:.5rem">'
+      + '<strong>' + esc(z[1]) + '</strong> <small style="font-weight:400;opacity:.6">(laisser vide = « Non inclus »)</small>'
+      + '<input type="text" data-rfield="sum_' + z[0] + '" value="' + esc(data['sum_' + z[0]] || '') + '" placeholder="Résumé affiché sur la carte" style="margin:.25rem 0">'
+      + '<textarea data-rfield="det_' + z[0] + '" rows="3" placeholder="Détail déroulant — une prestation par ligne">' + esc(data['det_' + z[0]] || '') + '</textarea></div>';
+  });
+  if (data.features) {
+    zoneFields += '<label class="block-repeater-row__label" style="border-top:1px solid var(--color-border);padding-top:.5rem">Ancienne liste de prestations <small style="font-weight:400;opacity:.6">(affichée seulement si aucune zone ci-dessus n\'est remplie)</small><textarea data-rfield="features" rows="3">' + esc(data.features) + '</textarea></label>';
+  }
   var row = document.createElement('div');
   row.className = 'block-repeater-row';
   row.innerHTML =
@@ -873,7 +903,7 @@ function addVehiclePriceItem(container, data) {
     +   '<select data-rfield="featured"><option value="no"' + (data.featured === 'yes' ? '' : ' selected') + '>Non</option><option value="yes"' + (data.featured === 'yes' ? ' selected' : '') + '>Oui (cadre marqué)</option></select></label>'
     + '<label class="block-repeater-row__label">Description<textarea data-rfield="desc" rows="2">' + esc(data.desc || '') + '</textarea></label>'
     + '<label class="block-repeater-row__label">Note en italique <small style="font-weight:400;opacity:.6">(optionnel)</small><input type="text" data-rfield="note" value="' + esc(data.note || '') + '" placeholder="Idéal pour les fins de leasing"></label>'
-    + '<label class="block-repeater-row__label">Prestations incluses <small style="font-weight:400;opacity:.6">(une par ligne)</small><textarea data-rfield="features" rows="5">' + esc(data.features || '') + '</textarea></label>'
+    + zoneFields
     + '<div class="block-repeater-row__label">Prix « à partir de »' + grid + '</div>'
     + '<label class="block-repeater-row__label">Texte du bouton<input type="text" data-rfield="cta_text" value="' + esc(data.cta_text || '') + '" placeholder="Prenez RDV"></label>'
     + '<label class="block-repeater-row__label">Lien du bouton <small style="font-weight:400;opacity:.6">(vide = lien de réservation)</small><input type="text" data-rfield="cta_url" value="' + esc(data.cta_url || '') + '" placeholder="/reserver"></label>'

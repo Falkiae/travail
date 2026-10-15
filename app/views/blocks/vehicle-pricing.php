@@ -24,6 +24,15 @@ $places = array(
     'atelier'  => 'En atelier',
 );
 
+$zones = array(
+    'sieges'    => array('Sièges & textiles', 'armchair'),
+    'habitacle' => array('Habitacle', 'vitres'),
+    'ext'       => array('Extérieur', 'voiture'),
+    'finitions' => array('Finitions', 'sparkles'),
+);
+$detailLabel  = !empty($block['detail_label']) ? $block['detail_label'] : 'Voir le détail';
+$openDesktop  = isset($block['details_default']) && $block['details_default'] === 'open_desktop';
+
 $style       = (isset($block['selector_style']) && $block['selector_style'] === 'select') ? 'select' : 'pills';
 $labelCar    = !empty($block['label_vehicle']) ? $block['label_vehicle'] : 'Mon véhicule';
 $labelPlace  = !empty($block['label_place'])   ? $block['label_place']   : 'Lieu du nettoyage';
@@ -104,6 +113,15 @@ if (!function_exists('knVpPrice')) {
         $initial   = $prices[$defSize][$defPlace];
         $features  = isset($item['features']) ? preg_split('/\r\n|\r|\n/', (string) $item['features']) : array();
         $features  = array_values(array_filter(array_map('trim', $features), 'strlen'));
+        $zoneSum   = array();
+        $zoneDet   = array();
+        $hasZones  = false;
+        foreach ($zones as $zk => $_z) {
+            $zoneSum[$zk] = isset($item['sum_' . $zk]) ? trim((string) $item['sum_' . $zk]) : '';
+            $d = isset($item['det_' . $zk]) ? preg_split('/\r\n|\r|\n/', (string) $item['det_' . $zk]) : array();
+            $zoneDet[$zk] = array_values(array_filter(array_map('trim', $d), 'strlen'));
+            if ($zoneSum[$zk] !== '' || $zoneDet[$zk]) $hasZones = true;
+        }
         $ctaUrl    = !empty($item['cta_url']) ? $item['cta_url'] : $booking_url;
         $ctaText   = !empty($item['cta_text']) ? $item['cta_text'] : 'Prenez RDV';
       ?>
@@ -122,7 +140,31 @@ if (!function_exists('knVpPrice')) {
           <?php if (!empty($item['note'])): ?>
           <p class="kn-vp-card__note"><?php echo htmlspecialchars($item['note']); ?></p>
           <?php endif; ?>
-          <?php if ($features): ?>
+          <?php if ($hasZones): ?>
+          <ul class="kn-vp-sum">
+            <?php foreach ($zones as $zk => $z): ?>
+            <li<?php echo $zoneSum[$zk] === '' && !$zoneDet[$zk] ? ' class="is-off"' : ''; ?>>
+              <span class="kn-vp-sum__ico"><?php echo knIcon($z[1], array('size' => 18)); ?></span>
+              <span class="kn-vp-sum__txt"><strong><?php echo htmlspecialchars($z[0]); ?></strong><?php echo $zoneSum[$zk] === '' && !$zoneDet[$zk] ? 'Non inclus' : htmlspecialchars($zoneSum[$zk]); ?></span>
+            </li>
+            <?php endforeach; ?>
+          </ul>
+          <?php if (array_filter($zoneDet)): ?>
+          <details class="kn-vp-more">
+            <summary><?php echo htmlspecialchars($detailLabel); ?></summary>
+            <?php foreach ($zones as $zk => $z): if (!$zoneDet[$zk]) continue; ?>
+            <div class="kn-vp-more__zone">
+              <h4><?php echo htmlspecialchars($z[0]); ?></h4>
+              <ul>
+                <?php foreach ($zoneDet[$zk] as $f): ?>
+                <li><span class="kn-vp-card__check" aria-hidden="true"><?php echo knIcon('check', array('size' => 12)); ?></span><span><?php echo htmlspecialchars($f); ?></span></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+            <?php endforeach; ?>
+          </details>
+          <?php endif; ?>
+          <?php elseif ($features): ?>
           <ul class="kn-vp-card__features">
             <?php foreach ($features as $f): ?>
             <li><span class="kn-vp-card__check" aria-hidden="true"><?php echo knIcon('check', array('size' => 12)); ?></span><span><?php echo htmlspecialchars($f); ?></span></li>
@@ -135,6 +177,9 @@ if (!function_exists('knVpPrice')) {
       <?php endforeach; ?>
     </div>
 
+    <?php if (!empty($block['ozone_text'])): ?>
+    <p class="kn-vp__ozone"><strong><?php echo htmlspecialchars(!empty($block['ozone_title']) ? $block['ozone_title'] : 'Option ozone'); ?></strong> — <?php echo htmlspecialchars($block['ozone_text']); ?></p>
+    <?php endif; ?>
     <?php if (!empty($block['note'])): ?>
     <p class="kn-vp__note"><?php echo nl2br(htmlspecialchars($block['note'])); ?></p>
     <?php endif; ?>
@@ -192,6 +237,12 @@ if (!function_exists('knVpPrice')) {
 
   bindPills(root.querySelector('div[data-vp-size]'), 'size');
   bindPills(root.querySelector('div[data-vp-place]'), 'place');
+
+<?php if ($openDesktop): ?>
+  if (window.matchMedia('(min-width: 1180px)').matches) {
+    root.querySelectorAll('.kn-vp-more').forEach(function (d) { d.open = true; });
+  }
+<?php endif; ?>
 
   var selSize  = root.querySelector('select[data-vp-size]');
   var selPlace = root.querySelector('select[data-vp-place]');

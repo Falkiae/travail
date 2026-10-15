@@ -2641,3 +2641,23 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 .kn-vp-card__cta { margin-top: auto; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; text-align: center; }
 .kn-vp__note { margin: 1.5rem 0 0; font-size: .875rem; color: var(--kn-muted); text-align: center; }
 .kn-bg--blue .kn-vp__note, .kn-bg--night .kn-vp__note { color: rgba(247,244,236,.6); }
+
+/* Tarifs véhicules : résumé par zone + détail déroulant */
+.kn-vp-sum { list-style: none; margin: .5rem 0 .25rem; padding: 0; width: 100%; display: flex; flex-direction: column; gap: .55rem; text-align: left; }
+.kn-vp-sum li { display: flex; gap: .7rem; align-items: flex-start; font-size: .875rem; line-height: 1.3; color: var(--kn-navy-ink); }
+.kn-vp-sum li.is-off { opacity: .45; }
+.kn-vp-sum__ico { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--kn-cream-soft); display: inline-flex; align-items: center; justify-content: center; color: var(--kn-navy); }
+.kn-vp-sum__txt { display: flex; flex-direction: column; min-width: 0; }
+.kn-vp-sum__txt strong { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--kn-muted); font-weight: 600; }
+.kn-vp-more { width: 100%; margin: .5rem 0 1rem; border-top: 1px solid var(--kn-border); padding-top: .75rem; text-align: left; }
+.kn-vp-more summary { list-style: none; cursor: pointer; font-weight: 600; font-size: .875rem; color: var(--kn-rose-600); display: flex; align-items: center; justify-content: center; gap: .4rem; }
+.kn-vp-more summary::-webkit-details-marker { display: none; }
+.kn-vp-more summary::after { content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); margin-top: -3px; transition: transform .2s; }
+.kn-vp-more[open] summary::after { transform: rotate(-135deg); margin-top: 3px; }
+.kn-vp-more summary:focus-visible { outline: 2px solid var(--kn-rose-600); outline-offset: 4px; border-radius: 4px; }
+.kn-vp-more__zone { margin-top: .9rem; }
+.kn-vp-more__zone h4 { margin: 0 0 .4rem; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--kn-muted); }
+.kn-vp-more__zone ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
+.kn-vp-more__zone li { display: flex; gap: .6rem; font-size: .875rem; line-height: 1.35; color: var(--kn-navy-ink); }
+.kn-vp__ozone { margin: 1.5rem 0 0; padding: .9rem 1.1rem; background: var(--kn-white); border: 1px dashed var(--kn-rose-400); border-radius: var(--r-md); font-size: .9375rem; color: var(--kn-navy-ink); text-align: center; }
+.kn-vp-card__cta { margin-top: auto; }
