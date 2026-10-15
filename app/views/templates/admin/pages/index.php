@@ -42,6 +42,10 @@
           <td>
             <div class="d-flex gap-sm">
               <a href="/admin/pages/<?= (int)$page['id'] ?>/edit" class="btn btn-secondary btn-sm">Modifier</a>
+              <form method="POST" action="/admin/pages/<?= (int)$page['id'] ?>/duplicate">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+                <button type="submit" class="btn btn-secondary btn-sm" title="Créer une copie en brouillon">Dupliquer</button>
+              </form>
               <form method="POST" action="/admin/pages/<?= (int)$page['id'] ?>/delete" class="confirm-delete">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                 <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>

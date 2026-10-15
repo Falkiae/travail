@@ -131,6 +131,39 @@ class PageController extends BaseController
         $this->redirect('/' . ADMIN_PATH . '/pages');
     }
 
+    public function duplicate(string $id): void
+    {
+        $this->requireLogin();
+        if (!Auth::verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
+            Auth::setFlash('error', 'Token CSRF invalide.');
+            $this->redirect('/' . ADMIN_PATH . '/pages');
+        }
+        $page = $this->pageModel->findById((int)$id);
+        if (!$page) {
+            Auth::setFlash('error', 'Page introuvable.');
+            $this->redirect('/' . ADMIN_PATH . '/pages');
+        }
+
+        // La copie démarre en brouillon, sans canonical (il pointerait vers
+        // l'original) et sans lien de traduction : à publier explicitement.
+        $slug  = $this->ensureUniqueSlug('pages', $page['slug'] . '-copie', $page['lang']);
+        $newId = $this->pageModel->create([
+            'lang'             => $page['lang'],
+            'slug'             => $slug,
+            'title'            => mb_substr($page['title'] . ' (copie)', 0, 255),
+            'template'         => $page['template'],
+            'status'           => 'draft',
+            'content'          => $page['content'],
+            'meta_title'       => $page['meta_title'],
+            'meta_description' => $page['meta_description'],
+            'og_image'         => $page['og_image'],
+            'canonical_url'    => '',
+            'robots'           => $page['robots'],
+        ]);
+        Auth::setFlash('success', 'Page dupliquée en brouillon : vous pouvez maintenant la modifier.');
+        $this->redirect('/' . ADMIN_PATH . '/pages/' . $newId . '/edit');
+    }
+
     public function delete(string $id): void
     {
         $this->requireLogin();

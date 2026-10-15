@@ -17,6 +17,7 @@ return [
     'POST /admin/pages/new'           => ['PageController', 'store'],
     'GET /admin/pages/{id}/edit'      => ['PageController', 'edit'],
     'POST /admin/pages/{id}/edit'     => ['PageController', 'update'],
+    'POST /admin/pages/{id}/duplicate' => ['PageController', 'duplicate'],
     'POST /admin/pages/{id}/delete'   => ['PageController', 'delete'],
 
     'GET /admin/posts'                => ['PostController', 'index'],
