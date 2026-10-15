@@ -170,6 +170,9 @@ if (!function_exists('knVpInherited')) {
         $hasBase   = $baseItem && array_filter($inherited);
         $extras    = array();
         $hasZones  = false;
+        $hasIn     = !empty($inherited['sieges']) || !empty($inherited['habitacle']);
+        $hasOut    = !empty($inherited['ext']);
+        $baseScope = ($hasIn && $hasOut) ? 'nettoyage intérieur et extérieur' : ($hasIn ? 'nettoyage intérieur' : ($hasOut ? 'nettoyage extérieur' : ''));
         foreach ($zones as $zk => $_z) {
             $zoneSum[$zk] = isset($item['sum_' . $zk]) ? trim((string) $item['sum_' . $zk]) : '';
             $extras[$zk]  = array();
@@ -220,17 +223,10 @@ if (!function_exists('knVpInherited')) {
             <summary><?php echo htmlspecialchars($detailLabel); ?></summary>
             <?php if ($hasBase): ?>
             <div class="kn-vp-more__inherit">
-              <p class="kn-vp-more__title">Inclus — « <?php echo htmlspecialchars($baseItem['title']); ?> »</p>
-              <?php foreach ($zones as $zk => $z): if (!$inherited[$zk]) continue; ?>
-              <div class="kn-vp-more__zone">
-                <h4><?php echo htmlspecialchars($z[0]); ?></h4>
-                <ul>
-                  <?php foreach ($inherited[$zk] as $f): ?>
-                  <li><span class="kn-vp-card__check" aria-hidden="true"><?php echo knIcon('check', array('size' => 12)); ?></span><span><?php echo htmlspecialchars($f); ?></span></li>
-                  <?php endforeach; ?>
-                </ul>
-              </div>
-              <?php endforeach; ?>
+              <p class="kn-vp-more__inclall">
+                <span class="kn-vp-card__check" aria-hidden="true"><?php echo knIcon('check', array('size' => 12)); ?></span>
+                <span>Tout ce qui est compris dans la formule « <?php echo htmlspecialchars($baseItem['title']); ?> »<?php if ($baseScope !== ''): ?> <small>(<?php echo htmlspecialchars($baseScope); ?>)</small><?php endif; ?></span>
+              </p>
             </div>
             <?php if (array_filter($extras)): ?>
             <div class="kn-vp-more__extra">

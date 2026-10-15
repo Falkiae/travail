@@ -2674,3 +2674,5 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 .kn-vp-card__check--plus { background: var(--kn-rose-mid); color: var(--kn-rose-600); font-size: .9rem; font-weight: 700; line-height: 1; }
 .kn-vp-sum__txt strong { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .45rem; }
 .kn-vp-sum__plus { margin-left: 0; white-space: nowrap; }
+.kn-vp-more__inclall { display: flex; gap: .6rem; margin: .9rem 0 0; padding: .7rem .8rem; background: var(--kn-cream-soft); border-radius: var(--r-sm); font-size: .875rem; line-height: 1.4; font-weight: 600; color: var(--kn-navy); }
+.kn-vp-more__inclall small { display: block; font-weight: 400; color: var(--kn-muted); }
