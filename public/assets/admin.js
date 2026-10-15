@@ -98,6 +98,7 @@ const BLOCK_TYPES = {
   'sofa-simulator':      'Simulateur canapé',
   'prestation':          'Prestation détaillée',
   'blog-latest':         'Derniers articles',
+  'vehicle-pricing':     'Tarifs véhicules (adaptatif)',
 };
 
 let dragSrcEl = null;
@@ -539,6 +540,28 @@ function buildBlockForm(type, data) {
         '<p style="color:var(--color-muted);font-size:.85em;margin:.5rem 0">Les articles affichés sont les derniers publiés du blog, automatiquement.</p>';
       break;
 
+    case 'vehicle-pricing':
+      d.innerHTML =
+        fg('Eyebrow <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('eyebrow', data.eyebrow, 'NOS TARIFS', 1)) +
+        fg('Titre <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('h2', data.h2, 'Le bon prix pour <span class="hl">votre véhicule</span>', 2)) +
+        fg('Paragraphe intro <small style="font-weight:400;opacity:.6">(optionnel)</small>', ta('intro', data.intro, 'Choisissez votre véhicule et le lieu du nettoyage : les tarifs s\'adaptent.', 2)) +
+        fg('Sélecteur', sel('selector_style', [['pills','Pastilles cliquables (recommandé)'],['select','Listes déroulantes']], data.selector_style || 'pills')) +
+        fg('Libellé « véhicule »', inp('label_vehicle', data.label_vehicle, 'Mon véhicule')) +
+        fg('Libellé « lieu »', inp('label_place', data.label_place, 'Lieu du nettoyage')) +
+        fg('Mention devant le prix', inp('price_prefix', data.price_prefix, 'à partir de')) +
+        fg('Mention sous la grille <small style="font-weight:400;opacity:.6">(optionnel)</small>', ta('note', data.note, 'Ex : Prix TVAC. Supplément possible selon l\'état du véhicule.', 2)) +
+        bgField(data.bg || 'cream') +
+        visibilityField(data.visible) +
+        '<div class="form-group"><label>Formules <small style="font-weight:400;opacity:.6">(un prix par type de véhicule et par lieu ; vide = « Sur devis »)</small></label><div class="block-repeater" data-repeater="items"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter une formule</button></div>';
+      (data.items === undefined ? VEHICLE_PRICING_DEFAULTS : data.items).forEach(function(item) {
+        addVehiclePriceItem(d.querySelector('[data-repeater="items"]'), item);
+      });
+      d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
+        addVehiclePriceItem(d.querySelector('[data-repeater="items"]'), {});
+      });
+      break;
+
     case 'pricing':
       d.innerHTML =
         fg('Eyebrow <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('eyebrow', data.eyebrow, 'NOS TARIFS', 1)) +
@@ -806,6 +829,60 @@ function addHowStepItem(container, data) {
   container.appendChild(row);
 }
 
+var VEHICLE_PRICING_DEFAULTS = [
+  { title: 'Shampoing des sièges', badge: 'NOUVEAU', featured: 'no',
+    desc: 'La formule parfaite pour nettoyer en profondeur vos sièges et faire disparaître les tâches.',
+    features: 'Aspiration des sièges\nShampoing des sièges\nParfum longue durée\nShampoing des carpettes (supplément)',
+    price_citadine_domicile: '80' },
+  { title: 'Intérieur & Extérieur', badge: 'LE PLUS DEMANDÉ', featured: 'yes',
+    desc: 'Nettoyage intérieur et extérieur de votre voiture pour préserver votre véhicule dans les meilleures conditions.',
+    features: 'Dépoussiérage minutieux & aspiration complète de l\'habitacle\nTraitement léger plastiques intérieurs\nNettoyage intérieur vitres sans traces\nPrélavage mousse active et rinçage\nNettoyage jantes et passages de roues\nLavage manuel délicat\nSéchage complet véhicule + seuils de portes\nApplication brillant pneus\nParfum d\'ambiance',
+    price_citadine_domicile: '95' },
+  { title: 'Remise à neuf Intérieur', badge: '', featured: 'no',
+    desc: 'Cette formule permettra de retrouver un intérieur de véhicule comme neuf !',
+    features: 'Aspiration du véhicule\nNettoyage de l\'habitacle\nShampoing sièges\nShampoing des carpettes\nNettoyage des cuirs\nNettoyage des vitres + pare-brise\nParfum longue durée',
+    price_citadine_domicile: '180' },
+  { title: 'Remise à neuf complète', badge: '', featured: 'no',
+    desc: 'Formule pour rendre votre véhicule comme neuf',
+    note: 'Idéal pour les fins de leasing',
+    features: 'Formule intérieur - extérieur\nNettoyage Sièges\nShampoing tapis\nCire de protection\nDégraissage du volant\nTraitement des plastiques extérieur\nSuppression des odeurs*',
+    price_citadine_domicile: '240' }
+];
+
+function addVehiclePriceItem(container, data) {
+  data = data || {};
+  var sizes  = [['citadine','Citadine'],['berline','Berline / Break'],['suv','SUV / 4x4'],['utilitaire','Camionnette / Utilitaire']];
+  var places = [['domicile','À domicile'],['atelier','En atelier']];
+  var grid = '<div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:.35rem .5rem;align-items:center">'
+    + '<span></span><strong style="font-size:.75rem">À domicile (€)</strong><strong style="font-size:.75rem">En atelier (€)</strong>';
+  sizes.forEach(function(sz) {
+    grid += '<span style="font-size:.8rem">' + esc(sz[1]) + '</span>';
+    places.forEach(function(pl) {
+      var key = 'price_' + sz[0] + '_' + pl[0];
+      grid += '<input type="text" inputmode="decimal" data-rfield="' + key + '" value="' + esc(data[key] || '') + '" placeholder="—" style="min-width:0">';
+    });
+  });
+  grid += '</div>';
+  var row = document.createElement('div');
+  row.className = 'block-repeater-row';
+  row.innerHTML =
+    '<div class="block-repeater-row__fields">'
+    + '<label class="block-repeater-row__label">Titre<input type="text" data-rfield="title" value="' + esc(data.title || '') + '" placeholder="Ex : Intérieur & Extérieur"></label>'
+    + '<label class="block-repeater-row__label">Étiquette <small style="font-weight:400;opacity:.6">(optionnel)</small><input type="text" data-rfield="badge" value="' + esc(data.badge || '') + '" placeholder="LE PLUS DEMANDÉ"></label>'
+    + '<label class="block-repeater-row__label">Mise en avant'
+    +   '<select data-rfield="featured"><option value="no"' + (data.featured === 'yes' ? '' : ' selected') + '>Non</option><option value="yes"' + (data.featured === 'yes' ? ' selected' : '') + '>Oui (cadre marqué)</option></select></label>'
+    + '<label class="block-repeater-row__label">Description<textarea data-rfield="desc" rows="2">' + esc(data.desc || '') + '</textarea></label>'
+    + '<label class="block-repeater-row__label">Note en italique <small style="font-weight:400;opacity:.6">(optionnel)</small><input type="text" data-rfield="note" value="' + esc(data.note || '') + '" placeholder="Idéal pour les fins de leasing"></label>'
+    + '<label class="block-repeater-row__label">Prestations incluses <small style="font-weight:400;opacity:.6">(une par ligne)</small><textarea data-rfield="features" rows="5">' + esc(data.features || '') + '</textarea></label>'
+    + '<div class="block-repeater-row__label">Prix « à partir de »' + grid + '</div>'
+    + '<label class="block-repeater-row__label">Texte du bouton<input type="text" data-rfield="cta_text" value="' + esc(data.cta_text || '') + '" placeholder="Prenez RDV"></label>'
+    + '<label class="block-repeater-row__label">Lien du bouton <small style="font-weight:400;opacity:.6">(vide = lien de réservation)</small><input type="text" data-rfield="cta_url" value="' + esc(data.cta_url || '') + '" placeholder="/reserver"></label>'
+    + '</div>'
+    + '<button type="button" class="btn btn-danger btn-sm remove-repeater-row" title="Supprimer">×</button>';
+  row.querySelector('.remove-repeater-row').addEventListener('click', function() { row.remove(); });
+  container.appendChild(row);
+}
+
 function addPricingItem(container, data) {
   data = data || {};
   var row = document.createElement('div');
@@ -898,6 +975,7 @@ function serializeBlock(blockItem) {
     'zone':         'pills',
     'hero':         'pills',
     'pricing':      'items',
+    'vehicle-pricing': 'items',
     'before-after': 'items',
     'logos':        'items',
     'prestation':   ['items','metas'],

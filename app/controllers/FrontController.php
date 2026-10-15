@@ -35,7 +35,7 @@ class FrontController extends BaseController
             $blocks = array();
         }
 
-        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation','blog-latest'];
+        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation','blog-latest','vehicle-pricing'];
         $block_styles = '';
         foreach ($block_types as $bt) {
             $css_key = 'block_css_' . $bt;
@@ -805,7 +805,7 @@ class FrontController extends BaseController
             $blocks = array();
         }
 
-        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation','blog-latest'];
+        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation','blog-latest','vehicle-pricing'];
         $block_styles = '';
         foreach ($block_types as $bt) {
             $css_key = 'block_css_' . $bt;
