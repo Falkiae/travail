@@ -32,45 +32,52 @@ $blocks[] = ['type'=>'two-col','bg'=>'white','layout'=>'1-1',
   'right_body'=>"✓ Pas besoin d'espace chez vous ou au boulot\n✓ Espace d'attente dédié pour travailler ou se détendre\n✓ Tarif plus avantageux qu'à domicile",
   'visible'=>['desktop','tablet','mobile']];
 
-// 3. FORMULES TARIFAIRES (html)
-$pricingHtml = '<div class="kn-pricing__grid" style="margin-top:0">
-<div class="kn-pricing-card"><div class="kn-pricing-card__body">
-  <p style="font-size:.7rem;font-weight:700;letter-spacing:.08em;color:var(--kn-blue);margin-bottom:.5rem">NOUVEAU</p>
-  <p class="kn-pricing-card__label">Shampoing des sièges</p>
-  <p class="kn-pricing-card__price">À partir de 80€</p>
-  <p style="font-size:.85rem;color:#6b7280;margin-bottom:1rem">La formule parfaite pour nettoyer en profondeur vos sièges et faire disparaître les taches.</p>
-  <ul style="font-size:.85rem;padding-left:1.2rem;color:#374151;margin-bottom:1.25rem"><li>Aspiration des sièges</li><li>Shampoing des sièges</li><li>Parfum longue durée</li><li style="color:#9ca3af">Shampoing des carpettes (supplément)</li></ul>
-  <a href="/reserver" class="kn-btn">Prenez RDV</a>
-</div></div>
-<div class="kn-pricing-card" style="border:2px solid var(--kn-blue)"><div class="kn-pricing-card__body">
-  <p style="font-size:.7rem;font-weight:700;letter-spacing:.08em;color:var(--kn-blue);margin-bottom:.5rem">LE PLUS DEMANDÉ</p>
-  <p class="kn-pricing-card__label">Intérieur &amp; Extérieur</p>
-  <p class="kn-pricing-card__price">À partir de 95€</p>
-  <p style="font-size:.85rem;color:#6b7280;margin-bottom:1rem">Nettoyage intérieur et extérieur de votre voiture pour préserver votre véhicule dans les meilleures conditions.</p>
-  <ul style="font-size:.85rem;padding-left:1.2rem;color:#374151;margin-bottom:1.25rem"><li>Dépoussiérage &amp; aspiration complète de l\'habitacle</li><li>Traitement léger plastiques intérieurs</li><li>Nettoyage intérieur vitres sans traces</li><li>Prélavage mousse active et rinçage</li><li>Nettoyage jantes et passages de roues</li><li>Lavage manuel délicat</li><li>Séchage complet + seuils de portes</li><li>Application brillant pneus</li><li>Parfum d\'ambiance</li></ul>
-  <a href="/reserver" class="kn-btn">Prenez RDV</a>
-</div></div>
-<div class="kn-pricing-card"><div class="kn-pricing-card__body">
-  <p style="font-size:.7rem;font-weight:700;letter-spacing:.08em;color:#6b7280;margin-bottom:.5rem">INTÉRIEUR</p>
-  <p class="kn-pricing-card__label">Remise à neuf Intérieur</p>
-  <p class="kn-pricing-card__price">À partir de 180€</p>
-  <p style="font-size:.85rem;color:#6b7280;margin-bottom:1rem">Cette formule permettra de retrouver un intérieur de véhicule comme neuf !</p>
-  <ul style="font-size:.85rem;padding-left:1.2rem;color:#374151;margin-bottom:1.25rem"><li>Aspiration du véhicule</li><li>Nettoyage de l\'habitacle</li><li>Shampoing sièges</li><li>Shampoing des carpettes</li><li>Nettoyage des cuirs</li><li>Nettoyage des vitres + pare-brise</li><li>Parfum longue durée</li></ul>
-  <a href="/reserver" class="kn-btn">Prenez RDV</a>
-</div></div>
-<div class="kn-pricing-card"><div class="kn-pricing-card__body">
-  <p style="font-size:.7rem;font-weight:700;letter-spacing:.08em;color:#6b7280;margin-bottom:.5rem">COMPLET</p>
-  <p class="kn-pricing-card__label">Remise à neuf complète</p>
-  <p class="kn-pricing-card__price">À partir de 240€</p>
-  <p style="font-size:.85rem;color:var(--kn-blue);font-weight:600;margin-bottom:.5rem">Idéal pour les fins de leasing</p>
-  <ul style="font-size:.85rem;padding-left:1.2rem;color:#374151;margin-bottom:1.25rem"><li>Formule intérieur &amp; extérieur</li><li>Nettoyage sièges</li><li>Shampoing tapis</li><li>Cire de protection</li><li>Dégraissage du volant</li><li>Traitement des plastiques extérieur</li><li>Suppression des odeurs*</li></ul>
-  <a href="/reserver" class="kn-btn">Prenez RDV</a>
-</div></div>
-</div>';
-
-$blocks[] = ['type'=>'html','bg'=>'alt',
+// 3. TARIFS ADAPTATIFS (bloc vehicle-pricing : véhicule x lieu)
+// Seuls les prix « citadine à domicile » sont connus : les autres
+// combinaisons s'affichent « Sur devis » tant qu'elles ne sont pas
+// renseignées dans l'admin (clés price_{citadine|berline|suv|utilitaire}_{domicile|atelier}).
+$blocks[] = ['type'=>'vehicle-pricing','bg'=>'alt',
   'eyebrow'=>'NOS TARIFS',
-  'html'=>'<section style="padding:0"><div class="container"><span class="kn-eyebrow" style="color:var(--kn-blue)">NOS TARIFS</span><h2 class="kn-section__title">Découvrez le tarif de nettoyage Keepnew adapté à votre voiture</h2><p style="margin-bottom:2.5rem;color:#6b7280">Nos tarifs s\'adaptent à votre type de véhicule (citadine, berline, SUV/4x4, utilitaire) et à votre choix de prestation.</p>'.$pricingHtml.'</div></section>',
+  'h2'=>'Découvrez le tarif de nettoyage Keepnew adapté à votre voiture',
+  'intro'=>'Choisissez votre type de véhicule (citadine, berline, SUV/4x4, utilitaire) et le lieu du nettoyage : les tarifs s\'adaptent.',
+  'selector_style'=>'pills','label_vehicle'=>'Mon véhicule','label_place'=>'Lieu du nettoyage',
+  'price_prefix'=>'à partir de','detail_label'=>'Voir le détail','details_default'=>'closed',
+  'ozone_title'=>'Option ozone',
+  'ozone_text'=>'désodorisation et suppression des odeurs, disponible sur toutes les formules. Tarif sur demande.',
+  'items'=>[
+    ['title'=>'Shampoing des sièges','badge'=>'NOUVEAU','featured'=>'no',
+     'desc'=>'La formule parfaite pour nettoyer en profondeur vos sièges et faire disparaître les tâches.',
+     'sum_sieges'=>'Aspiration + shampoing des sièges','sum_finitions'=>'Parfum longue durée',
+     'det_sieges'=>"Aspiration des sièges\nShampoing des sièges\nShampoing des carpettes (supplément)",
+     'det_finitions'=>'Parfum longue durée',
+     'price_citadine_domicile'=>'80'],
+    ['title'=>'Intérieur & Extérieur','badge'=>'LE PLUS DEMANDÉ','featured'=>'yes',
+     'desc'=>'Nettoyage intérieur et extérieur pour préserver votre véhicule dans les meilleures conditions.',
+     'sum_sieges'=>'Aspiration des sièges','sum_habitacle'=>'Aspiration complète, vitres, plastiques',
+     'sum_ext'=>'Lavage manuel, jantes, protection hydrophobe','sum_finitions'=>"Brillant pneus + parfum d'ambiance",
+     'det_sieges'=>'Aspiration des sièges',
+     'det_habitacle'=>"Dépoussiérage minutieux & aspiration complète de l'habitacle\nTraitement léger des plastiques intérieurs\nNettoyage intérieur des vitres sans traces",
+     'det_ext'=>"Prélavage mousse active et rinçage\nNettoyage jantes et passages de roues\nLavage manuel délicat\nSéchage complet + seuils de portes\nProtection hydrophobe",
+     'det_finitions'=>"Application brillant pneus\nParfum d'ambiance",
+     'price_citadine_domicile'=>'95'],
+    ['title'=>'Remise à neuf Intérieur','badge'=>'','featured'=>'no',
+     'desc'=>'Retrouvez un intérieur de véhicule comme neuf !',
+     'sum_sieges'=>'Shampoing sièges, cuirs et carpettes','sum_habitacle'=>'Aspiration, habitacle, vitres + pare-brise',
+     'sum_finitions'=>'Parfum longue durée',
+     'det_sieges'=>"Aspiration du véhicule\nShampoing des sièges\nNettoyage des cuirs\nShampoing des carpettes",
+     'det_habitacle'=>"Nettoyage de l'habitacle\nNettoyage des vitres + pare-brise",
+     'det_finitions'=>'Parfum longue durée',
+     'price_citadine_domicile'=>'180'],
+    ['title'=>'Remise à neuf complète','badge'=>'IDÉAL FINS DE LEASING','featured'=>'no',
+     'desc'=>'Formule pour rendre votre véhicule comme neuf.',
+     'sum_sieges'=>'Sièges, cuirs et tapis','sum_habitacle'=>'Habitacle complet, volant dégraissé',
+     'sum_ext'=>'Lavage, jantes, plastiques ext., hydrophobe','sum_finitions'=>'Brillant pneus + parfum longue durée',
+     'det_sieges'=>"Nettoyage des sièges\nShampoing des tapis",
+     'det_habitacle'=>"Formule intérieur - extérieur\nDégraissage du volant",
+     'det_ext'=>"Traitement des plastiques extérieurs\nProtection hydrophobe",
+     'det_finitions'=>"Brillant pneus\nParfum longue durée",
+     'price_citadine_domicile'=>'240'],
+  ],
   'visible'=>['desktop','tablet','mobile']];
 
 // 4. FAQ
