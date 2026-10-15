@@ -557,12 +557,44 @@ function buildBlockForm(type, data) {
         bgField(data.bg || 'cream') +
         visibilityField(data.visible) +
         '<div class="form-group"><label>Formules <small style="font-weight:400;opacity:.6">(un prix par type de véhicule et par lieu ; vide = « Sur devis »)</small></label><div class="block-repeater" data-repeater="items"></div>'
-        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter une formule</button></div>';
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter une formule</button> '
+        + '<button type="button" class="btn btn-secondary btn-sm" data-vp-apply>Appliquer la répartition par zone proposée</button>'
+        + '<p style="color:var(--color-muted);font-size:.8rem;margin:.4rem 0 0">Remplit les résumés et détails par zone des formules existantes (même titre, sinon même position) sans toucher aux prix.</p></div>';
       (data.items === undefined ? VEHICLE_PRICING_DEFAULTS : data.items).forEach(function(item) {
         addVehiclePriceItem(d.querySelector('[data-repeater="items"]'), item);
       });
       d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
         addVehiclePriceItem(d.querySelector('[data-repeater="items"]'), {});
+      });
+      d.querySelector('[data-vp-apply]').addEventListener('click', function() {
+        if (!confirm('Remplacer les résumés et détails par zone des formules par la répartition proposée ? Les prix ne sont pas modifiés.')) return;
+        var box = d.querySelector('[data-repeater="items"]');
+        var norm = function(t) { return String(t || '').trim().toLowerCase(); };
+        var rows = Array.prototype.slice.call(box.querySelectorAll('.block-repeater-row'));
+        var used = [];
+        var titleOf = function(r) { return norm(r.querySelector('[data-rfield="title"]').value); };
+        // 1) correspondance par titre ; 2) à défaut, par position (si la ligne n'est pas déjà prise)
+        var targets = VEHICLE_PRICING_DEFAULTS.map(function(def) {
+          var m = rows.filter(function(r) { return used.indexOf(r) === -1 && titleOf(r) === norm(def.title); })[0];
+          if (m) used.push(m);
+          return m || null;
+        });
+        VEHICLE_PRICING_DEFAULTS.forEach(function(def, i) {
+          var row = targets[i] || (rows[i] && used.indexOf(rows[i]) === -1 ? rows[i] : null);
+          if (row) used.push(row);
+          if (!row) { addVehiclePriceItem(box, def); return; }
+          Object.keys(def).forEach(function(k) {
+            if (!/^(sum|det)_/.test(k) && k !== 'badge' && k !== 'desc' && k !== 'note') return;
+            var f = row.querySelector('[data-rfield="' + k + '"]');
+            if (f) f.value = def[k];
+          });
+          ['sieges','habitacle','ext','finitions'].forEach(function(z) {
+            ['sum_', 'det_'].forEach(function(pre) {
+              var f = row.querySelector('[data-rfield="' + pre + z + '"]');
+              if (f && def[pre + z] === undefined) f.value = '';
+            });
+          });
+        });
       });
       break;
 

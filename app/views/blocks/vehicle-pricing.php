@@ -165,11 +165,16 @@ if (!function_exists('knVpPrice')) {
           </details>
           <?php endif; ?>
           <?php elseif ($features): ?>
-          <ul class="kn-vp-card__features">
-            <?php foreach ($features as $f): ?>
-            <li><span class="kn-vp-card__check" aria-hidden="true"><?php echo knIcon('check', array('size' => 12)); ?></span><span><?php echo htmlspecialchars($f); ?></span></li>
-            <?php endforeach; ?>
-          </ul>
+          <details class="kn-vp-more">
+            <summary><?php echo htmlspecialchars($detailLabel); ?> (<?php echo count($features); ?>)</summary>
+            <div class="kn-vp-more__zone">
+              <ul>
+                <?php foreach ($features as $f): ?>
+                <li><span class="kn-vp-card__check" aria-hidden="true"><?php echo knIcon('check', array('size' => 12)); ?></span><span><?php echo htmlspecialchars($f); ?></span></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+          </details>
           <?php endif; ?>
           <a href="<?php echo htmlspecialchars($ctaUrl); ?>" class="kn-btn kn-vp-card__cta"><?php echo knIcon('calendar', array('size' => 16)); ?><?php echo htmlspecialchars($ctaText); ?></a>
         </div>
