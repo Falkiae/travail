@@ -2766,3 +2766,5 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 .kn-contact__success-ico { display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: var(--kn-green-light); color: var(--kn-green); margin-bottom: 1rem; }
 .kn-contact__success h3 { margin: 0 0 .5rem; font-family: var(--font-display); font-weight: 600; font-size: 1.6rem; color: var(--kn-navy); }
 .kn-contact__success p { margin: 0 auto; max-width: 420px; color: var(--kn-muted); line-height: 1.6; }
+
+.kn-section.kn-contact { padding-top: 2.1875rem; } /* 35px */
