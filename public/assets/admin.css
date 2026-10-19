@@ -321,6 +321,13 @@ textarea { min-height: 120px; resize: vertical; }
   font-family: var(--font-body);
 }
 .block-add-menu button:hover { background: var(--color-bg); }
+.block-add-menu__presets { border-top: 1px solid var(--color-border); margin-top: .25rem; padding-top: .25rem; }
+.block-add-menu__title { padding: .4rem 1rem .2rem; font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--color-muted); }
+.block-add-menu__preset { display: flex; align-items: stretch; }
+.block-add-menu .block-add-menu__use { flex: 1; min-width: 0; }
+.block-add-menu .block-add-menu__use small { color: var(--color-muted); margin-left: .35rem; }
+.block-add-menu .block-add-menu__del { width: auto; flex: 0 0 auto; padding: .5rem .85rem; color: var(--color-muted); font-size: 1rem; line-height: 1; }
+.block-add-menu .block-add-menu__del:hover { color: var(--color-danger); }
 
 .block-item {
   background: #fff;

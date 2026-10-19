@@ -60,6 +60,10 @@ return [
     'POST /admin/blocks/{type}/edit'            => ['BlockController', 'update'],
     'POST /admin/blocks/{type}/restore'         => ['BlockController', 'restore'],
 
+    'GET /admin/block-presets/json'             => ['BlockPresetController', 'listJson'],
+    'POST /admin/block-presets'                 => ['BlockPresetController', 'save'],
+    'POST /admin/block-presets/{id}/delete'     => ['BlockPresetController', 'delete'],
+
     'GET /admin/settings'                       => ['SettingsController', 'index'],
     'POST /admin/settings'                      => ['SettingsController', 'update'],
     'POST /admin/settings/clear-cache'          => ['SettingsController', 'clearCache'],

@@ -1116,6 +1116,47 @@ function serializeBlock(blockItem) {
   return data;
 }
 
+/* ── Blocs types enregistrés (réutilisables d'une page à l'autre) ── */
+function presetCsrf() {
+  var editor = document.getElementById('block-editor');
+  var form = editor ? editor.closest('form') : null;
+  var inp = (form && form.querySelector('[name="csrf_token"]')) || document.getElementById('csrf-token-value');
+  return inp ? inp.value : '';
+}
+
+function presetRequest(url, params) {
+  var body = new URLSearchParams();
+  Object.keys(params || {}).forEach(function(k) { body.set(k, params[k]); });
+  body.set('csrf_token', presetCsrf());
+  return fetch(url, { method: 'POST', body: body, credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+    .then(function(r) { return r.json().then(function(j) { return { status: r.status, json: j }; }); });
+}
+
+function saveBlockPreset(item, btn, name, overwrite) {
+  var type = item.dataset.blockType;
+  if (name === undefined) {
+    name = window.prompt('Nom sous lequel enregistrer ce bloc (pour le retrouver sur une autre page) :', BLOCK_TYPES[type] || type);
+    if (name === null) return;
+    name = name.trim();
+    if (!name) return;
+  }
+  var params = { name: name, type: type, content: JSON.stringify(serializeBlock(item)) };
+  if (overwrite) params.overwrite = '1';
+  presetRequest('/admin/block-presets', params).then(function(res) {
+    if (res.status === 409 && res.json.exists) {
+      if (window.confirm('Un bloc porte déjà le nom « ' + name + ' ». Le remplacer ?')) saveBlockPreset(item, btn, name, true);
+      return;
+    }
+    if (res.json && res.json.ok) {
+      var orig = btn.textContent;
+      btn.textContent = '✓ Enregistré';
+      setTimeout(function() { btn.textContent = orig; }, 2000);
+    } else {
+      window.alert((res.json && res.json.error) || 'Impossible d\'enregistrer ce bloc.');
+    }
+  }).catch(function() { window.alert('Impossible d\'enregistrer ce bloc (erreur réseau).'); });
+}
+
 function createBlockItem(type, data) {
   var item = document.createElement('div');
   item.className = 'block-item';
@@ -1131,6 +1172,7 @@ function createBlockItem(type, data) {
     '<span class="block-handle" title="Déplacer">⠿</span>' +
     '<span class="block-type-label">' + (BLOCK_TYPES[type] || type) + '</span>' +
     '<div class="block-controls">' +
+      '<button type="button" class="btn btn-secondary btn-sm save-preset-btn" title="Enregistrer ce bloc pour le réutiliser sur une autre page">☆ Enregistrer</button>' +
       '<button type="button" class="btn btn-secondary btn-sm toggle-block-btn" title="Ouvrir/Fermer">▾</button>' +
     '</div>';
 
@@ -1156,6 +1198,11 @@ function createBlockItem(type, data) {
     var collapsed = item.classList.toggle('collapsed');
     form.style.display = collapsed ? 'none' : '';
     this.textContent = collapsed ? '▾' : '▴';
+  });
+
+  header.querySelector('.save-preset-btn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    saveBlockPreset(item, this);
   });
 
   // Click on header label also toggles
@@ -1226,11 +1273,62 @@ function createBlockItem(type, data) {
   addBtn.addEventListener('click', function(e) {
     e.stopPropagation();
     addMenu.classList.toggle('open');
+    if (addMenu.classList.contains('open')) loadPresets();
   });
 
   document.addEventListener('click', function() {
     addMenu.classList.remove('open');
   });
+
+  // Section « Mes blocs enregistrés », rechargée à chaque ouverture du menu
+  var presetBox = document.createElement('div');
+  presetBox.className = 'block-add-menu__presets';
+  presetBox.hidden = true;
+  addMenu.appendChild(presetBox);
+
+  function renderPresets(items) {
+    presetBox.innerHTML = '';
+    if (!items.length) { presetBox.hidden = true; return; }
+    var title = document.createElement('div');
+    title.className = 'block-add-menu__title';
+    title.textContent = 'Mes blocs enregistrés';
+    presetBox.appendChild(title);
+    items.forEach(function(preset) {
+      var row = document.createElement('div');
+      row.className = 'block-add-menu__preset';
+      var use = document.createElement('button');
+      use.type = 'button';
+      use.className = 'block-add-menu__use';
+      use.innerHTML = esc(preset.name) + ' <small>' + esc(BLOCK_TYPES[preset.type] || preset.type) + '</small>';
+      use.addEventListener('click', function() {
+        // copie indépendante : modifier le bloc inséré ne change pas le modèle
+        var copy = JSON.parse(JSON.stringify(preset.content));
+        blockList.appendChild(createBlockItem(preset.type, copy));
+        addMenu.classList.remove('open');
+      });
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'block-add-menu__del';
+      del.title = 'Supprimer ce bloc enregistré';
+      del.textContent = '×';
+      del.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (!window.confirm('Supprimer le bloc enregistré « ' + preset.name + ' » ? (les pages qui l\'utilisent ne sont pas modifiées)')) return;
+        presetRequest('/admin/block-presets/' + preset.id + '/delete', {}).then(loadPresets);
+      });
+      row.appendChild(use);
+      row.appendChild(del);
+      presetBox.appendChild(row);
+    });
+    presetBox.hidden = false;
+  }
+
+  function loadPresets() {
+    return fetch('/admin/block-presets/json', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+      .then(function(r) { return r.json(); })
+      .then(function(j) { renderPresets(j && j.ok ? j.items : []); })
+      .catch(function() { renderPresets([]); });
+  }
 
   // Type buttons in dropdown
   addMenu.querySelectorAll('[data-type]').forEach(function(btn) {
