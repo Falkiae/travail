@@ -16,7 +16,7 @@ class BlockPresetController extends BaseController
         'cta-final', 'heading', 'text', 'image', 'cta', 'html', 'video', 'file',
         'quote', 'pricing', 'before-after', 'logos', 'seo-content',
         'domicile-vs-atelier', 'sofa-simulator', 'prestation', 'blog-latest',
-        'vehicle-pricing',
+        'vehicle-pricing', 'contact',
     ];
     private const MAX_CONTENT_BYTES = 204800;
 

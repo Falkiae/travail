@@ -11,7 +11,7 @@ class BlockController extends BaseController
         'hero', 'services', 'two-col', 'how', 'reviews', 'zone',
         'accordion', 'cta-final', 'heading', 'text', 'image',
         'cta', 'html', 'video', 'file', 'quote', 'domicile-vs-atelier', 'sofa-simulator',
-        'prestation', 'blog-latest', 'vehicle-pricing',
+        'prestation', 'blog-latest', 'vehicle-pricing', 'contact',
     ];
 
     public function index(): void

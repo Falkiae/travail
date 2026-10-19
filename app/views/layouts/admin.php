@@ -8,6 +8,10 @@
 </head>
 <body class="admin-layout<?php if (!\App\Core\Auth::isLoggedIn()) echo ' admin-layout--login'; ?>">
 <?php if (\App\Core\Auth::isLoggedIn()): ?>
+<?php
+$__newMessages = 0;
+try { $__newMessages = (int) \App\Core\Database::getInstance()->query("SELECT COUNT(*) FROM kn_contact_messages WHERE status = 'new'")->fetchColumn(); } catch (\Throwable $e) { $__newMessages = 0; }
+?>
 <aside class="sidebar">
   <div class="sidebar-logo">Keepnew</div>
   <nav>
@@ -18,6 +22,7 @@
     <a href="/admin/media">Médiathèque</a>
     <a href="/admin/menus">Menus</a>
     <a href="/admin/blocks">Blocs</a>
+    <a href="/admin/messages">Messages<?php if ($__newMessages > 0): ?> <span class="sidebar-badge"><?php echo $__newMessages; ?></span><?php endif; ?></a>
     <a href="/admin/sofa">Simulateur canapé</a>
     <a href="/admin/redirections">Redirections</a>
     <a href="/admin/settings">Réglages</a>

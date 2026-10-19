@@ -38,6 +38,8 @@ return [
     'POST /admin/projects/{id}/edit'  => ['ProjectController', 'update'],
     'POST /admin/projects/{id}/delete'=> ['ProjectController', 'delete'],
 
+    'POST /contact/send'                        => ['ContactController', 'send'],
+
     'GET /uploads/{file}'                       => ['MediaController', 'serveFile'],
 
     'GET /admin/media'                          => ['MediaController', 'index'],
@@ -63,6 +65,10 @@ return [
     'GET /admin/block-presets/json'             => ['BlockPresetController', 'listJson'],
     'POST /admin/block-presets'                 => ['BlockPresetController', 'save'],
     'POST /admin/block-presets/{id}/delete'     => ['BlockPresetController', 'delete'],
+
+    'GET /admin/messages'                       => ['ContactMessageController', 'index'],
+    'POST /admin/messages/{id}/status'          => ['ContactMessageController', 'status'],
+    'POST /admin/messages/{id}/delete'          => ['ContactMessageController', 'delete'],
 
     'GET /admin/settings'                       => ['SettingsController', 'index'],
     'POST /admin/settings'                      => ['SettingsController', 'update'],

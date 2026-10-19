@@ -99,6 +99,7 @@ const BLOCK_TYPES = {
   'prestation':          'Prestation détaillée',
   'blog-latest':         'Derniers articles',
   'vehicle-pricing':     'Tarifs véhicules (adaptatif)',
+  'contact':             'Contact / Devis sur mesure',
 };
 
 let dragSrcEl = null;
@@ -603,6 +604,49 @@ function buildBlockForm(type, data) {
       });
       break;
 
+    case 'contact':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'UNE QUESTION OU UN PROJET ?')) +
+        fg('Titre <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('h2', data.h2, 'Parlons de <span class="hl">votre besoin</span>', 2)) +
+        fg('Texte d\'introduction', ta('intro', data.intro, 'Le formulaire de réservation ne correspond pas tout à fait à votre situation ? …', 3)) +
+        '<div class="form-group"><label>Points rassurants <small style="font-weight:400;opacity:.6">(icône + texte)</small></label><div class="block-repeater" data-repeater="items"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="items">+ Ajouter un point</button></div>' +
+        '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Contact direct <small style="font-weight:400;opacity:.6">(les numéros et liens se règlent dans Réglages › Contact &amp; messagerie)</small></label></div>' +
+        fg('Titre de la zone', inp('channels_title', data.channels_title, 'Ou contactez-nous directement')) +
+        fg('Message WhatsApp prérempli', inp('whatsapp_text', data.whatsapp_text, 'Bonjour, j\'aimerais avoir des informations / un devis sur mesure.')) +
+        fg('Boutons à afficher', ['whatsapp:WhatsApp','messenger:Messenger','phone:Téléphone','email:E-mail','socials:Réseaux sociaux'].map(function(o) {
+          var k = o.split(':');
+          return '<label style="display:flex;align-items:center;gap:.4rem;font-weight:400;margin-top:.2rem"><input type="checkbox" data-field="show_' + k[0] + '" checked> ' + k[1] + '</label>';
+        }).join('')) +
+        '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Formulaire</label></div>' +
+        fg('Titre du formulaire', inp('form_title', data.form_title, 'Écrivez-nous')) +
+        fg('Sous-titre', inp('form_intro', data.form_intro, 'Quelques mots suffisent, nous revenons vers vous rapidement.')) +
+        fg('Sujets proposés <small style="font-weight:400;opacity:.6">(un par ligne)</small>', ta('subjects', data.subjects === undefined ? 'Devis sur mesure\nUne question\nAutre' : data.subjects, '', 4)) +
+        fg('Texte du bouton', inp('submit_label', data.submit_label, 'Envoyer mon message')) +
+        fg('Mention rassurante sous le bouton', inp('note', data.note, 'Réponse personnelle sous 24 h ouvrées. Vos données ne servent qu\'à répondre à votre demande.')) +
+        fg('Texte de la case de consentement', inp('consent_text', data.consent_text, 'J\'accepte que mes données soient utilisées pour répondre à ma demande.')) +
+        fg('Lien de confidentialité — libellé', inp('privacy_label', data.privacy_label, 'Politique de confidentialité')) +
+        fg('Lien de confidentialité — URL <small style="font-weight:400;opacity:.6">(vide = politique de cookies des réglages)</small>', inp('privacy_url', data.privacy_url, '/politique-de-confidentialite')) +
+        fg('Message de succès — titre', inp('success_title', data.success_title, 'Message bien reçu !')) +
+        fg('Message de succès — texte', ta('success_text', data.success_text, 'Merci, nous vous répondons personnellement sous 24 h ouvrées…', 2)) +
+        bgField(data.bg || 'cream') +
+        visibilityField(data.visible);
+      (data.items === undefined ? [
+        { icon: 'clock', text: 'Réponse sous 24 h ouvrées' },
+        { icon: 'shield-check', text: 'Devis gratuit et sans engagement' },
+        { icon: 'lock', text: 'Vos données restent confidentielles' }
+      ] : data.items).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['icon','text'], ['Icône','Texte'], item);
+      });
+      d.querySelector('[data-repeater-add="items"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="items"]'), 'items', ['icon','text'], ['Icône','Texte'], {});
+      });
+      ['whatsapp','messenger','phone','email','socials'].forEach(function(k) {
+        var cb = d.querySelector('[data-field="show_' + k + '"]');
+        if (cb && data['show_' + k] !== undefined) cb.checked = !!data['show_' + k];
+      });
+      break;
+
     case 'pricing':
       d.innerHTML =
         fg('Eyebrow <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('eyebrow', data.eyebrow, 'NOS TARIFS', 1)) +
@@ -1068,6 +1112,7 @@ function serializeBlock(blockItem) {
     'hero':         'pills',
     'pricing':      'items',
     'vehicle-pricing': 'items',
+    'contact':      'items',
     'before-after': 'items',
     'logos':        'items',
     'prestation':   ['items','metas'],

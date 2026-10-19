@@ -35,7 +35,7 @@ class FrontController extends BaseController
             $blocks = array();
         }
 
-        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation','blog-latest','vehicle-pricing'];
+        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation','blog-latest','vehicle-pricing','contact'];
         $block_styles = '';
         foreach ($block_types as $bt) {
             $css_key = 'block_css_' . $bt;
@@ -70,6 +70,7 @@ class FrontController extends BaseController
             'logo_rose_url'  => isset($settings['logo_rose_url'])  ? $settings['logo_rose_url']  : '',
             'logo_alt'       => isset($settings['logo_alt']) ? $settings['logo_alt'] : $site_name,
             'reviews'     => $reviews,
+            'contact_channels' => $this->buildContactChannels($settings),
             'latest_posts' => $latestPosts,
             'blocks'      => $blocks,
             'nav_items'   => $nav_items,
@@ -481,6 +482,36 @@ class FrontController extends BaseController
      * catégorie à une liste d'articles issue de kn_posts.
      */
     /**
+     * Canaux de contact lus dans les réglages, pour le bloc « contact »
+     * (les blocs ne reçoivent pas $settings).
+     */
+    private function buildContactChannels(array $settings): array
+    {
+        $get = function ($k) use ($settings) { return isset($settings[$k]) ? trim((string) $settings[$k]) : ''; };
+        $wa = preg_replace('/\D+/', '', $get('whatsapp_number'));
+        $m  = $get('messenger_page');
+        if ($m !== '' && !preg_match('#^https?://#i', $m)) {
+            $m = 'https://m.me/' . rawurlencode(ltrim(preg_replace('#^.*facebook\.com/#i', '', $m), '/@'));
+        } elseif ($m !== '' && !preg_match('#^https://(m\.me|www\.messenger\.com|www\.facebook\.com|facebook\.com)/#i', $m)) {
+            $m = '';
+        }
+        $url = function ($v) { return preg_match('#^https?://#i', $v) ? $v : ''; };
+        return array(
+            'phone'     => $get('footer_phone'),
+            'email'     => $get('contact_notify_email'),
+            'whatsapp'  => $wa,
+            'messenger' => $m,
+            'socials'   => array_filter(array(
+                'facebook'  => $url($get('social_facebook')),
+                'instagram' => $url($get('social_instagram')),
+                'linkedin'  => $url($get('social_linkedin')),
+                'twitter'   => $url($get('social_twitter')),
+            )),
+            'privacy_url' => $get('cookie_policy_url'),
+        );
+    }
+
+    /**
      * Derniers articles publiés pour le bloc « blog-latest » ; ne requête
      * la base que si un tel bloc figure sur la page.
      */
@@ -805,7 +836,7 @@ class FrontController extends BaseController
             $blocks = array();
         }
 
-        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation','blog-latest','vehicle-pricing'];
+        $block_types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation','blog-latest','vehicle-pricing','contact'];
         $block_styles = '';
         foreach ($block_types as $bt) {
             $css_key = 'block_css_' . $bt;
@@ -848,6 +879,7 @@ class FrontController extends BaseController
             'blocks'      => $blocks,
             'reviews'     => $reviews,
             'latest_posts' => $this->fetchLatestPosts($pdo, $lang, $blocks),
+            'contact_channels' => $this->buildContactChannels($settings),
             'gtm_id'      => isset($settings['gtm_id']) ? $settings['gtm_id'] : null,
             'noindex_all' => isset($settings['noindex_all']) && $settings['noindex_all'] === '1',
             'robots_global' => isset($settings['robots_global']) ? $settings['robots_global'] : 'index,follow',

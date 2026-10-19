@@ -198,6 +198,35 @@ function s(array $settings, string $key, string $default = ''): string {
     </div>
   </div>
 
+  <!-- Contact (bloc « Contact ») -->
+  <div class="card">
+    <div class="card-title">Contact &amp; messagerie</div>
+    <p class="help-text">Utilisés par le bloc « Contact » : réception du formulaire, boutons WhatsApp et Messenger. Les messages sont toujours conservés dans <a href="/admin/messages">Messages</a>, même si l'e-mail n'arrive pas.</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="contact_notify_email">E-mail qui reçoit les messages</label>
+        <input type="email" id="contact_notify_email" name="contact_notify_email" value="<?= s($settings, 'contact_notify_email') ?>" placeholder="contact@keepnew.be">
+      </div>
+      <div class="form-group">
+        <label for="contact_from_email">Adresse d'expédition <small style="font-weight:400;opacity:.6">(optionnel)</small></label>
+        <input type="email" id="contact_from_email" name="contact_from_email" value="<?= s($settings, 'contact_from_email') ?>" placeholder="no-reply@votre-domaine.be">
+        <small class="help-text">Vide = no-reply@ votre domaine. Chez OVH, utilisez une adresse de votre domaine pour éviter le spam.</small>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="whatsapp_number">Numéro WhatsApp</label>
+        <input type="text" id="whatsapp_number" name="whatsapp_number" value="<?= s($settings, 'whatsapp_number') ?>" placeholder="+32 455 13 84 19">
+        <small class="help-text">Format international (avec l'indicatif du pays).</small>
+      </div>
+      <div class="form-group">
+        <label for="messenger_page">Page Messenger</label>
+        <input type="text" id="messenger_page" name="messenger_page" value="<?= s($settings, 'messenger_page') ?>" placeholder="keepnew.be ou https://m.me/keepnew.be">
+        <small class="help-text">Identifiant de votre page Facebook (la partie après facebook.com/).</small>
+      </div>
+    </div>
+  </div>
+
   <!-- Avis Google -->
   <div class="card">
     <div class="card-title">Avis Google (My Business)</div>

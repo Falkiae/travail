@@ -61,6 +61,7 @@ class SettingsController extends BaseController
             'maintenance_mode', 'maintenance_message', 'robots_global',
             'cookie_banner_enabled', 'cookie_banner_text', 'cookie_policy_url',
             'social_linkedin', 'social_twitter', 'social_facebook', 'social_instagram',
+            'contact_notify_email', 'contact_from_email', 'whatsapp_number', 'messenger_page',
             'booking_url', 'google_place_id',
             'logo_url', 'logo_light_url', 'logo_rose_url', 'logo_alt',
             'google_reviews_api_key',
