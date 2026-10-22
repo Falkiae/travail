@@ -1682,6 +1682,88 @@ function esc(str) {
   var uploadForm = document.getElementById('upload-form');
   if (!zone || !fileInput || !uploadForm) return;
 
+  var label = zone.querySelector('label');
+  var labelHtml = label ? label.innerHTML : '';
+
+  function isHeic(file) {
+    return /^image\/hei[cf]/i.test(file.type || '') || /\.hei[cf]$/i.test(file.name || '');
+  }
+
+  // libheif (WebAssembly, LGPL-3.0 — voir assets/vendor/libheif-LICENSE.txt), chargé uniquement
+  // quand une photo HEIC est choisie : le décodage se fait dans le navigateur, rien n'est envoyé à un tiers.
+  function loadHeicLib() {
+    // Le bundle expose une fabrique `libheif()` ; on attend que le décodeur WebAssembly soit prêt.
+    // (le module est renvoyé dans un objet : il possède une méthode then(), qui perturberait la promesse)
+    function init() {
+      return new Promise(function(resolve, reject) {
+        var mod = window.libheif();
+        var tries = 0;
+        (function wait() {
+          if (typeof mod.HeifDecoder === 'function') return resolve({ lib: mod });
+          if (++tries > 200) return reject(new Error('lib'));
+          setTimeout(wait, 50);
+        })();
+      });
+    }
+    if (window.__heifBox) return Promise.resolve(window.__heifBox);
+    var ready = typeof window.libheif === 'function' ? Promise.resolve() : new Promise(function(resolve, reject) {
+      var sc = document.createElement('script');
+      sc.src = '/public/assets/vendor/libheif-bundle.js';
+      sc.onload = function() { typeof window.libheif === 'function' ? resolve() : reject(new Error('lib')); };
+      sc.onerror = function() { reject(new Error('lib')); };
+      document.head.appendChild(sc);
+    });
+    return ready.then(init).then(function(box) { window.__heifBox = box; return box; });
+  }
+
+  // Décode le HEIC en pixels (orientation appliquée par libheif), puis réduit à 2560 px max
+  // (le serveur ramène ensuite à 1920 px) pour rester sous la limite d'envoi avec les gros fichiers d'iPhone.
+  function convertHeic(file) {
+    return Promise.all([loadHeicLib(), file.arrayBuffer()]).then(function(r) {
+      var images = new r[0].lib.HeifDecoder().decode(new Uint8Array(r[1]));
+      if (!images || !images.length) throw new Error('heic');
+      var image = images[0];
+      var w = image.get_width(), h = image.get_height();
+      var full = document.createElement('canvas');
+      full.width = w; full.height = h;
+      var ctx = full.getContext('2d');
+      var data = ctx.createImageData(w, h);
+      return new Promise(function(resolve, reject) {
+        image.display(data, function(out) { out ? resolve() : reject(new Error('heic')); });
+      }).then(function() {
+        ctx.putImageData(data, 0, 0);
+        var scale = Math.min(1, 2560 / Math.max(w, h));
+        var out = full;
+        if (scale < 1) {
+          out = document.createElement('canvas');
+          out.width = Math.round(w * scale); out.height = Math.round(h * scale);
+          out.getContext('2d').drawImage(full, 0, 0, out.width, out.height);
+        }
+        return new Promise(function(resolve, reject) {
+          out.toBlob(function(b) { b ? resolve(b) : reject(new Error('canvas')); }, 'image/jpeg', 0.88);
+        });
+      });
+    }).then(function(jpeg) {
+      var name = (file.name || 'photo').replace(/\.hei[cf]$/i, '') + '.jpg';
+      return new File([jpeg], name, { type: 'image/jpeg', lastModified: Date.now() });
+    });
+  }
+
+  function send(file) {
+    if (!isHeic(file)) { uploadForm.submit(); return; }
+    if (label) label.innerHTML = '<strong>Conversion de la photo iPhone (HEIC) en JPEG…</strong><br><small>Quelques secondes, ne fermez pas la page.</small>';
+    convertHeic(file).then(function(jpegFile) {
+      var dt = new DataTransfer();
+      dt.items.add(jpegFile);
+      fileInput.files = dt.files;
+      uploadForm.submit();
+    }).catch(function() {
+      if (label) label.innerHTML = labelHtml;
+      fileInput.value = '';
+      window.alert('Cette photo HEIC n\'a pas pu être convertie. Exportez-la en JPEG depuis votre iPhone (Réglages › Appareil photo › Formats › « Le plus compatible »), puis réessayez.');
+    });
+  }
+
   zone.addEventListener('dragover', function(e) {
     e.preventDefault();
     zone.classList.add('drag-over');
@@ -1692,11 +1774,11 @@ function esc(str) {
     zone.classList.remove('drag-over');
     if (e.dataTransfer.files.length) {
       fileInput.files = e.dataTransfer.files;
-      uploadForm.submit();
+      send(fileInput.files[0]);
     }
   });
   fileInput.addEventListener('change', function() {
-    if (fileInput.files.length) uploadForm.submit();
+    if (fileInput.files.length) send(fileInput.files[0]);
   });
 })();
 

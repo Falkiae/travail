@@ -12,9 +12,9 @@
   <div id="upload-zone" class="drop-zone">
     <label for="upload-file">
       <strong>Glissez un fichier ici</strong> ou <u>cliquez pour choisir</u><br>
-      <small>JPEG, PNG, GIF, WebP, SVG, PDF — 5 Mo max &nbsp;|&nbsp; MP4, WebM, OGV — 100 Mo max</small>
+      <small>JPEG, PNG, GIF, WebP, SVG, PDF — 5 Mo max &nbsp;|&nbsp; MP4, WebM, OGV — 100 Mo max<br>Les photos iPhone (HEIC) sont converties automatiquement en JPEG.</small>
     </label>
-    <input type="file" id="upload-file" name="file" accept="image/*,.svg,application/pdf,video/mp4,video/webm,video/ogg" style="display:none">
+    <input type="file" id="upload-file" name="file" accept="image/*,.heic,.heif,image/heic,image/heif,.svg,application/pdf,video/mp4,video/webm,video/ogg" style="display:none">
   </div>
 </form>
 

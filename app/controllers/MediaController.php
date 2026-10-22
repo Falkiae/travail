@@ -46,6 +46,10 @@ class MediaController extends BaseController
             Auth::setFlash('error', 'Fichier trop lourd (max ' . $maxLabel . ').');
             $this->redirect('/' . ADMIN_PATH . '/media');
         }
+        if (in_array($mime, ['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'], true)) {
+            Auth::setFlash('error', 'Les photos iPhone (HEIC) sont converties en JPEG par le navigateur au moment de l\'envoi depuis la page Médiathèque : réessayez avec JavaScript activé, ou exportez la photo en JPEG.');
+            $this->redirect('/' . ADMIN_PATH . '/media');
+        }
         $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'application/pdf', 'video/mp4', 'video/webm', 'video/ogg'];
         if (!in_array($mime, $allowed, true)) {
             Auth::setFlash('error', 'Type de fichier non autorisé.');
@@ -79,6 +83,9 @@ class MediaController extends BaseController
         if ($canProcess) {
             $img = $this->loadImage($dest, $mime);
             if ($img) {
+                if ($mime === 'image/jpeg') {
+                    $img = $this->applyExifOrientation($img, $dest);
+                }
                 $width  = imagesx($img);
                 $height = imagesy($img);
 
@@ -275,6 +282,24 @@ class MediaController extends BaseController
             case 'image/gif':  return imagecreatefromgif($path);
             default: return null;
         }
+    }
+
+    // GD ignore l'orientation EXIF : sans ceci, les photos d'iPhone prises en
+    // portrait s'affichent couchées (et l'EXIF est perdu à l'enregistrement).
+    private function applyExifOrientation($img, string $path)
+    {
+        if (!function_exists('exif_read_data')) return $img;
+        $exif = @exif_read_data($path);
+        $orientation = is_array($exif) && isset($exif['Orientation']) ? (int) $exif['Orientation'] : 1;
+        $angle = 0;
+        if ($orientation === 3) $angle = 180;
+        elseif ($orientation === 6) $angle = -90;
+        elseif ($orientation === 8) $angle = 90;
+        if ($angle === 0) return $img;
+        $rotated = imagerotate($img, $angle, 0);
+        if (!$rotated) return $img;
+        imagedestroy($img);
+        return $rotated;
     }
 
     private function saveImage($img, string $path, string $mime): void
