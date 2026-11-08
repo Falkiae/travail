@@ -98,6 +98,8 @@ $existingBlocks = $isEdit && !empty($page['content']) ? json_decode($page['conte
                 <button type="button" data-type="vehicle-pricing">Tarifs véhicules (adaptatif)</button>
                 <button type="button" data-type="contact">Contact / Devis sur mesure</button>
                 <button type="button" data-type="terrace-calculator">Calculateur terrasse</button>
+                <button type="button" data-type="fleet-calculator">Calculateur flotte (abonnement)</button>
+                <button type="button" data-type="plan-cards">Cartes d'abonnement</button>
                 <button type="button" data-type="sofa-simulator">Simulateur canapé</button>
               </div>
             </div>

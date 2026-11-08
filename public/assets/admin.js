@@ -101,6 +101,8 @@ const BLOCK_TYPES = {
   'vehicle-pricing':     'Tarifs véhicules (adaptatif)',
   'contact':             'Contact / Devis sur mesure',
   'terrace-calculator':  'Calculateur terrasse',
+  'fleet-calculator':    'Calculateur flotte (abonnement)',
+  'plan-cards':          'Cartes d\'abonnement',
 };
 
 let dragSrcEl = null;
@@ -735,6 +737,98 @@ function buildBlockForm(type, data) {
       if (tcSchema && data.schema_enabled !== undefined) tcSchema.checked = !!data.schema_enabled;
       break;
 
+    case 'fleet-calculator':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'CALCULATEUR DE PRIX')) +
+        fg('Titre (H2)', inp('h2', data.h2, 'Estimez votre budget en temps réel')) +
+        fg('Introduction', ta('intro', data.intro, 'Configurez votre flotte…', 2)) +
+        '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Tarifs et remises</label></div>' +
+        '<div class="form-group"><label>Catégories de véhicules <small style="font-weight:400;opacity:.6">(libellé, exemples, icône, prix HTVA par passage)</small></label><div class="block-repeater" data-repeater="cats"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="cats">+ Ajouter une catégorie</button></div>' +
+        '<div class="form-group"><label>Fréquences <small style="font-weight:400;opacity:.6">(libellé, passages par mois)</small></label><div class="block-repeater" data-repeater="freqs"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="freqs">+ Ajouter une fréquence</button></div>' +
+        '<div class="form-group"><label>Engagements <small style="font-weight:400;opacity:.6">(libellé, durée en mois — 0 = sans engagement —, remise %)</small></label><div class="block-repeater" data-repeater="engs"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="engs">+ Ajouter un engagement</button></div>' +
+        fg('Engagement présélectionné <small style="font-weight:400;opacity:.6">(position dans la liste, 0 = le premier)</small>', inp('eng_default', data.eng_default, '1')) +
+        fg('Remise flotte — à partir de (véhicules)', inp('fleet_threshold', data.fleet_threshold, '5')) +
+        fg('Remise flotte — taux (%) <small style="font-weight:400;opacity:.6">(0 = désactivée)</small>', inp('fleet_discount', data.fleet_discount, '5')) +
+        '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Textes du calculateur</label></div>' +
+        fg('Étape 1 — titre', inp('step1_title', data.step1_title, 'Votre flotte')) +
+        fg('Étape 1 — précision', inp('step1_hint', data.step1_hint, 'Combinez les catégories de véhicules.')) +
+        fg('Étape 2 — titre', inp('step2_title', data.step2_title, 'Fréquence des passages')) +
+        fg('Étape 3 — titre', inp('step3_title', data.step3_title, 'Engagement')) +
+        fg('Titre du résultat', inp('result_label', data.result_label, 'Votre estimation')) +
+        fg('Encadré fiscal', ta('fiscal_text', data.fiscal_text, 'En tant que professionnel, cette dépense est jusqu\'à 100 % déductible fiscalement.', 2)) +
+        fg('Bouton vers le formulaire', inp('cta_label', data.cta_label, 'Recevoir mon devis personnalisé')) +
+        fg('Mention sous le calculateur', ta('disclaimer', data.disclaimer, '* Estimation indicative…', 2)) +
+        '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Formulaire de demande <small style="font-weight:400;opacity:.6">(les messages arrivent dans Messages, comme le bloc Contact)</small></label></div>' +
+        fg('Fond de la section du formulaire', sel('form_bg', [['white','Blanc (comme le bloc Contact)'],['cream','Crème'],['alt','Ivoire alterné'],['rose','Rose poudré'],['blue','Navy'],['night','Navy profond']], data.form_bg || 'white')) +
+        fg('Eyebrow du formulaire', inp('form_eyebrow', data.form_eyebrow, 'VOTRE DEVIS PERSONNALISÉ')) +
+        fg('Titre du formulaire (H2)', inp('form_h2', data.form_h2, 'Recevoir mon estimation par e-mail')) +
+        fg('Texte d\'introduction', ta('form_intro', data.form_intro, 'Remplissez vos coordonnées…', 2)) +
+        fg('Titre de la carte', inp('form_title', data.form_title, 'Recevoir mon estimation')) +
+        fg('Texte du bouton', inp('submit_label', data.submit_label, 'Envoyer ma demande')) +
+        fg('Mention sous le bouton', inp('form_note', data.form_note, 'Gratuit · Sans engagement · Paiement après chaque prestation')) +
+        fg('Case de consentement', inp('consent_text', data.consent_text, 'J\'accepte que mes données soient utilisées pour répondre à ma demande.')) +
+        fg('Lien de confidentialité — URL <small style="font-weight:400;opacity:.6">(vide = politique de cookies des réglages)</small>', inp('privacy_url', data.privacy_url, '/politique-de-confidentialite')) +
+        '<div class="form-group"><label>Points rassurants <small style="font-weight:400;opacity:.6">(colonne de gauche, icône + texte)</small></label><div class="block-repeater" data-repeater="reassure"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="reassure">+ Ajouter un point</button></div>' +
+        fg('Titre « contact direct »', inp('channels_title', data.channels_title, 'Ou contactez-nous directement')) +
+        fg('Message WhatsApp prérempli', inp('whatsapp_text', data.whatsapp_text, 'Bonjour, je souhaite un devis pour l\'entretien de ma flotte.')) +
+        fg('Boutons à afficher <small style="font-weight:400;opacity:.6">(numéros et liens : Réglages › Contact &amp; messagerie)</small>', ['whatsapp:WhatsApp','messenger:Messenger','phone:Téléphone','email:E-mail','socials:Réseaux sociaux'].map(function(o) {
+          var k = o.split(':');
+          return '<label style="display:flex;align-items:center;gap:.4rem;font-weight:400;margin-top:.2rem"><input type="checkbox" data-field="show_' + k[0] + '" checked> ' + k[1] + '</label>';
+        }).join('')) +
+        fg('Message de succès — titre', inp('success_title', data.success_title, 'Demande envoyée avec succès !')) +
+        fg('Message de succès — texte <small style="font-weight:400;opacity:.6">({nom} et {tel} sont remplacés)</small>', ta('success_text', data.success_text, 'Merci {nom}…', 2)) +
+        bgField(data.bg || 'cream') +
+        visibilityField(data.visible);
+      var fcSets = {
+        cats: { f: ['label','sub','icon','price'], l: ['Libellé','Exemples','Icône','Prix € HTVA'], def: [
+          { label: 'Citadine', sub: 'Polo, Clio, 208…', icon: 'voiture', price: '79' },
+          { label: 'Berline', sub: 'Golf, Passat, 308…', icon: 'voiture', price: '87' },
+          { label: 'SUV / Break', sub: 'Tiguan, Outlander…', icon: 'voiture', price: '91' },
+          { label: 'Utilitaire / Camionnette', sub: 'Van, camionnette…', icon: 'truck', price: '100' }] },
+        freqs: { f: ['label','per'], l: ['Libellé','Passages / mois'], def: [
+          { label: '1 fois par mois', per: '1' }, { label: '2 fois par mois', per: '2' }, { label: '1 fois par semaine (×4/mois)', per: '4' }] },
+        engs: { f: ['label','months','discount'], l: ['Libellé','Durée (mois)','Remise %'], def: [
+          { label: 'Sans engagement', months: '0', discount: '0' }, { label: '6 mois', months: '6', discount: '10' },
+          { label: '12 mois', months: '12', discount: '12' }, { label: '2 ans', months: '24', discount: '15' }] },
+        reassure: { f: ['icon','text'], l: ['Icône','Texte'], def: [
+          { icon: 'clock', text: 'Réponse sous 24 h ouvrées' }, { icon: 'shield-check', text: 'Paiement après chaque prestation' }, { icon: 'lock', text: 'Devis gratuit et sans engagement' }] }
+      };
+      Object.keys(fcSets).forEach(function(k) {
+        var set = fcSets[k], box = d.querySelector('[data-repeater="' + k + '"]');
+        (data[k] === undefined ? set.def : data[k]).forEach(function(item) { addRepeaterRow(box, k, set.f, set.l, item); });
+        d.querySelector('[data-repeater-add="' + k + '"]').addEventListener('click', function() { addRepeaterRow(box, k, set.f, set.l, {}); });
+      });
+      ['whatsapp','messenger','phone','email','socials'].forEach(function(k) {
+        var cb = d.querySelector('[data-field="show_' + k + '"]');
+        if (cb && data['show_' + k] !== undefined) cb.checked = !!data['show_' + k];
+      });
+      break;
+
+    case 'plan-cards':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'NOS ABONNEMENTS')) +
+        fg('Titre (H2)', inp('h2', data.h2, 'Plus vous vous engagez, plus vous économisez.')) +
+        fg('Introduction', ta('intro', data.intro, '', 2)) +
+        '<div class="form-group"><label>Cartes <small style="font-weight:400;opacity:.6">(points : séparés par « | » ; commencer par « - » = point non inclus, barré ; « mise en avant » : 1 pour oui)</small></label><div class="block-repeater" data-repeater="plans"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="plans">+ Ajouter une carte</button></div>' +
+        bgField(data.bg || 'alt') +
+        visibilityField(data.visible);
+      var pcF = ['duration','name','discount','sub','points','cta_label','cta_url','featured','badge'];
+      var pcL = ['Durée (petit titre)','Nom','Remise (grand chiffre)','Sous le chiffre','Points (séparés par |)','Bouton — texte','Bouton — lien','Mise en avant (1 = oui)','Pastille (si mise en avant)'];
+      (data.plans === undefined ? [
+        { duration: 'ABONNEMENT 6 MOIS', name: 'Découverte', discount: '−10 %', sub: 'sur chaque passage', points: 'Remise de 10 % sur chaque passage | Planification flexible | Facture mensuelle HTVA | - Remise flotte étendue', cta_label: 'Calculer mon tarif', cta_url: '#calculateur' },
+        { duration: 'ABONNEMENT 12 MOIS', name: 'Recommandé', discount: '−12 %', sub: 'sur chaque passage', points: 'Remise de 12 % sur chaque passage | Planification prioritaire | Facture mensuelle HTVA | Remise flotte : 5 % à partir de 5 véhicules', cta_label: 'Calculer mon tarif', cta_url: '#calculateur', featured: '1', badge: 'Le plus choisi' },
+        { duration: 'ABONNEMENT 2 ANS', name: 'Partenaire', discount: '−15 %', sub: 'sur chaque passage', points: 'Remise de 15 % sur chaque passage | Planification prioritaire | Facture mensuelle HTVA | Remise flotte : 5 % à partir de 5 véhicules', cta_label: 'Calculer mon tarif', cta_url: '#calculateur' }
+      ] : data.plans).forEach(function(item) { addRepeaterRow(d.querySelector('[data-repeater="plans"]'), 'plans', pcF, pcL, item); });
+      d.querySelector('[data-repeater-add="plans"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="plans"]'), 'plans', pcF, pcL, {});
+      });
+      break;
+
     case 'pricing':
       d.innerHTML =
         fg('Eyebrow <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('eyebrow', data.eyebrow, 'NOS TARIFS', 1)) +
@@ -1202,6 +1296,8 @@ function serializeBlock(blockItem) {
     'vehicle-pricing': 'items',
     'contact':      'items',
     'terrace-calculator': ['surfaces','options','reassure'],
+    'fleet-calculator': ['cats','freqs','engs','reassure'],
+    'plan-cards':   'plans',
     'before-after': 'items',
     'logos':        'items',
     'prestation':   ['items','metas'],

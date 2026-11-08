@@ -2860,3 +2860,55 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 @media (min-width: 1100px) { .kn-how__steps.kn-how__steps--c4 { grid-template-columns: repeat(4, 1fr); } }
 .kn-tc-rdv__form .kn-contact__form-title { margin-bottom: 1.25rem; }
 .kn-tc-rdv .kn-contact__grid > * { min-width: 0; }
+
+/* ── Calculateur flotte (abonnement Pro) ───────────────────── */
+.kn-fc__rows { display: flex; flex-direction: column; gap: .65rem; }
+.kn-fc__row { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "ico name counter" "ico price counter"; align-items: center; column-gap: .85rem; row-gap: .1rem; padding: .8rem 1rem; border: 1.5px solid var(--kn-border); border-radius: var(--r-md); background: var(--kn-white); }
+.kn-fc__row.is-active { border-color: var(--kn-navy); background: var(--kn-cream); }
+.kn-fc__row .kn-tc__pill-ico { grid-area: ico; }
+.kn-fc__name { grid-area: name; display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.kn-fc__name strong { font-size: .9375rem; color: var(--kn-navy); }
+.kn-fc__name small { color: var(--kn-muted); font-size: .78rem; margin-top: .1rem; }
+.kn-fc__price { grid-area: price; font-family: var(--font-display); font-weight: 600; font-size: .875rem; color: var(--kn-rose-600); }
+.kn-fc__counter { grid-area: counter; display: inline-flex; align-items: center; gap: .35rem; }
+.kn-fc__counter button { appearance: none; width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--kn-border); background: var(--kn-white); color: var(--kn-navy); font: inherit; font-size: 1.2rem; font-weight: 700; line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.kn-fc__counter button:hover { border-color: var(--kn-navy); }
+.kn-fc__counter button:focus-visible { outline: 2px solid var(--kn-rose-600); outline-offset: 2px; }
+.kn-fc__counter input[type="number"] { width: 3.2rem; padding: .5rem .2rem; -moz-appearance: textfield; }
+.kn-fc__counter input[type="number"]::-webkit-outer-spin-button, .kn-fc__counter input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.kn-fc__summary { display: flex; justify-content: space-between; gap: 1rem; margin: 1rem 0 0; padding: .75rem 1rem; border-radius: var(--r-md); background: var(--kn-cream); font-size: .9rem; color: var(--kn-navy); }
+.kn-fc__summary strong { font-family: var(--font-display); white-space: nowrap; }
+.kn-fc__hint { margin-top: .75rem; text-align: left; }
+.kn-fc__engs { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; }
+@media (min-width: 640px) { .kn-fc__engs { grid-template-columns: repeat(4, 1fr); } }
+.kn-fc__eng { justify-content: space-between; flex-direction: column; align-items: flex-start; gap: .25rem; }
+.kn-fc__eng .kn-tc__pill-price { margin-left: 0; }
+.kn-fc .kn-contact__field select { width: 100%; box-sizing: border-box; font: inherit; padding: .8rem 1rem; border: 1.5px solid var(--kn-border); border-radius: var(--r-md); background: var(--kn-cream); color: var(--kn-navy-ink); }
+.kn-fc__saving { display: flex; align-items: center; gap: .6rem; margin: 0 0 1rem; padding: .75rem 1rem; border-radius: var(--r-md); background: rgba(247,244,236,.12); font-size: .875rem; font-weight: 600; }
+.kn-fc__saving-ico { color: var(--kn-rose-mid); display: inline-flex; }
+.kn-fc__fiscal { display: flex; align-items: flex-start; gap: .5rem; margin: 0 0 1.25rem; font-size: .8125rem; color: rgba(247,244,236,.75); }
+.kn-fc__fiscal .kn-icon { flex-shrink: 0; margin-top: .15rem; --kn-icon-stroke: var(--kn-rose-mid); }
+.kn-fc .kn-tc__cta .kn-icon { --kn-icon-stroke: var(--kn-navy); }
+
+/* ── Cartes d'abonnement (plan-cards) ──────────────────────── */
+.kn-plans__head { text-align: center; margin-bottom: 2.25rem; }
+.kn-plans__intro { margin: .75rem auto 0; max-width: 620px; font-size: 1.0625rem; line-height: 1.65; color: var(--kn-muted); }
+.kn-plans__grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; align-items: stretch; }
+@media (min-width: 900px) { .kn-plans__grid { grid-template-columns: repeat(3, 1fr); } }
+.kn-plans__card { position: relative; display: flex; flex-direction: column; background: var(--kn-white); border: 1px solid var(--kn-border); border-radius: var(--r-card); box-shadow: var(--shadow-card); padding: 2rem 1.5rem 1.5rem; }
+.kn-plans__card.is-featured { border: 2px solid var(--kn-navy); box-shadow: var(--shadow-raised); }
+.kn-plans__badge { position: absolute; top: -.8rem; left: 50%; transform: translateX(-50%); background: var(--kn-navy); color: var(--kn-cream); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: .35rem .9rem; border-radius: var(--r-pill); white-space: nowrap; }
+.kn-plans__dur { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--kn-muted); }
+.kn-plans__name { margin: .25rem 0 0; font-size: 1.25rem; color: var(--kn-navy); }
+.kn-plans__disc { margin: 1rem 0 .25rem; font-family: var(--font-display); font-weight: 600; font-size: 3rem; line-height: 1; color: var(--kn-rose-600); }
+.kn-plans__sub { margin: 0 0 1.25rem; font-size: .875rem; color: var(--kn-muted); }
+.kn-plans__list { list-style: none; margin: 0 0 1.5rem; padding: 1.1rem 0 0; border-top: 1px solid var(--kn-border); display: flex; flex-direction: column; gap: .6rem; flex: 1; }
+.kn-plans__list li { display: flex; align-items: flex-start; gap: .6rem; font-size: .9rem; line-height: 1.4; color: var(--kn-navy-ink); }
+.kn-plans__list li .kn-icon { flex-shrink: 0; margin-top: .15rem; --kn-icon-stroke: var(--kn-rose-600); }
+.kn-plans__list li.is-off { color: var(--kn-muted); text-decoration: line-through; }
+.kn-plans__list li.is-off .kn-icon { --kn-icon-stroke: var(--kn-muted); }
+.kn-plans__cta { width: 100%; justify-content: center; }
+@media (max-width: 519px) {
+  .kn-fc__row { grid-template-columns: auto 1fr; grid-template-areas: "ico name" "ico price" "counter counter"; }
+  .kn-fc__counter { justify-self: end; margin-top: .5rem; }
+}
