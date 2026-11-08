@@ -2780,8 +2780,6 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 .kn-tc__inner { max-width: 760px; }
 .kn-tc__head { text-align: center; margin-bottom: 2rem; }
 .kn-tc__intro { margin: .75rem auto 0; max-width: 560px; font-size: 1.0625rem; line-height: 1.65; color: var(--kn-muted); }
-.kn-tc__head--light .kn-section__title { color: var(--kn-cream); }
-.kn-tc__head--light .kn-tc__intro { color: rgba(247,244,236,.8); }
 
 .kn-tc__card { background: var(--kn-white); border: 1px solid var(--kn-border); border-radius: var(--r-card); box-shadow: var(--shadow-card); padding: 1.5rem; margin-bottom: 1rem; }
 @media (min-width: 640px) { .kn-tc__card { padding: 1.75rem; } }
@@ -2843,21 +2841,22 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 .kn-tc__cta:hover { background: var(--kn-white); }
 .kn-tc__note { text-align: center; font-size: .8125rem; line-height: 1.6; color: var(--kn-muted); margin: 0; }
 
-.kn-tc-rdv__inner { max-width: 660px; }
-.kn-tc-rdv__resume { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.1rem 1.4rem; margin-bottom: 1.5rem; background: rgba(247,244,236,.1); border: 1px solid rgba(247,244,236,.22); border-radius: var(--r-card); color: var(--kn-cream); }
-.kn-tc-rdv__resume .kn-tc__lab { color: rgba(247,244,236,.65); margin-bottom: .1rem; }
-.kn-tc-rdv__resume strong { display: block; font-family: var(--font-display); font-size: 2rem; line-height: 1.1; }
-.kn-tc-rdv__resume small { display: block; margin-top: .15rem; font-size: .78rem; color: rgba(247,244,236,.65); }
-.kn-tc-rdv__resume-opt { padding: .4rem .9rem; border-radius: var(--r-pill); background: rgba(247,244,236,.14); font-size: .78rem; font-weight: 600; }
-.kn-tc-rdv__card { background: var(--kn-white); border-radius: var(--r-card); box-shadow: 0 24px 60px rgba(10,16,32,.35); padding: 1.5rem; color: var(--kn-navy-ink); }
-@media (min-width: 640px) { .kn-tc-rdv__card { padding: 2.25rem; } }
-.kn-tc-rdv__form .kn-contact__form-title { margin-bottom: 1.25rem; }
-.kn-tc-rdv__success { text-align: center; padding: 2rem .5rem; outline: none; }
-.kn-tc-rdv__success h3 { margin: 0 0 .5rem; font-family: var(--font-display); font-weight: 600; font-size: 1.6rem; color: var(--kn-navy); }
-.kn-tc-rdv__success p { margin: 0 auto; max-width: 440px; color: var(--kn-muted); line-height: 1.6; }
+/* Formulaire de devis terrasse : mêmes classes que le bloc Contact (grille, carte, champs) ;
+   seul l'encadré d'estimation lui est propre. */
+.kn-tc-rdv__resume { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1.5rem; padding: 1.1rem 1.4rem; background: var(--kn-white); border: 1px solid var(--kn-border); border-left: 4px solid var(--kn-rose-400); border-radius: var(--r-md); box-shadow: var(--shadow-card); color: var(--kn-navy-ink); }
+.kn-tc-rdv__resume .kn-tc__lab { margin-bottom: .1rem; }
+.kn-tc-rdv__resume strong { display: block; font-family: var(--font-display); font-weight: 600; font-size: 2rem; line-height: 1.1; color: var(--kn-navy); }
+.kn-tc-rdv__resume small { display: block; margin-top: .15rem; font-size: .8rem; color: var(--kn-muted); }
+.kn-tc-rdv__resume-opt { padding: .4rem .9rem; border-radius: var(--r-pill); background: var(--kn-cream-soft); color: var(--kn-navy); font-size: .78rem; font-weight: 600; }
+.kn-bg--blue .kn-tc-rdv__resume, .kn-bg--night .kn-tc-rdv__resume { background: rgba(247,244,236,.1); border-color: rgba(247,244,236,.22); border-left-color: var(--kn-rose-mid); box-shadow: none; color: var(--kn-cream); }
+.kn-bg--blue .kn-tc-rdv__resume strong, .kn-bg--night .kn-tc-rdv__resume strong { color: var(--kn-cream); }
+.kn-bg--blue .kn-tc-rdv__resume small, .kn-bg--night .kn-tc-rdv__resume small, .kn-bg--blue .kn-tc-rdv__resume .kn-tc__lab, .kn-bg--night .kn-tc-rdv__resume .kn-tc__lab { color: rgba(247,244,236,.7); }
+.kn-bg--blue .kn-tc-rdv__resume-opt, .kn-bg--night .kn-tc-rdv__resume-opt { background: rgba(247,244,236,.14); color: var(--kn-cream); }
 .kn-tc-rdv__form .kn-contact__field textarea { width: 100%; box-sizing: border-box; font: inherit; font-size: 1rem; padding: .8rem 1rem; background: var(--kn-cream); border: 1.5px solid var(--kn-border); border-radius: var(--r-md); resize: vertical; }
 .kn-tc-rdv__form .kn-contact__field textarea:focus { outline: none; background: var(--kn-white); border-color: var(--kn-navy); box-shadow: 0 0 0 3px rgba(36,53,92,.15); }
 .kn-tc__cta .kn-icon { --kn-icon-stroke: var(--kn-navy); --kn-icon-accent: var(--kn-rose-600); }
 /* Comment ça marche : option 4 colonnes (4 étapes) — activée seulement via le champ « columns » */
 @media (min-width: 768px) { .kn-how__steps.kn-how__steps--c4 { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1100px) { .kn-how__steps.kn-how__steps--c4 { grid-template-columns: repeat(4, 1fr); } }
+.kn-tc-rdv__form .kn-contact__form-title { margin-bottom: 1.25rem; }
+.kn-tc-rdv .kn-contact__grid > * { min-width: 0; }

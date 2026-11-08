@@ -400,3 +400,29 @@ function gridClasses(array $block, string $defaultLayout = '1-1'): string
 
     return implode(' ', $classes);
 }
+
+/**
+ * Canaux de contact direct (WhatsApp, Messenger, téléphone, e-mail) et réseaux sociaux
+ * à afficher dans un bloc, d'après les réglages ($channels) et les interrupteurs show_* du bloc.
+ */
+if (!function_exists('knContactChannels')) {
+    function knContactChannels(array $block, array $channels, string $waText): array
+    {
+        $on = function ($key) use ($block) { return !isset($block[$key]) || !empty($block[$key]); };
+        $out = array();
+        if ($on('show_whatsapp') && !empty($channels['whatsapp'])) {
+            $out[] = array('cls' => 'whatsapp', 'icon' => 'whatsapp', 'label' => 'WhatsApp', 'href' => 'https://wa.me/' . $channels['whatsapp'] . '?text=' . rawurlencode($waText), 'ext' => true);
+        }
+        if ($on('show_messenger') && !empty($channels['messenger'])) {
+            $out[] = array('cls' => 'messenger', 'icon' => 'messenger', 'label' => 'Messenger', 'href' => $channels['messenger'], 'ext' => true);
+        }
+        if ($on('show_phone') && !empty($channels['phone'])) {
+            $out[] = array('cls' => 'phone', 'icon' => 'phone', 'label' => $channels['phone'], 'href' => 'tel:' . preg_replace('/[^+0-9]/', '', $channels['phone']), 'ext' => false);
+        }
+        if ($on('show_email') && !empty($channels['email'])) {
+            $out[] = array('cls' => 'mail', 'icon' => 'mail', 'label' => $channels['email'], 'href' => 'mailto:' . $channels['email'], 'ext' => false);
+        }
+        $socials = ($on('show_socials') && !empty($channels['socials']) && is_array($channels['socials'])) ? $channels['socials'] : array();
+        return array('channels' => $out, 'socials' => $socials);
+    }
+}

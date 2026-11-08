@@ -673,6 +673,8 @@ function buildBlockForm(type, data) {
         fg('Bouton vers le formulaire', inp('cta_label', data.cta_label, 'Demander un RDV avec ce devis')) +
         fg('Mention sous le calculateur', ta('note', data.note, '* Prix indicatifs. Le devis définitif est confirmé sous 24h…', 2)) +
         '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Formulaire de demande de RDV <small style="font-weight:400;opacity:.6">(les messages arrivent dans Messages, comme le bloc Contact)</small></label></div>' +
+        fg('Fond de la section du formulaire', sel('form_bg', [['white','Blanc (comme le bloc Contact)'],['cream','Crème'],['alt','Ivoire alterné'],['rose','Rose poudré'],['blue','Navy'],['night','Navy profond']], data.form_bg || 'white')) +
+        fg('Eyebrow du formulaire', inp('form_eyebrow', data.form_eyebrow, 'VOTRE DEVIS EST PRÊT')) +
         fg('Titre du formulaire (H2)', inp('form_h2', data.form_h2, 'Votre devis est prêt. Demandez votre RDV !')) +
         fg('Texte d\'introduction', ta('form_intro', data.form_intro, 'Remplissez le formulaire ci-dessous…', 2)) +
         fg('Titre de la carte', inp('form_title', data.form_title, 'Fixons un RDV — nous vous rappelons sous 24h')) +
@@ -680,6 +682,14 @@ function buildBlockForm(type, data) {
         fg('Mention sous le bouton', inp('form_note', data.form_note, 'Gratuit · Sans engagement · Paiement uniquement après la prestation')) +
         fg('Case de consentement', inp('consent_text', data.consent_text, 'J\'accepte que mes données soient utilisées pour répondre à ma demande.')) +
         fg('Lien de confidentialité — URL <small style="font-weight:400;opacity:.6">(vide = politique de cookies des réglages)</small>', inp('privacy_url', data.privacy_url, '/politique-de-confidentialite')) +
+        '<div class="form-group"><label>Points rassurants <small style="font-weight:400;opacity:.6">(colonne de gauche, icône + texte)</small></label><div class="block-repeater" data-repeater="reassure"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="reassure">+ Ajouter un point</button></div>' +
+        fg('Titre « contact direct »', inp('channels_title', data.channels_title, 'Ou contactez-nous directement')) +
+        fg('Message WhatsApp prérempli', inp('whatsapp_text', data.whatsapp_text, 'Bonjour, je souhaite un devis pour le nettoyage de ma terrasse.')) +
+        fg('Boutons à afficher <small style="font-weight:400;opacity:.6">(numéros et liens : Réglages › Contact &amp; messagerie)</small>', ['whatsapp:WhatsApp','messenger:Messenger','phone:Téléphone','email:E-mail','socials:Réseaux sociaux'].map(function(o) {
+          var k = o.split(':');
+          return '<label style="display:flex;align-items:center;gap:.4rem;font-weight:400;margin-top:.2rem"><input type="checkbox" data-field="show_' + k[0] + '" checked> ' + k[1] + '</label>';
+        }).join('')) +
         fg('Message de succès — titre', inp('success_title', data.success_title, 'Demande envoyée avec succès !')) +
         fg('Message de succès — texte <small style="font-weight:400;opacity:.6">({nom} et {tel} sont remplacés)</small>', ta('success_text', data.success_text, 'Merci {nom} — nous avons bien reçu votre demande…', 2)) +
         '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Référencement Google</label></div>' +
@@ -706,6 +716,20 @@ function buildBlockForm(type, data) {
       });
       d.querySelector('[data-repeater-add="options"]').addEventListener('click', function() {
         addRepeaterRow(d.querySelector('[data-repeater="options"]'), 'options', ['label','desc','rate'], ['Libellé','Description','Supplément €/m²'], {});
+      });
+      (data.reassure === undefined ? [
+        { icon: 'clock', text: 'Réponse sous 24 h ouvrées' },
+        { icon: 'shield-check', text: 'Paiement uniquement après la prestation' },
+        { icon: 'lock', text: 'Devis gratuit et sans engagement' }
+      ] : data.reassure).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="reassure"]'), 'reassure', ['icon','text'], ['Icône','Texte'], item);
+      });
+      d.querySelector('[data-repeater-add="reassure"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="reassure"]'), 'reassure', ['icon','text'], ['Icône','Texte'], {});
+      });
+      ['whatsapp','messenger','phone','email','socials'].forEach(function(k) {
+        var cb = d.querySelector('[data-field="show_' + k + '"]');
+        if (cb && data['show_' + k] !== undefined) cb.checked = !!data['show_' + k];
       });
       var tcSchema = d.querySelector('[data-field="schema_enabled"]');
       if (tcSchema && data.schema_enabled !== undefined) tcSchema.checked = !!data.schema_enabled;
@@ -1177,7 +1201,7 @@ function serializeBlock(blockItem) {
     'pricing':      'items',
     'vehicle-pricing': 'items',
     'contact':      'items',
-    'terrace-calculator': ['surfaces','options'],
+    'terrace-calculator': ['surfaces','options','reassure'],
     'before-after': 'items',
     'logos':        'items',
     'prestation':   ['items','metas'],

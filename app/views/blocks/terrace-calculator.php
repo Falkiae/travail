@@ -70,6 +70,19 @@ $okTitle   = $t('success_title', 'Demande envoyée avec succès !');
 $okText    = $t('success_text', 'Merci {nom} — nous avons bien reçu votre demande. Notre équipe vous contactera au {tel} sous 24h pour fixer la date de l\'intervention.');
 $privUrl   = $t('privacy_url', isset($contact_channels['privacy_url']) ? (string) $contact_channels['privacy_url'] : '');
 $privLabel = $t('privacy_label', 'Politique de confidentialité');
+$formEyebrow = $t('form_eyebrow', 'VOTRE DEVIS EST PRÊT');
+$chanTitle   = $t('channels_title', 'Ou contactez-nous directement');
+$waText      = $t('whatsapp_text', 'Bonjour, je souhaite un devis pour le nettoyage de ma terrasse.');
+$formBg      = isset($block['form_bg']) && in_array($block['form_bg'], array('white','alt','cream','rose','blue','night'), true) ? $block['form_bg'] : 'white';
+$reassure    = isset($block['reassure']) && is_array($block['reassure']) ? $block['reassure'] : array(
+    array('icon' => 'clock',        'text' => 'Réponse sous 24 h ouvrées'),
+    array('icon' => 'shield-check', 'text' => 'Paiement uniquement après la prestation'),
+    array('icon' => 'lock',         'text' => 'Devis gratuit et sans engagement'),
+);
+$chData      = knContactChannels($block, isset($contact_channels) && is_array($contact_channels) ? $contact_channels : array(), $waText);
+$channels    = $chData['channels'];
+$socials     = $chData['socials'];
+$socialLabels = array('facebook' => 'Facebook', 'instagram' => 'Instagram', 'linkedin' => 'LinkedIn', 'twitter' => 'X (Twitter)');
 
 $defM2   = 20.0;
 $first   = $surfaces[0];
@@ -92,7 +105,7 @@ $cfg = array(
 $schemaOn = !isset($block['schema_enabled']) || !empty($block['schema_enabled']);
 $lowRate  = null;
 foreach ($surfaces as $s) { if ($s['rate'] > 0 && ($lowRate === null || $s['rate'] < $lowRate)) $lowRate = $s['rate']; }
-$rdvBlock = $block; $rdvBlock['bg'] = 'blue';
+$rdvBlock = $block; $rdvBlock['bg'] = $formBg;
 ?>
 <section class="<?php echo blockClasses($block, 'cream', 'kn-tc'); ?>" id="<?php echo $calcId; ?>" data-tc-root>
   <div class="container kn-tc__inner">
@@ -176,50 +189,90 @@ $rdvBlock = $block; $rdvBlock['bg'] = 'blue';
   </div>
 </section>
 
-<section class="<?php echo blockClasses($rdvBlock, 'blue', 'kn-tc-rdv'); ?>" id="<?php echo $formId; ?>" data-tc-form-root>
-  <div class="container kn-tc-rdv__inner">
-    <header class="kn-tc__head kn-tc__head--light">
-      <h2 class="kn-section__title"><?php echo htmlspecialchars($formH2); ?></h2>
-      <p class="kn-tc__intro"><?php echo htmlspecialchars($formIntro); ?></p>
-    </header>
+<section class="<?php echo blockClasses($rdvBlock, 'white', 'kn-contact kn-tc-rdv'); ?>" id="<?php echo $formId; ?>" data-tc-form-root>
+  <div class="container">
+    <div class="kn-contact__grid">
 
-    <div class="kn-tc-rdv__resume" data-resume>
-      <div><span class="kn-tc__lab">Votre estimation</span><strong data-resume-price>—</strong><small data-resume-detail></small></div>
-      <span class="kn-tc-rdv__resume-opt" data-resume-opts></span>
-    </div>
+      <div class="kn-contact__info">
+        <span class="kn-eyebrow"><?php echo htmlspecialchars($formEyebrow); ?></span>
+        <h2 class="kn-section__title"><?php echo htmlspecialchars($formH2); ?></h2>
+        <p class="kn-contact__intro"><?php echo htmlspecialchars($formIntro); ?></p>
 
-    <div class="kn-tc-rdv__card">
-      <div class="kn-tc-rdv__success" tabindex="-1" role="status" hidden>
-        <span class="kn-contact__success-ico" aria-hidden="true"><?php echo knIcon('check', array('size' => 28)); ?></span>
-        <h3><?php echo htmlspecialchars($okTitle); ?></h3>
-        <p data-success-text></p>
+        <div class="kn-tc-rdv__resume" data-resume>
+          <div><span class="kn-tc__lab">Votre estimation</span><strong data-resume-price>—</strong><small data-resume-detail></small></div>
+          <span class="kn-tc-rdv__resume-opt" data-resume-opts></span>
+        </div>
+
+        <?php if ($reassure): ?>
+        <ul class="kn-contact__reassure">
+          <?php foreach ($reassure as $r):
+            $txt = is_array($r) ? (isset($r['text']) ? (string) $r['text'] : '') : (string) $r;
+            if (trim($txt) === '') continue;
+            $ico = is_array($r) && !empty($r['icon']) ? $r['icon'] : 'check';
+          ?>
+          <li><span class="kn-contact__reassure-ico" aria-hidden="true"><?php echo knIcon($ico, array('size' => 18, 'fallback' => 'check')); ?></span><span><?php echo htmlspecialchars($txt); ?></span></li>
+          <?php endforeach; ?>
+        </ul>
+        <?php endif; ?>
+
+        <?php if ($channels): ?>
+        <div class="kn-contact__channels">
+          <p class="kn-contact__channels-title"><?php echo htmlspecialchars($chanTitle); ?></p>
+          <div class="kn-contact__chan-list">
+            <?php foreach ($channels as $c): ?>
+            <a class="kn-contact__chan kn-contact__chan--<?php echo $c['cls']; ?>" href="<?php echo htmlspecialchars($c['href']); ?>"<?php echo $c['ext'] ? ' target="_blank" rel="noopener"' : ''; ?>>
+              <?php echo knIcon($c['icon'], array('size' => 20)); ?><span><?php echo htmlspecialchars($c['label']); ?></span>
+            </a>
+            <?php endforeach; ?>
+          </div>
+        </div>
+        <?php endif; ?>
+
+        <?php if ($socials): ?>
+        <div class="kn-contact__socials" aria-label="Nos réseaux sociaux">
+          <?php foreach ($socials as $net => $url): if (!isset($socialLabels[$net])) continue; ?>
+          <a href="<?php echo htmlspecialchars($url); ?>" target="_blank" rel="noopener" aria-label="<?php echo htmlspecialchars($socialLabels[$net]); ?>" title="<?php echo htmlspecialchars($socialLabels[$net]); ?>"><?php echo knIcon($net, array('size' => 20)); ?></a>
+          <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
       </div>
 
-      <form class="kn-tc-rdv__form" method="post" action="/contact/send" novalidate data-tc-form>
-        <h3 class="kn-contact__form-title"><?php echo htmlspecialchars($formTitle); ?></h3>
-        <input type="hidden" name="_token" value="<?php echo htmlspecialchars($token); ?>">
-        <input type="hidden" name="ts" value="<?php echo htmlspecialchars($stamp['ts']); ?>">
-        <input type="hidden" name="sig" value="<?php echo htmlspecialchars($stamp['sig']); ?>">
-        <input type="hidden" name="page" value="<?php echo htmlspecialchars($pageUrl); ?>">
-        <div class="kn-contact__trap" aria-hidden="true"><label>Ne pas remplir<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-
-        <div class="kn-contact__row">
-          <div class="kn-contact__field"><label for="<?php echo $uid; ?>-name">Nom &amp; Prénom</label><input type="text" id="<?php echo $uid; ?>-name" name="name" autocomplete="name" required maxlength="100"><p class="kn-contact__error" data-error-for="name"></p></div>
-          <div class="kn-contact__field"><label for="<?php echo $uid; ?>-tel">Téléphone</label><input type="tel" id="<?php echo $uid; ?>-tel" name="phone" autocomplete="tel" inputmode="tel" required maxlength="30"><p class="kn-contact__error" data-error-for="phone"></p></div>
-        </div>
-        <div class="kn-contact__field"><label for="<?php echo $uid; ?>-email">E-mail</label><input type="email" id="<?php echo $uid; ?>-email" name="email" autocomplete="email" inputmode="email" required maxlength="190"><p class="kn-contact__error" data-error-for="email"></p></div>
-        <div class="kn-contact__field"><label for="<?php echo $uid; ?>-commune">Commune / adresse approximative</label><input type="text" id="<?php echo $uid; ?>-commune" name="commune" placeholder="Ex : Visé, Liège, Maastricht…" required maxlength="120"><p class="kn-contact__error" data-error-for="commune"></p></div>
-        <div class="kn-contact__field"><label for="<?php echo $uid; ?>-msg">Informations complémentaires <small>(facultatif)</small></label><textarea id="<?php echo $uid; ?>-msg" name="extra" rows="4" maxlength="1200" placeholder="État de la terrasse, présence de mousse importante, options souhaitées, disponibilités…"></textarea></div>
-
-        <div class="kn-contact__field kn-contact__field--check">
-          <label class="kn-contact__consent"><input type="checkbox" name="consent" value="1" required><span><?php echo htmlspecialchars($consent); ?><?php if ($privUrl !== ''): ?> <a href="<?php echo htmlspecialchars($privUrl); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($privLabel); ?></a><?php endif; ?></span></label>
-          <p class="kn-contact__error" data-error-for="consent"></p>
+      <div class="kn-contact__card">
+        <div class="kn-contact__success kn-tc-rdv__success" tabindex="-1" role="status" hidden>
+          <span class="kn-contact__success-ico" aria-hidden="true"><?php echo knIcon('check', array('size' => 28)); ?></span>
+          <h3><?php echo htmlspecialchars($okTitle); ?></h3>
+          <p data-success-text></p>
         </div>
 
-        <p class="kn-contact__status" role="alert" aria-live="polite" hidden></p>
-        <button type="submit" class="kn-btn kn-contact__submit"><?php echo knIcon('send', array('size' => 16)); ?><span><?php echo htmlspecialchars($submitLbl); ?></span></button>
-        <p class="kn-contact__note"><?php echo knIcon('lock', array('size' => 14)); ?><span><?php echo htmlspecialchars($formNote); ?></span></p>
-      </form>
+        <form class="kn-contact__form kn-tc-rdv__form" method="post" action="/contact/send" novalidate data-tc-form>
+          <h3 class="kn-contact__form-title"><?php echo htmlspecialchars($formTitle); ?></h3>
+          <input type="hidden" name="_token" value="<?php echo htmlspecialchars($token); ?>">
+          <input type="hidden" name="ts" value="<?php echo htmlspecialchars($stamp['ts']); ?>">
+          <input type="hidden" name="sig" value="<?php echo htmlspecialchars($stamp['sig']); ?>">
+          <input type="hidden" name="page" value="<?php echo htmlspecialchars($pageUrl); ?>">
+          <div class="kn-contact__trap" aria-hidden="true"><label>Ne pas remplir<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+
+          <div class="kn-contact__row">
+            <div class="kn-contact__field"><label for="<?php echo $uid; ?>-name">Nom &amp; Prénom</label><input type="text" id="<?php echo $uid; ?>-name" name="name" autocomplete="name" required maxlength="100"><p class="kn-contact__error" data-error-for="name"></p></div>
+            <div class="kn-contact__field"><label for="<?php echo $uid; ?>-tel">Téléphone</label><input type="tel" id="<?php echo $uid; ?>-tel" name="phone" autocomplete="tel" inputmode="tel" required maxlength="30"><p class="kn-contact__error" data-error-for="phone"></p></div>
+          </div>
+          <div class="kn-contact__row">
+            <div class="kn-contact__field"><label for="<?php echo $uid; ?>-email">E-mail</label><input type="email" id="<?php echo $uid; ?>-email" name="email" autocomplete="email" inputmode="email" required maxlength="190"><p class="kn-contact__error" data-error-for="email"></p></div>
+            <div class="kn-contact__field"><label for="<?php echo $uid; ?>-commune">Commune</label><input type="text" id="<?php echo $uid; ?>-commune" name="commune" placeholder="Ex : Visé, Liège…" required maxlength="120"><p class="kn-contact__error" data-error-for="commune"></p></div>
+          </div>
+          <div class="kn-contact__field"><label for="<?php echo $uid; ?>-msg">Informations complémentaires <small>(facultatif)</small></label><textarea id="<?php echo $uid; ?>-msg" name="extra" rows="4" maxlength="1200" placeholder="État de la terrasse, présence de mousse importante, options souhaitées, disponibilités…"></textarea></div>
+
+          <div class="kn-contact__field kn-contact__field--check">
+            <label class="kn-contact__consent"><input type="checkbox" name="consent" value="1" required><span><?php echo htmlspecialchars($consent); ?><?php if ($privUrl !== ''): ?> <a href="<?php echo htmlspecialchars($privUrl); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($privLabel); ?></a><?php endif; ?></span></label>
+            <p class="kn-contact__error" data-error-for="consent"></p>
+          </div>
+
+          <p class="kn-contact__status" role="alert" aria-live="polite" hidden></p>
+          <button type="submit" class="kn-btn kn-contact__submit"><?php echo knIcon('send', array('size' => 16)); ?><span><?php echo htmlspecialchars($submitLbl); ?></span></button>
+          <p class="kn-contact__note"><?php echo knIcon('lock', array('size' => 14)); ?><span><?php echo htmlspecialchars($formNote); ?></span></p>
+        </form>
+      </div>
+
     </div>
   </div>
 </section>
