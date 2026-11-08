@@ -2768,3 +2768,9 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 .kn-contact__success p { margin: 0 auto; max-width: 420px; color: var(--kn-muted); line-height: 1.6; }
 
 .kn-section.kn-contact { padding-top: 2.1875rem; } /* 35px */
+
+/* Sections de texte des pages de services (sous-titre H3, liste à coches) — classes nouvelles, sans effet sur l'existant */
+.kn-subtitle { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.4rem, 2.5vw, 1.8rem); line-height: 1.2; color: var(--kn-navy); margin: 0 0 .75rem; }
+.kn-checklist { list-style: none; margin: 1rem 0 1.5rem; padding: 0; display: flex; flex-direction: column; gap: .6rem; }
+.kn-checklist li { position: relative; padding-left: 1.75rem; line-height: 1.55; color: var(--kn-navy-ink); }
+.kn-checklist li::before { content: "\2713"; position: absolute; left: 0; top: 0; color: var(--kn-rose-600); font-weight: 700; }

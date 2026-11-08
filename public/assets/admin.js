@@ -311,6 +311,7 @@ function buildBlockForm(type, data) {
         fg('Corps de texte (HTML autorisé)', ta('body', data.body, 'Keepnew nettoie vos <strong>canapés</strong>...')) +
         fg('CTA — Eyebrow', inp('cta_eyebrow', data.cta_eyebrow, 'RÉSERVATION EN LIGNE')) +
         fg('CTA — Titre', inp('cta_title', data.cta_title, 'Prendre RDV en 2 min')) +
+        fg('CTA — Lien <small style="font-weight:400;opacity:.6">(vide = réservation en ligne)</small>', inp('cta_url', data.cta_url, '#contact')) +
         fg('Preuve sociale', inp('social_proof', data.social_proof, '4,9/5 · +110 avis · +400 canapés · +250 voitures')) +
         fg('Visuel — Type', sel('visual_type', [['photo','Photo (image)'],['video','Video depuis médiathèque'],['video_bg','Video en arrière-plan']], data.visual_type || 'photo')) +
         '<div data-visual-section="photo">' +
@@ -522,6 +523,7 @@ function buildBlockForm(type, data) {
         fg('Titre <small style="font-weight:400;opacity:.6">(HTML autorisé — surbrillance : &lt;span class="hl-inverse"&gt;…&lt;/span&gt;)</small>', ta('title', data.title, 'Qu\'attendez-vous pour <span class="hl-inverse">prendre RDV</span> ?', 2)) +
         fg('Texte sous le titre', ta('intro', data.intro, 'Rejoignez nos nombreux clients satisfaits : intervention à domicile, résultat garanti.', 2)) +
         fg('Texte du bouton de réservation', inp('cta_title', data.cta_title, 'Prendre RDV en 2 min')) +
+        fg('Lien du bouton <small style="font-weight:400;opacity:.6">(vide = réservation en ligne)</small>', inp('cta_url', data.cta_url, '#contact')) +
         fg('Téléphone', inp('phone', data.phone, '+32 (0)4 55 13 84 19')) +
         fg('', '<label style="display:flex;align-items:center;gap:.4rem;font-weight:400"><input type="checkbox" data-field="show_reviews" checked> Afficher la note et deux avis Google <small style="opacity:.6">(nécessite l\'API Google configurée dans les réglages)</small></label>') +
         visibilityField(data.visible);

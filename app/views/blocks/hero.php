@@ -76,7 +76,7 @@ $rawPills = isset($block['pills']) && is_array($block['pills']) ? $block['pills'
           <span class="kn-pill <?php echo $pillCls; ?>"><?php echo knIcon($pillIcon, array('size' => 15, 'class' => 'kn-icon--pill')); ?><?php echo htmlspecialchars($pillText); ?></span>
           <?php endforeach; ?>
         </div>
-        <a href="<?php echo htmlspecialchars($booking_url); ?>" class="kn-cta-card <?php echo $isDark ? 'kn-cta-card--glass' : 'kn-cta-card--navy'; ?>">
+        <a href="<?php echo htmlspecialchars(!empty($block['cta_url']) ? $block['cta_url'] : $booking_url); ?>" class="kn-cta-card <?php echo $isDark ? 'kn-cta-card--glass' : 'kn-cta-card--navy'; ?>">
           <div class="kn-cta-card__content">
             <span class="kn-eyebrow"><?php echo knIcon('calendar', array('size' => 14, 'class' => 'kn-icon--eyebrow')); ?><?php echo htmlspecialchars(isset($block['cta_eyebrow']) ? $block['cta_eyebrow'] : 'RÉSERVATION EN LIGNE'); ?></span>
             <p class="kn-cta-card__title"><?php echo htmlspecialchars(isset($block['cta_title']) ? $block['cta_title'] : 'Prendre RDV en 2 min'); ?></p>

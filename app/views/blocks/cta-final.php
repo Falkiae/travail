@@ -59,7 +59,7 @@ $hasReviews = $showReviews && ($rvRating !== null || $rvPicked);
           <span class="kn-final__rating-text"><strong><?php echo htmlspecialchars(number_format($rvRating, 1, ',', '')); ?>/5</strong><?php if ($rvTotal !== null): ?> · <?php echo htmlspecialchars((string) $rvTotal); ?> avis Google<?php endif; ?></span>
         </div>
         <?php endif; ?>
-        <a href="<?php echo htmlspecialchars($booking_url); ?>" class="kn-cta-card <?php echo $cardStyle; ?>">
+        <a href="<?php echo htmlspecialchars(!empty($block['cta_url']) ? $block['cta_url'] : $booking_url); ?>" class="kn-cta-card <?php echo $cardStyle; ?>">
           <div class="kn-cta-card__content">
             <span class="kn-eyebrow"><?php echo knIcon('calendar', array('size' => 14, 'class' => 'kn-icon--eyebrow')); ?>Réservation en ligne</span>
             <p class="kn-cta-card__title"><?php echo htmlspecialchars($ctaText); ?></p>
