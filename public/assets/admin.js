@@ -100,6 +100,7 @@ const BLOCK_TYPES = {
   'blog-latest':         'Derniers articles',
   'vehicle-pricing':     'Tarifs véhicules (adaptatif)',
   'contact':             'Contact / Devis sur mesure',
+  'terrace-calculator':  'Calculateur terrasse',
 };
 
 let dragSrcEl = null;
@@ -480,6 +481,7 @@ function buildBlockForm(type, data) {
         fg('Eyebrow', inp('eyebrow', data.eyebrow, 'RÉSERVATION EN LIGNE')) +
         fg('H2', inp('h2', data.h2, 'Réservez votre nettoyage à domicile en 2 minutes')) +
         bgField(data.bg || 'alt') +
+        fg('Colonnes (ordinateur)', sel('columns', [['3','3 colonnes (défaut)'],['4','4 colonnes (pour 4 étapes)']], data.columns || '3')) +
         visibilityField(data.visible) +
         '<div class="form-group"><label>Étapes</label><div class="block-repeater" data-repeater="steps"></div>'
         + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="steps">+ Ajouter une étape</button></div>';
@@ -647,6 +649,66 @@ function buildBlockForm(type, data) {
         var cb = d.querySelector('[data-field="show_' + k + '"]');
         if (cb && data['show_' + k] !== undefined) cb.checked = !!data['show_' + k];
       });
+      break;
+
+    case 'terrace-calculator':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'CALCULATEUR GRATUIT')) +
+        fg('Titre', inp('h2', data.h2, 'Combien coûte le nettoyage de ma terrasse ?')) +
+        fg('Introduction', ta('intro', data.intro, 'Obtenez une estimation en 30 secondes — sans engagement…', 2)) +
+        '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Tarifs</label></div>' +
+        fg('Prix minimum (€)', inp('min_price', data.min_price, '95')) +
+        fg('Surface minimale (m²) <small style="font-weight:400;opacity:.6">(pour l\'alerte « petite surface »)</small>', inp('min_m2', data.min_m2, '15')) +
+        fg('Curseur : maximum (m²)', inp('slider_max', data.slider_max, '200')) +
+        '<div class="form-group"><label>Types de revêtement <small style="font-weight:400;opacity:.6">(libellé, détail, icône, prix par m²)</small></label><div class="block-repeater" data-repeater="surfaces"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="surfaces">+ Ajouter un revêtement</button></div>' +
+        '<div class="form-group"><label>Options <small style="font-weight:400;opacity:.6">(libellé, description, supplément par m²)</small></label><div class="block-repeater" data-repeater="options"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="options">+ Ajouter une option</button></div>' +
+        '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Textes du calculateur</label></div>' +
+        fg('Étape 1 — titre', inp('step1_title', data.step1_title, 'Quel est le type de revêtement ?')) +
+        fg('Étape 2 — titre', inp('step2_title', data.step2_title, 'Quelle est la superficie de votre terrasse ?')) +
+        fg('Étape 3 — titre', inp('step3_title', data.step3_title, 'Options supplémentaires')) +
+        fg('Titre du résultat', inp('result_label', data.result_label, 'Estimation de votre devis')) +
+        fg('Pastilles du résultat <small style="font-weight:400;opacity:.6">(une par ligne)</small>', ta('badges', data.badges === undefined ? 'Déplacement offert\nPaiement après prestation\nRéponse sous 24h' : data.badges, '', 3)) +
+        fg('Bouton vers le formulaire', inp('cta_label', data.cta_label, 'Demander un RDV avec ce devis')) +
+        fg('Mention sous le calculateur', ta('note', data.note, '* Prix indicatifs. Le devis définitif est confirmé sous 24h…', 2)) +
+        '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Formulaire de demande de RDV <small style="font-weight:400;opacity:.6">(les messages arrivent dans Messages, comme le bloc Contact)</small></label></div>' +
+        fg('Titre du formulaire (H2)', inp('form_h2', data.form_h2, 'Votre devis est prêt. Demandez votre RDV !')) +
+        fg('Texte d\'introduction', ta('form_intro', data.form_intro, 'Remplissez le formulaire ci-dessous…', 2)) +
+        fg('Titre de la carte', inp('form_title', data.form_title, 'Fixons un RDV — nous vous rappelons sous 24h')) +
+        fg('Texte du bouton', inp('submit_label', data.submit_label, 'Envoyer ma demande de RDV')) +
+        fg('Mention sous le bouton', inp('form_note', data.form_note, 'Gratuit · Sans engagement · Paiement uniquement après la prestation')) +
+        fg('Case de consentement', inp('consent_text', data.consent_text, 'J\'accepte que mes données soient utilisées pour répondre à ma demande.')) +
+        fg('Lien de confidentialité — URL <small style="font-weight:400;opacity:.6">(vide = politique de cookies des réglages)</small>', inp('privacy_url', data.privacy_url, '/politique-de-confidentialite')) +
+        fg('Message de succès — titre', inp('success_title', data.success_title, 'Demande envoyée avec succès !')) +
+        fg('Message de succès — texte <small style="font-weight:400;opacity:.6">({nom} et {tel} sont remplacés)</small>', ta('success_text', data.success_text, 'Merci {nom} — nous avons bien reçu votre demande…', 2)) +
+        '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Référencement Google</label></div>' +
+        fg('', '<label style="display:flex;align-items:center;gap:.4rem;font-weight:400"><input type="checkbox" data-field="schema_enabled" checked> Ajouter le balisage « Service » (tarif au m²) pour Google</label>') +
+        fg('Nom du service', inp('service_name', data.service_name, 'Nettoyage de terrasse haute pression')) +
+        fg('Zone desservie', inp('area_served', data.area_served, 'Liège, Namur, Belgique')) +
+        bgField(data.bg || 'cream') +
+        visibilityField(data.visible);
+      (data.surfaces === undefined ? [
+        { label: 'Carrelage / Grès cérame', detail: 'Surface lisse', icon: 'terrasse', rate: '6' },
+        { label: 'Béton brut & Dalle', detail: 'Terrasse, allée', icon: 'terrasse', rate: '7' },
+        { label: 'Pavés & Autobloquants', detail: 'Joints inclus', icon: 'terrasse', rate: '7' },
+        { label: 'Bois / Résine', detail: 'Nettoyage manuel et basse pression', icon: 'terrasse', rate: '9' }
+      ] : data.surfaces).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="surfaces"]'), 'surfaces', ['label','detail','icon','rate'], ['Libellé','Détail','Icône','Prix €/m²'], item);
+      });
+      d.querySelector('[data-repeater-add="surfaces"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="surfaces"]'), 'surfaces', ['label','detail','icon','rate'], ['Libellé','Détail','Icône','Prix €/m²'], {});
+      });
+      (data.options === undefined ? [
+        { label: 'Anti-mousse longue durée', desc: 'Protection 12–18 mois contre le retour des mousses et algues', rate: '1' }
+      ] : data.options).forEach(function(item) {
+        addRepeaterRow(d.querySelector('[data-repeater="options"]'), 'options', ['label','desc','rate'], ['Libellé','Description','Supplément €/m²'], item);
+      });
+      d.querySelector('[data-repeater-add="options"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="options"]'), 'options', ['label','desc','rate'], ['Libellé','Description','Supplément €/m²'], {});
+      });
+      var tcSchema = d.querySelector('[data-field="schema_enabled"]');
+      if (tcSchema && data.schema_enabled !== undefined) tcSchema.checked = !!data.schema_enabled;
       break;
 
     case 'pricing':
@@ -1115,6 +1177,7 @@ function serializeBlock(blockItem) {
     'pricing':      'items',
     'vehicle-pricing': 'items',
     'contact':      'items',
+    'terrace-calculator': ['surfaces','options'],
     'before-after': 'items',
     'logos':        'items',
     'prestation':   ['items','metas'],

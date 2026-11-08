@@ -15,7 +15,7 @@ $steps = isset($block['steps']) && is_array($block['steps']) ? $block['steps'] :
     <?php else: ?>
     <h2 class="kn-section__title">Trois étapes, <span class="kn-highlight">zéro stress</span>.</h2>
     <?php endif; ?>
-    <div class="kn-how__steps">
+    <div class="kn-how__steps<?php echo isset($block['columns']) && $block['columns'] === '4' ? ' kn-how__steps--c4' : ''; ?>">
       <?php foreach ($steps as $i => $step):
         $stepNum  = !empty($step['num']) ? $step['num'] : sprintf('%02d', $i + 1);
         $hasPhoto = !empty($step['image_url']);
