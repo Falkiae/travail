@@ -103,6 +103,7 @@ const BLOCK_TYPES = {
   'terrace-calculator':  'Calculateur terrasse',
   'fleet-calculator':    'Calculateur flotte (abonnement)',
   'plan-cards':          'Cartes d\'abonnement',
+  'price-table':         'Tableau de tarifs',
 };
 
 let dragSrcEl = null;
@@ -829,6 +830,24 @@ function buildBlockForm(type, data) {
       });
       break;
 
+    case 'price-table':
+      d.innerHTML =
+        fg('Eyebrow', inp('eyebrow', data.eyebrow, 'NOS TARIFS')) +
+        fg('Titre (H2)', inp('h2', data.h2, 'Tarifs')) +
+        fg('Introduction', ta('intro', data.intro, '', 2)) +
+        '<div class="form-group"><label>Cartes <small style="font-weight:400;opacity:.6">(lignes séparées par « ; » : « libellé | exemple | prix »)</small></label><div class="block-repeater" data-repeater="cards"></div>'
+        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="cards">+ Ajouter une carte</button></div>' +
+        fg('Mention sous les cartes', ta('note', data.note, '', 3)) +
+        bgField(data.bg || 'alt') +
+        visibilityField(data.visible);
+      var ptF = ['title','sub','rows','cta_label','cta_url'];
+      var ptL = ['Titre de la carte (H3)','Sous-titre','Lignes (séparées par « ; »)','Bouton — texte','Bouton — lien'];
+      (data.cards || []).forEach(function(item) { addRepeaterRow(d.querySelector('[data-repeater="cards"]'), 'cards', ptF, ptL, item); });
+      d.querySelector('[data-repeater-add="cards"]').addEventListener('click', function() {
+        addRepeaterRow(d.querySelector('[data-repeater="cards"]'), 'cards', ptF, ptL, {});
+      });
+      break;
+
     case 'pricing':
       d.innerHTML =
         fg('Eyebrow <small style="font-weight:400;opacity:.6">(HTML autorisé)</small>', ta('eyebrow', data.eyebrow, 'NOS TARIFS', 1)) +
@@ -1298,6 +1317,7 @@ function serializeBlock(blockItem) {
     'terrace-calculator': ['surfaces','options','reassure'],
     'fleet-calculator': ['cats','freqs','engs','reassure'],
     'plan-cards':   'plans',
+    'price-table':  'cards',
     'before-after': 'items',
     'logos':        'items',
     'prestation':   ['items','metas'],

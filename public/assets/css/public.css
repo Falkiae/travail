@@ -2912,3 +2912,16 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
   .kn-fc__row { grid-template-columns: auto 1fr; grid-template-areas: "ico name" "ico price" "counter counter"; }
   .kn-fc__counter { justify-self: end; margin-top: .5rem; }
 }
+
+/* ── Tableau de tarifs (price-table) ───────────────────────── */
+.kn-ptable__grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; max-width: 980px; margin: 0 auto; }
+@media (min-width: 800px) { .kn-ptable__grid--2, .kn-ptable__grid--3 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .kn-ptable__grid--3 { grid-template-columns: repeat(3, 1fr); max-width: none; } }
+.kn-ptable__card { padding-top: 1.75rem; }
+.kn-ptable__rows { list-style: none; margin: 0 0 1.5rem; padding: 0; flex: 1; }
+.kn-ptable__rows li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 0; border-top: 1px solid var(--kn-border); }
+.kn-ptable__name { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.kn-ptable__name strong { font-size: .95rem; color: var(--kn-navy); }
+.kn-ptable__name small { color: var(--kn-muted); font-size: .78rem; margin-top: .1rem; }
+.kn-ptable__price { flex-shrink: 0; font-family: var(--font-display); font-weight: 600; font-size: 1.25rem; color: var(--kn-rose-600); white-space: nowrap; }
+.kn-ptable__note { max-width: 760px; margin: 1.5rem auto 0; }
