@@ -658,6 +658,20 @@ class FrontController extends BaseController
         $this->view->render('blog-list', $data);
     }
 
+    /** CSS personnalisé par type de bloc (Réglages), pour les articles. */
+    private function blockStylesFor(array $settings): string
+    {
+        $types = ['hero','services','two-col','how','reviews','zone','accordion','cta-final','heading','text','image','cta','html','video','file','quote','pricing','before-after','logos','seo-content','domicile-vs-atelier','sofa-simulator','prestation','blog-latest','vehicle-pricing','contact','terrace-calculator','fleet-calculator','plan-cards','price-table'];
+        $css = '';
+        foreach ($types as $bt) {
+            $key = 'block_css_' . $bt;
+            if (!empty($settings[$key])) {
+                $css .= '/* ' . $bt . " */\n" . $settings[$key] . "\n";
+            }
+        }
+        return $css;
+    }
+
     public function blogPost(string $slug): void
     {
         $pdo      = $this->db();
@@ -769,7 +783,27 @@ class FrontController extends BaseController
             array('@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $breadcrumb),
         );
 
-        $data = array_merge($this->commonPublicData($pdo, $settings, $lang), array(
+        // Blocs « données » : mêmes variables que sur une page (avis Google,
+        // canaux de contact, derniers articles), chargées seulement si utiles.
+        $blockTypesUsed = array();
+        foreach ($blocks as $bl) {
+            if (isset($bl['type'])) $blockTypesUsed[$bl['type']] = true;
+        }
+        $extraData = array();
+        if (isset($blockTypesUsed['reviews'])) {
+            $postReviews = $this->fetchGoogleReviews($pdo, $settings);
+            $extraData['reviews'] = $postReviews;
+            $reviewsLd = $this->buildReviewsStructuredData($settings, $postReviews, $siteName, $canonicalUrl);
+            if ($reviewsLd) $structuredData[] = $reviewsLd;
+        }
+        if (isset($blockTypesUsed['contact'])) {
+            $extraData['contact_channels'] = $this->buildContactChannels($settings);
+        }
+        if (isset($blockTypesUsed['blog-latest'])) {
+            $extraData['latest_posts'] = $this->fetchLatestPosts($pdo, $lang, $blocks);
+        }
+
+        $data = array_merge($this->commonPublicData($pdo, $settings, $lang), $extraData, array(
             'title'             => isset($post['meta_title']) && $post['meta_title'] ? $post['meta_title'] : $post['title'],
             'meta_title'        => isset($post['meta_title']) ? $post['meta_title'] : $post['title'],
             'meta_description'  => $metaDesc,
@@ -785,7 +819,7 @@ class FrontController extends BaseController
             'blocks'            => $blocks,
             'related_posts'     => $related,
             'reading_minutes'   => $readingMinutes,
-            'block_styles'      => '',
+            'block_styles'      => $this->blockStylesFor($settings),
         ));
         $this->view->render('blog-post', $data);
     }

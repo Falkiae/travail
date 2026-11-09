@@ -106,6 +106,18 @@ $existingBlocks = $isEdit && !empty($post['content']) ? json_decode($post['conte
                 <button type="button" data-type="before-after">Avant / Apres</button>
                 <button type="button" data-type="logos">Logos partenaires</button>
                 <button type="button" data-type="seo-content">Contenu SEO</button>
+                <button type="button" data-type="services">Grille services</button>
+                <button type="button" data-type="two-col">Deux colonnes</button>
+                <button type="button" data-type="how">Comment ça marche</button>
+                <button type="button" data-type="reviews">Avis clients</button>
+                <button type="button" data-type="zone">Zone d'intervention</button>
+                <button type="button" data-type="cta-final">CTA final</button>
+                <button type="button" data-type="domicile-vs-atelier">Domicile vs Atelier</button>
+                <button type="button" data-type="prestation">Prestation détaillée</button>
+                <button type="button" data-type="blog-latest">Derniers articles</button>
+                <button type="button" data-type="contact">Contact / Devis sur mesure</button>
+                <button type="button" data-type="price-table">Tableau de tarifs</button>
+                <button type="button" data-type="plan-cards">Cartes d'abonnement</button>
               </div>
             </div>
           </div>
