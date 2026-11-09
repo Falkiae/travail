@@ -2401,6 +2401,12 @@ details[open] .kn-accordion__q::after { transform: rotate(45deg); color: var(--k
 }
 .kn-blog-article__body .kn-section__title { margin-top: 0; }
 
+/* Blocs « mis en page » (étapes, tarifs, cartes, zones…) dans un article :
+   ils gardent leur espacement de section, seule la prose est resserrée. */
+.kn-blog-article__body .kn-section:has(.kn-how__steps, .kn-pricing__grid, .kn-presta__head, .kn-zone__inner, .kn-ba-grid, .kn-dva__steps, .kn-dva__grid, .kn-services__grid, .kn-seo-content__text),
+.kn-blog-article__body .kn-section:has(.kn-reviews__summary) { padding: 3.5rem 0; }
+.kn-blog-article__body .kn-section:has(.kn-how__steps, .kn-pricing__grid, .kn-presta__head, .kn-zone__inner, .kn-ba-grid, .kn-dva__grid, .kn-services__grid) .kn-section__title { margin-top: 0; }
+
 .kn-blog-article__cta { margin: 1rem 0 3rem; }
 
 .kn-blog-related { padding: 2rem 0 4rem; border-top: 1px solid var(--kn-border); }
