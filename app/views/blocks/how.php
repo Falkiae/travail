@@ -6,7 +6,7 @@ $steps = isset($block['steps']) && is_array($block['steps']) ? $block['steps'] :
   array('num' => '03', 'title' => 'Résultat garanti', 'desc' => 'Votre bien est comme neuf. Sinon on revient — sans frais.'),
 );
 ?>
-<section class="<?php echo blockClasses($block, 'alt'); ?>">
+<section class="<?php echo blockClasses($block, 'alt'); ?>"<?php echo blockAnchor($block); ?>>
   <div class="container">
     <span class="kn-eyebrow"><?php echo htmlspecialchars(isset($block['eyebrow']) ? $block['eyebrow'] : 'COMMENT ÇA MARCHE'); ?></span>
     <?php $howH2 = !empty($block['h2']) ? $block['h2'] : (!empty($block['title']) ? $block['title'] : ''); ?>

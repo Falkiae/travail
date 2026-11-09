@@ -9,7 +9,7 @@ if (isset($block['pills']) && is_array($block['pills']) && !isset($block['zones'
     }
 }
 ?>
-<section class="<?php echo blockClasses($block, 'night'); ?>">
+<section class="<?php echo blockClasses($block, 'night'); ?>"<?php echo blockAnchor($block); ?>>
   <div class="container">
     <div class="kn-zone__inner">
       <div class="kn-zone__content">

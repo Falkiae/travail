@@ -22,7 +22,7 @@ $hasVisual = !empty($block['image_url']);
 $sectionClass = blockClasses($block, 'cream', 'kn-presta' . ($isDark ? ' kn-presta--dark' : ''));
 $gridClass    = gridClasses($block, '2-3');
 ?>
-<section class="<?php echo $sectionClass; ?>">
+<section class="<?php echo $sectionClass; ?>"<?php echo blockAnchor($block); ?>>
   <div class="container">
 
     <div class="kn-presta__head">

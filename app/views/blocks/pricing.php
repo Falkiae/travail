@@ -17,7 +17,7 @@ $defaultItems = [
 ];
 $items = isset($block['items']) && is_array($block['items']) && count($block['items']) ? $block['items'] : $defaultItems;
 ?>
-<section class="<?php echo $sectionClass; ?>">
+<section class="<?php echo $sectionClass; ?>"<?php echo blockAnchor($block); ?>>
   <div class="container">
     <?php if (!empty($block['eyebrow'])): ?>
     <span class="kn-eyebrow" style="color:<?php echo $eyebrowColor; ?>;"><?php echo $block['eyebrow']; ?></span>

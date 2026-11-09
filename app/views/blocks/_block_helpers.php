@@ -362,6 +362,19 @@ function knIcon(string $name, array $opts = array()): string
  * Returns CSS classes for a block's <section> element.
  * Handles: bg ambiance + responsive visibility.
  */
+/**
+ * Attribut id optionnel (ancre) d'un bloc : ` id="mon-ancre"` si le champ
+ * « Ancre » est renseigné, chaîne vide sinon (aucun changement de rendu).
+ */
+function blockAnchor(array $block): string
+{
+    if (empty($block['anchor'])) return '';
+    $id = strtolower(trim((string) $block['anchor']));
+    $id = preg_replace('/[^a-z0-9-]+/', '-', $id);
+    $id = trim(substr($id, 0, 60), '-');
+    return $id !== '' ? ' id="' . $id . '"' : '';
+}
+
 function blockClasses(array $block, string $defaultBg = 'white', string $extra = ''): string
 {
     $bg = isset($block['bg']) ? $block['bg'] : $defaultBg;

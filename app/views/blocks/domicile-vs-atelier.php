@@ -35,7 +35,7 @@ $wsCtaUrl       = isset($block['workshop_cta_url']) ? $block['workshop_cta_url']
 
 $ctaCardClass   = $isDark ? 'kn-cta-card kn-cta-card--glass' : 'kn-cta-card kn-cta-card--navy';
 ?>
-<section class="<?php echo $sectionClass; ?>">
+<section class="<?php echo $sectionClass; ?>"<?php echo blockAnchor($block); ?>>
   <div class="container">
     <?php if (!empty($block['eyebrow'])): ?>
     <span class="kn-eyebrow" style="color:<?php echo $eyebrowColor; ?>;"><?php echo htmlspecialchars($block['eyebrow']); ?></span>

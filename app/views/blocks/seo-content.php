@@ -48,7 +48,7 @@ if (!function_exists('knSeoCta')) {
 $booking_url = isset($booking_url) ? $booking_url : '#';
 $ctaHtml     = knSeoCta($block, $isDark, $booking_url);
 ?>
-<section class="<?php echo $sectionClass; ?>">
+<section class="<?php echo $sectionClass; ?>"<?php echo blockAnchor($block); ?>>
   <div class="container">
     <?php if ($hasImage): ?>
     <div class="kn-grid kn-grid--<?php echo $layout === 'image-left' ? '1-2' : '2-1'; ?>">

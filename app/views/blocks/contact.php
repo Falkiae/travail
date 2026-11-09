@@ -5,6 +5,7 @@ static $knContactCount = 0;
 $knContactCount++;
 $uid      = 'kn-contact-' . $knContactCount;
 $anchorId = $knContactCount === 1 ? 'contact' : $uid;
+if (!empty($block['anchor']) && preg_match('/^\s*id="([^"]+)"/', blockAnchor($block), $__am)) $anchorId = $__am[1];
 
 $bg     = isset($block['bg']) ? $block['bg'] : 'cream';
 $isDark = ($bg === 'blue' || $bg === 'night');

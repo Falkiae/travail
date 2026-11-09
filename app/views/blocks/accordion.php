@@ -12,7 +12,7 @@ foreach ($items as $item) {
     $normalized[] = array('q' => $q, 'a' => $a);
 }
 ?>
-<section class="<?php echo blockClasses($block, 'white'); ?>">
+<section class="<?php echo blockClasses($block, 'white'); ?>"<?php echo blockAnchor($block); ?>>
   <div class="container">
     <?php if (!empty($block['eyebrow'])): ?>
     <span class="kn-eyebrow"><?php echo htmlspecialchars($block['eyebrow']); ?></span>

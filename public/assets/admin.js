@@ -186,7 +186,9 @@ function buildBlockForm(type, data) {
       return '<label style="display:flex;align-items:center;gap:.4rem;font-weight:normal;margin:.2rem 0;">' +
         '<input type="checkbox" data-vis="' + v + '"' + checked + '> ' + labels[v] + '</label>';
     }).join('');
-    return '<div class="form-group"><label>Visibilité</label><div class="vis-checks">' + checks + '</div></div>';
+    return '<div class="form-group"><label>Ancre <small style="font-weight:400;opacity:.6">(optionnel : permet un lien interne #mon-ancre vers ce bloc)</small></label>'
+      + '<input type="text" data-field="anchor" value="' + esc((data && data.anchor) || '') + '" placeholder="ex. tarifs" maxlength="60"></div>'
+      + '<div class="form-group"><label>Visibilité</label><div class="vis-checks">' + checks + '</div></div>';
   }
 
   function reverseFields(data) {

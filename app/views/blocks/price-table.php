@@ -4,7 +4,7 @@ $cards = isset($block['cards']) && is_array($block['cards']) ? $block['cards'] :
   array('title' => 'Formule 1', 'sub' => 'Tarifs à partir de', 'rows' => "Citadine | ex. Peugeot 208 | 550 €\nBerline | ex. BMW Série 3 | 650 €\nBreak / SUV | ex. Peugeot 3008 | 720 €", 'cta_label' => 'Demander un devis', 'cta_url' => '#contact'),
 );
 ?>
-<section class="<?php echo blockClasses($block, 'alt', 'kn-ptable'); ?>">
+<section class="<?php echo blockClasses($block, 'alt', 'kn-ptable'); ?>"<?php echo blockAnchor($block); ?>>
   <div class="container">
     <header class="kn-plans__head">
       <?php if (!empty($block['eyebrow'])): ?><span class="kn-eyebrow"><?php echo htmlspecialchars($block['eyebrow']); ?></span><?php endif; ?>

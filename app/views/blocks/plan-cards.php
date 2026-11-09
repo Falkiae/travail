@@ -7,7 +7,7 @@ $plans = isset($block['plans']) && is_array($block['plans']) ? $block['plans'] :
   array('duration' => 'ABONNEMENT 2 ANS', 'name' => 'Partenaire', 'discount' => '−15 %', 'sub' => 'sur chaque passage', 'points' => "Remise de 15 % sur chaque passage\nPlanification prioritaire\nFacture mensuelle HTVA\nRemise flotte : 5 % à partir de 5 véhicules", 'cta_label' => 'Calculer mon tarif', 'cta_url' => '#calculateur', 'featured' => ''),
 );
 ?>
-<section class="<?php echo blockClasses($block, 'alt', 'kn-plans'); ?>">
+<section class="<?php echo blockClasses($block, 'alt', 'kn-plans'); ?>"<?php echo blockAnchor($block); ?>>
   <div class="container">
     <header class="kn-plans__head">
       <?php if (!empty($block['eyebrow'])): ?><span class="kn-eyebrow"><?php echo htmlspecialchars($block['eyebrow']); ?></span><?php endif; ?>

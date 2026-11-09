@@ -10,7 +10,7 @@ $avgRating   = isset($reviewsData['rating']) ? (float) $reviewsData['rating'] : 
 $totalCount  = isset($reviewsData['total']) ? (int) $reviewsData['total'] : null;
 $blockId     = 'reviews-' . (isset($__block_index) ? (int) $__block_index : 0);
 ?>
-<section class="<?php echo blockClasses($block, 'white'); ?>">
+<section class="<?php echo blockClasses($block, 'white'); ?>"<?php echo blockAnchor($block); ?>>
   <div class="container">
     <span class="kn-eyebrow"><?php echo htmlspecialchars(isset($block['eyebrow']) ? $block['eyebrow'] : 'AVIS CLIENTS'); ?></span>
     <?php $revH2 = !empty($block['h2']) ? $block['h2'] : (!empty($block['title']) ? $block['title'] : ''); ?>
