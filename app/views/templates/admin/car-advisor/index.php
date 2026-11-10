@@ -2,13 +2,12 @@
 $cfg     = isset($config) && is_array($config) ? $config : array();
 $sizes   = knCaSizes();
 $places  = knCaPlaces();
-$tags    = knCaTags();
 $h = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); };
 $fmt = function ($v) { return $v === null ? '' : rtrim(rtrim(number_format((float) $v, 2, '.', ''), '0'), '.'); };
 $formulaKeys = array_map(function ($f) { return array($f['key'], $f['name']); }, $cfg['formulas']);
 $extraKeys   = array_map(function ($e) { return array($e['key'], $e['label']); }, $cfg['extras']);
 
-$formulaCard = function ($i, $f) use ($h, $tags) {
+$formulaCard = function ($i, $f) use ($h) {
     ob_start(); ?>
     <div class="card ca-item" data-i="<?= $h($i) ?>">
       <div class="ca-item__bar">
@@ -29,11 +28,6 @@ $formulaCard = function ($i, $f) use ($h, $tags) {
       </div>
       <div class="form-group"><label>Accroche</label><input type="text" name="formulas[<?= $h($i) ?>][tagline]" value="<?= $h($f['tagline']) ?>" maxlength="200"></div>
       <div class="form-group"><label>Ce qui est compris <small>(un point par ligne)</small></label><textarea name="formulas[<?= $h($i) ?>][points]" rows="5"><?= $h(implode("\n", $f['points'])) ?></textarea></div>
-      <div class="form-group"><label>Ce que couvre la formule <small>(sert à la recommandation)</small></label>
-        <div class="ca-checks"><?php foreach ($tags as $tk => $tl): ?>
-          <label><input type="checkbox" name="formulas[<?= $h($i) ?>][covers][]" value="<?= $h($tk) ?>"<?= in_array($tk, $f['covers'], true) ? ' checked' : '' ?>> <?= $h($tl) ?></label>
-        <?php endforeach; ?></div>
-      </div>
       <div class="form-group"><label>Lien de réservation <small>(vide = lien de réservation des Réglages)</small></label><input type="text" name="formulas[<?= $h($i) ?>][cta_url]" value="<?= $h($f['cta_url']) ?>" maxlength="300" placeholder="https://…"></div>
     </div>
     <?php return ob_get_clean();
@@ -71,6 +65,7 @@ $extraCard = function ($i, $e) use ($h, $formulaKeys, $fmt) {
       </div>
       <div class="form-group ca-checks">
         <label><input type="checkbox" name="extras[<?= $h($i) ?>][atelier]" value="1"<?= $e['atelier'] ? ' checked' : '' ?>> Uniquement à l'atelier de Visé <small>(force le lieu)</small></label>
+        <label><input type="checkbox" name="extras[<?= $h($i) ?>][needs_exterior]" value="1"<?= !empty($e['needs_exterior']) ? ' checked' : '' ?>> Proposé seulement si l'extérieur est demandé</label>
       </div>
       <div class="form-group"><label>Déjà inclus dans <small>(le supplément n'est alors pas proposé)</small></label>
         <div class="ca-checks"><?php foreach ($formulaKeys as $fk): ?>
@@ -80,42 +75,11 @@ $extraCard = function ($i, $e) use ($h, $formulaKeys, $fmt) {
     </div>
     <?php return ob_get_clean();
 };
-$concernCard = function ($i, $c) use ($h, $tags, $extraKeys) {
-    ob_start(); ?>
-    <div class="card ca-item" data-i="<?= $h($i) ?>">
-      <div class="ca-item__bar">
-        <strong class="ca-item__title" data-title><?= $h($c['label'] !== '' ? $c['label'] : 'Nouveau souci') ?></strong>
-        <span class="ca-item__tools">
-          <button type="button" class="btn btn-secondary btn-sm" data-up>↑</button>
-          <button type="button" class="btn btn-secondary btn-sm" data-down>↓</button>
-          <button type="button" class="btn btn-danger btn-sm" data-remove>×</button>
-        </span>
-      </div>
-      <input type="hidden" name="concerns[<?= $h($i) ?>][key]" value="<?= $h($c['key']) ?>">
-      <div class="form-row">
-        <div class="form-group"><label>Libellé</label><input type="text" name="concerns[<?= $h($i) ?>][label]" value="<?= $h($c['label']) ?>" maxlength="80" required data-name></div>
-        <div class="form-group"><label>Icône</label><input type="text" list="kn-icon-list" name="concerns[<?= $h($i) ?>][icon]" value="<?= $h($c['icon']) ?>" placeholder="check"></div>
-      </div>
-      <div class="form-group"><label>Nécessite <small>(oriente vers une formule qui couvre ces besoins)</small></label>
-        <div class="ca-checks"><?php foreach ($tags as $tk => $tl): ?>
-          <label><input type="checkbox" name="concerns[<?= $h($i) ?>][needs][]" value="<?= $h($tk) ?>"<?= in_array($tk, $c['needs'], true) ? ' checked' : '' ?>> <?= $h($tl) ?></label>
-        <?php endforeach; ?></div>
-      </div>
-      <div class="form-group"><label>Suppléments conseillés <small>(précochés pour le client)</small></label>
-        <div class="ca-checks"><?php foreach ($extraKeys as $ek): ?>
-          <label><input type="checkbox" name="concerns[<?= $h($i) ?>][extras][]" value="<?= $h($ek[0]) ?>"<?= in_array($ek[0], $c['extras'], true) ? ' checked' : '' ?>> <?= $h($ek[1]) ?></label>
-        <?php endforeach; ?></div>
-      </div>
-    </div>
-    <?php return ob_get_clean();
-};
-$emptyF = array('key' => '', 'name' => '', 'badge' => '', 'tagline' => '', 'points' => array(), 'duration' => '', 'cta_url' => '', 'covers' => array(), 'prices' => array());
-$emptyE = array('key' => '', 'label' => '', 'desc' => '', 'icon' => 'sparkles', 'price' => null, 'atelier' => false, 'url' => '', 'included_in' => array());
-$emptyC = array('key' => '', 'label' => '', 'icon' => 'check', 'needs' => array(), 'extras' => array());
+$emptyF = array('key' => '', 'name' => '', 'badge' => '', 'tagline' => '', 'points' => array(), 'duration' => '', 'cta_url' => '', 'prices' => array());
+$emptyE = array('key' => '', 'label' => '', 'desc' => '', 'icon' => 'sparkles', 'price' => null, 'atelier' => false, 'needs_exterior' => false, 'url' => '', 'included_in' => array());
 $txtLabels = array(
-    'bot' => "Nom de l'assistant", 'q1' => 'Question 1 — véhicule', 'q2' => 'Question 2 — état', 'q3' => 'Question 3 — soucis',
-    'q4' => 'Question 4 — objectif', 'q5' => 'Message de recommandation', 'q6' => 'Question 6 — suppléments',
-    'q7' => 'Question 7 — lieu', 'q8' => 'Message final', 'cta' => 'Texte du bouton de réservation', 'note' => 'Mention sous le prix',
+    'bot' => "Nom de l'assistant", 'q1' => 'Question 1 — véhicule', 'q2' => "Question 2 — état de l'intérieur", 'q3' => "Question 3 — extérieur",
+    'q4' => 'Message avant la recommandation', 'cta' => 'Texte du bouton de réservation', 'note' => 'Mention sous le prix',
 );
 ?>
 <div class="page-header">
@@ -134,13 +98,13 @@ $txtLabels = array(
   <input type="hidden" name="tab" value="formules" data-tabfield>
 
   <nav class="ca-tabs" role="tablist">
-    <?php foreach (array('formules' => 'Formules', 'prix' => 'Grille de prix', 'supplements' => 'Suppléments', 'parcours' => 'États, soucis & recommandations', 'textes' => 'Textes') as $tk => $tl): ?>
+    <?php foreach (array('formules' => 'Formules', 'prix' => 'Grille de prix', 'supplements' => 'Suppléments', 'parcours' => 'Parcours & recommandations', 'textes' => 'Textes') as $tk => $tl): ?>
     <button type="button" role="tab" class="ca-tab" data-tab="<?= $tk ?>"><?= $h($tl) ?></button>
     <?php endforeach; ?>
   </nav>
 
   <section class="ca-panel" data-panel="formules">
-    <p class="ca-help">L'ordre des formules va de la plus simple à la plus complète : la recommandation s'en sert pour monter en gamme quand un souci l'exige.</p>
+    <p class="ca-help">L'ordre des formules est celui de l'affichage dans les listes. La recommandation se règle dans l'onglet « Parcours & recommandations ».</p>
     <div data-list="formulas"><?php foreach ($cfg['formulas'] as $i => $f) echo $formulaCard((string) $i, $f); ?></div>
     <button type="button" class="btn btn-secondary" data-add="formulas">+ Ajouter une formule</button>
   </section>
@@ -163,47 +127,61 @@ $txtLabels = array(
 
   <section class="ca-panel" data-panel="parcours" hidden>
     <div class="card">
-      <div class="card-title">Étape « état du véhicule »</div>
-      <?php foreach ($cfg['states'] as $i => $s): ?>
-      <div class="form-row">
-        <input type="hidden" name="states[<?= $i ?>][key]" value="<?= $h($s['key']) ?>">
-        <div class="form-group"><label>Libellé</label><input type="text" name="states[<?= $i ?>][label]" value="<?= $h($s['label']) ?>" maxlength="60"></div>
-        <div class="form-group"><label>Précision</label><input type="text" name="states[<?= $i ?>][sub]" value="<?= $h($s['sub']) ?>" maxlength="80"></div>
+      <div class="card-title">Question 2 — état de l'intérieur</div>
+      <p class="ca-help">La phrase « pourquoi » est reprise dans la recommandation, suivie de celle du choix pour l'extérieur. Les options cochées sont présélectionnées pour le client.</p>
+      <?php foreach ($cfg['interior'] as $i => $s): ?>
+      <div class="ca-sub-card">
+        <input type="hidden" name="interior[<?= $i ?>][key]" value="<?= $h($s['key']) ?>">
+        <div class="form-row">
+          <div class="form-group"><label>Réponse</label><input type="text" name="interior[<?= $i ?>][label]" value="<?= $h($s['label']) ?>" maxlength="60"></div>
+          <div class="form-group"><label>Précision</label><input type="text" name="interior[<?= $i ?>][sub]" value="<?= $h($s['sub']) ?>" maxlength="80"></div>
+        </div>
+        <div class="form-group"><label>Phrase « pourquoi »</label><input type="text" name="interior[<?= $i ?>][why]" value="<?= $h($s['why']) ?>" maxlength="200"></div>
+        <div class="form-group"><label>Options présélectionnées</label><div class="ca-checks">
+          <input type="hidden" name="interior[<?= $i ?>][extras][]" value="">
+          <?php foreach ($extraKeys as $ek): ?><label><input type="checkbox" name="interior[<?= $i ?>][extras][]" value="<?= $h($ek[0]) ?>"<?= in_array($ek[0], $s['extras'], true) ? ' checked' : '' ?>> <?= $h($ek[1]) ?></label><?php endforeach; ?>
+        </div></div>
       </div>
       <?php endforeach; ?>
     </div>
     <div class="card">
-      <div class="card-title">Étape « qu'est-ce qui vous gêne ? » (plusieurs choix)</div>
-      <p class="ca-help">Un souci peut faire monter la recommandation (« nécessite ») et précocher des suppléments. Après l'ajout d'un supplément ou d'une formule, enregistrez pour pouvoir l'associer ici.</p>
-      <div data-list="concerns"><?php foreach ($cfg['concerns'] as $i => $c) echo $concernCard((string) $i, $c); ?></div>
-      <button type="button" class="btn btn-secondary" data-add="concerns">+ Ajouter un souci</button>
-    </div>
-    <div class="card">
-      <div class="card-title">Étape « objectif »</div>
-      <?php foreach ($cfg['goals'] as $i => $g): ?>
-      <div class="form-row">
-        <input type="hidden" name="goals[<?= $i ?>][key]" value="<?= $h($g['key']) ?>">
-        <div class="form-group"><label>Libellé</label><input type="text" name="goals[<?= $i ?>][label]" value="<?= $h($g['label']) ?>" maxlength="60"></div>
-        <div class="form-group"><label>Précision</label><input type="text" name="goals[<?= $i ?>][sub]" value="<?= $h($g['sub']) ?>" maxlength="80"></div>
+      <div class="card-title">Question 3 — extérieur</div>
+      <?php foreach ($cfg['exterior'] as $i => $s): ?>
+      <div class="ca-sub-card">
+        <input type="hidden" name="exterior[<?= $i ?>][key]" value="<?= $h($s['key']) ?>">
+        <div class="form-row">
+          <div class="form-group"><label>Réponse</label><input type="text" name="exterior[<?= $i ?>][label]" value="<?= $h($s['label']) ?>" maxlength="60"></div>
+          <div class="form-group"><label>Précision</label><input type="text" name="exterior[<?= $i ?>][sub]" value="<?= $h($s['sub']) ?>" maxlength="80"></div>
+        </div>
+        <div class="form-group"><label>Suite de la phrase « pourquoi »</label><input type="text" name="exterior[<?= $i ?>][why]" value="<?= $h($s['why']) ?>" maxlength="200"></div>
       </div>
       <?php endforeach; ?>
     </div>
     <div class="card">
-      <div class="card-title">Formule recommandée selon l'objectif et l'état</div>
-      <p class="ca-help">Point de départ de la recommandation. Si le client coche des soucis que cette formule ne couvre pas, le simulateur propose la formule suivante qui les couvre, et garde celle-ci comme alternative « plus économique ».</p>
+      <div class="card-title">Recommandation selon les réponses</div>
+      <p class="ca-help">Pour chaque combinaison : la formule recommandée et l'alternative proposée juste en dessous (« Plus économique » ou « Pour aller plus loin », selon le prix).</p>
       <div class="ca-table-wrap"><table class="ca-table ca-matrix">
-        <thead><tr><th>Objectif \ État</th><?php foreach ($cfg['states'] as $s): ?><th><?= $h($s['label']) ?></th><?php endforeach; ?></tr></thead>
+        <thead><tr><th>Intérieur \ Extérieur</th><?php foreach ($cfg['exterior'] as $x): ?><th><?= $h($x['label']) ?></th><?php endforeach; ?></tr></thead>
         <tbody>
-        <?php foreach ($cfg['goals'] as $g): ?>
-          <tr><th><?= $h($g['label']) ?></th>
-          <?php foreach ($cfg['states'] as $s): $cur = $cfg['matrix'][$g['key']][$s['key']]; ?>
-            <td><select name="matrix[<?= $h($g['key']) ?>][<?= $h($s['key']) ?>]">
-              <?php foreach ($formulaKeys as $fk): ?><option value="<?= $h($fk[0]) ?>"<?= $fk[0] === $cur ? ' selected' : '' ?>><?= $h($fk[1]) ?></option><?php endforeach; ?>
-            </select></td>
+        <?php foreach ($cfg['interior'] as $in): ?>
+          <tr><th><?= $h($in['label']) ?></th>
+          <?php foreach ($cfg['exterior'] as $x): $cell = $cfg['grid'][$in['key']][$x['key']]; ?>
+            <td>
+              <label class="ca-cell-lab">Recommandée</label>
+              <select name="grid[<?= $h($in['key']) ?>][<?= $h($x['key']) ?>][rec]">
+                <?php foreach ($formulaKeys as $fk): ?><option value="<?= $h($fk[0]) ?>"<?= $fk[0] === $cell['rec'] ? ' selected' : '' ?>><?= $h($fk[1]) ?></option><?php endforeach; ?>
+              </select>
+              <label class="ca-cell-lab">Alternative</label>
+              <select name="grid[<?= $h($in['key']) ?>][<?= $h($x['key']) ?>][alt]">
+                <option value=""<?= $cell['alt'] === '' ? ' selected' : '' ?>>— Aucune —</option>
+                <?php foreach ($formulaKeys as $fk): ?><option value="<?= $h($fk[0]) ?>"<?= $fk[0] === $cell['alt'] ? ' selected' : '' ?>><?= $h($fk[1]) ?></option><?php endforeach; ?>
+              </select>
+            </td>
           <?php endforeach; ?></tr>
         <?php endforeach; ?>
         </tbody>
       </table></div>
+      <p class="ca-help" style="margin-top:.75rem">Après l'ajout d'une formule ou d'une option, enregistrez pour pouvoir la choisir ici.</p>
     </div>
   </section>
 
@@ -224,7 +202,6 @@ $txtLabels = array(
 <template id="ca-tpl-formulas"><?= $formulaCard('__I__', $emptyF) ?></template>
 <template id="ca-tpl-prices"><?= $priceRow('__I__', $emptyF) ?></template>
 <template id="ca-tpl-extras"><?= $extraCard('__I__', $emptyE) ?></template>
-<template id="ca-tpl-concerns"><?= $concernCard('__I__', $emptyC) ?></template>
 
 <style>
 .ca-tabs { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: 1rem; border-bottom: 1px solid var(--color-border); }
@@ -241,7 +218,10 @@ $txtLabels = array(
 .ca-table thead th { background: rgba(0,0,0,.03); white-space: nowrap; }
 .ca-table .ca-sub { font-weight: 500; font-size: .78rem; }
 .ca-table td input { width: 5.5rem; }
-.ca-matrix td select { width: 100%; min-width: 10rem; }
+.ca-matrix td select { width: 100%; min-width: 11rem; margin-bottom: .35rem; }
+.ca-cell-lab { display: block; font-size: .7rem; font-weight: 600; opacity: .65; margin: 0 0 .15rem; }
+.ca-sub-card { padding: .75rem 0; border-top: 1px solid var(--color-border); }
+.ca-sub-card:first-of-type { border-top: 0; }
 .ca-savebar { position: sticky; bottom: 0; padding: .9rem 0; background: var(--color-bg, #fff); border-top: 1px solid var(--color-border); margin-top: 1rem; z-index: 5; }
 </style>
 <script>
@@ -281,7 +261,7 @@ $txtLabels = array(
     var body = form.querySelector('[data-list="prices"]');
     form.querySelectorAll('[data-list="formulas"] .ca-item').forEach(function (it) { var r = body.querySelector('[data-i="' + it.dataset.i + '"]'); if (r) body.appendChild(r); });
   }
-  ['formulas', 'extras', 'concerns'].forEach(function (list) {
+  ['formulas', 'extras'].forEach(function (list) {
     form.querySelectorAll('[data-list="' + list + '"] .ca-item').forEach(function (it) { wire(it, list); });
     var add = form.querySelector('[data-add="' + list + '"]');
     add.addEventListener('click', function () {

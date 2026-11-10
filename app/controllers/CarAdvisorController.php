@@ -9,7 +9,7 @@ require_once APP_PATH . '/views/blocks/_car_advisor_config.php';
 
 /**
  * Admin › Simulateur auto : configuration unique du bloc car-advisor
- * (formules, grille de prix, suppléments, états & soucis, textes).
+ * (formules, grille de prix, suppléments, parcours & recommandations, textes).
  */
 class CarAdvisorController extends BaseController
 {
@@ -54,15 +54,14 @@ class CarAdvisorController extends BaseController
         $in = array(
             'formulas' => array_values(isset($_POST['formulas']) && is_array($_POST['formulas']) ? $_POST['formulas'] : array()),
             'extras'   => array_values(isset($_POST['extras'])   && is_array($_POST['extras'])   ? $_POST['extras']   : array()),
-            'states'   => array_values(isset($_POST['states'])   && is_array($_POST['states'])   ? $_POST['states']   : array()),
-            'concerns' => array_values(isset($_POST['concerns']) && is_array($_POST['concerns']) ? $_POST['concerns'] : array()),
-            'goals'    => array_values(isset($_POST['goals'])    && is_array($_POST['goals'])    ? $_POST['goals']    : array()),
-            'matrix'   => isset($_POST['matrix']) && is_array($_POST['matrix']) ? $_POST['matrix'] : array(),
+            'interior' => array_values(isset($_POST['interior']) && is_array($_POST['interior']) ? $_POST['interior'] : array()),
+            'exterior' => array_values(isset($_POST['exterior']) && is_array($_POST['exterior']) ? $_POST['exterior'] : array()),
+            'grid'     => isset($_POST['grid']) && is_array($_POST['grid']) ? $_POST['grid'] : array(),
             'txt'      => isset($_POST['txt'])    && is_array($_POST['txt'])    ? $_POST['txt']    : array(),
         );
         // Cases à cocher : présence = vrai
         foreach ($in['extras'] as $i => $e) {
-            if (is_array($e)) $in['extras'][$i]['atelier'] = !empty($e['atelier']);
+            if (is_array($e)) { $in['extras'][$i]['atelier'] = !empty($e['atelier']); $in['extras'][$i]['needs_exterior'] = !empty($e['needs_exterior']); }
         }
         if (!$in['formulas']) {
             Auth::setFlash('error', 'Il faut au moins une formule.');
