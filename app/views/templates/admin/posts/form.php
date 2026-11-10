@@ -118,6 +118,7 @@ $existingBlocks = $isEdit && !empty($post['content']) ? json_decode($post['conte
                 <button type="button" data-type="contact">Contact / Devis sur mesure</button>
                 <button type="button" data-type="price-table">Tableau de tarifs</button>
                 <button type="button" data-type="plan-cards">Cartes d'abonnement</button>
+                <button type="button" data-type="car-advisor">Simulateur auto (conseil &amp; prix)</button>
               </div>
             </div>
           </div>

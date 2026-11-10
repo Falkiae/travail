@@ -101,6 +101,7 @@ $existingBlocks = $isEdit && !empty($page['content']) ? json_decode($page['conte
                 <button type="button" data-type="fleet-calculator">Calculateur flotte (abonnement)</button>
                 <button type="button" data-type="plan-cards">Cartes d'abonnement</button>
                 <button type="button" data-type="price-table">Tableau de tarifs</button>
+                <button type="button" data-type="car-advisor">Simulateur auto (conseil &amp; prix)</button>
                 <button type="button" data-type="sofa-simulator">Simulateur canapé</button>
               </div>
             </div>
