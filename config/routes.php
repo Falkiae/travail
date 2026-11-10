@@ -78,6 +78,9 @@ return [
     'GET /admin/sofa'                           => ['SofaController', 'index'],
     'POST /admin/sofa'                          => ['SofaController', 'update'],
 
+    'GET /admin/car-advisor'                    => ['CarAdvisorController', 'index'],
+    'POST /admin/car-advisor'                   => ['CarAdvisorController', 'update'],
+
     'GET /admin/redirections'                   => ['RedirectionController', 'index'],
     'POST /admin/redirections'                  => ['RedirectionController', 'store'],
     'POST /admin/redirections/{id}/delete'      => ['RedirectionController', 'deleteRedirection'],

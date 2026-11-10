@@ -24,6 +24,7 @@ try { $__newMessages = (int) \App\Core\Database::getInstance()->query("SELECT CO
     <a href="/admin/blocks">Blocs</a>
     <a href="/admin/messages">Messages<?php if ($__newMessages > 0): ?> <span class="sidebar-badge"><?php echo $__newMessages; ?></span><?php endif; ?></a>
     <a href="/admin/sofa">Simulateur canapé</a>
+    <a href="/admin/car-advisor">Simulateur auto</a>
     <a href="/admin/redirections">Redirections</a>
     <a href="/admin/settings">Réglages</a>
     <a href="/admin/error-logs">Erreurs 404</a>

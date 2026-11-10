@@ -853,45 +853,14 @@ function buildBlockForm(type, data) {
 
     case 'car-advisor':
       d.innerHTML =
+        '<div class="form-group" style="background:rgba(0,0,0,.03);border-radius:8px;padding:.75rem 1rem">'
+        + '<strong>Formules, prix, suppléments et parcours</strong><br><span style="font-size:.85rem;opacity:.75">Ils se gèrent une seule fois pour tout le site.</span><br>'
+        + '<a href="/admin/car-advisor" target="_blank" class="btn btn-secondary btn-sm" style="margin-top:.5rem">Gérer le simulateur auto →</a></div>' +
         fg('Eyebrow', inp('eyebrow', data.eyebrow, 'SIMULATEUR')) +
         fg('Titre (H2)', inp('h2', data.h2, 'Trouvez le nettoyage idéal pour votre voiture')) +
         fg('Introduction', ta('intro', data.intro, 'Répondez à quelques questions…', 2)) +
-        '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Formules <small style="font-weight:400;opacity:.6">(clé : shampoing, ie, ran_int ou ran_full — utilisée par la recommandation ; points séparés par « ; » ; prix vide = « Sur devis » ; prix atelier vide = prix domicile)</small></label>'
-        + '<p style="font-size:.8rem;opacity:.7;margin:.25rem 0 .5rem">Recommandation : « comme neuve » → ran_full ; « grand nettoyage intérieur » → ran_int ; « sièges » → shampoing (ran_int si très marqué) ; « entretien » → ie (ran_int si très marqué).</p>'
-        + '<div class="block-repeater" data-repeater="formulas"></div>'
-        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="formulas">+ Ajouter une formule</button></div>' +
-        '<div class="form-group"><label style="font-weight:700">Suppléments <small style="font-weight:400;opacity:.6">(prix vide = « sur devis » ; atelier uniquement : 1 = oui ; présélection si l\'état est : propre, quotidien, enfants ou marque)</small></label><div class="block-repeater" data-repeater="extras"></div>'
-        + '<button type="button" class="btn btn-secondary btn-sm block-repeater-add" data-repeater-add="extras">+ Ajouter un supplément</button></div>' +
-        '<div class="form-group" style="border-top:1px solid var(--color-border);padding-top:.75rem"><label style="font-weight:700">Textes du parcours</label></div>' +
-        fg('Question 1 — véhicule', inp('q_vehicle', data.q_vehicle, 'Bonjour ! Pour commencer, quel véhicule souhaitez-vous faire nettoyer ?')) +
-        fg('Question 2 — état', inp('q_state', data.q_state, 'Très bien. Dans quel état est-il en ce moment ?')) +
-        fg('Question 3 — objectif', inp('q_goal', data.q_goal, "Et qu'aimeriez-vous obtenir ?")) +
-        fg('Message de recommandation', inp('q_reco', data.q_reco, 'Merci ! Voici ce que je vous recommande :')) +
-        fg('Question 5 — suppléments', inp('q_extras', data.q_extras, 'Un petit plus pour un résultat parfait ?')) +
-        fg('Question 6 — lieu', inp('q_place', data.q_place, 'Dernière question : où souhaitez-vous le nettoyage ?')) +
-        fg('Message final', inp('q_result', data.q_result, 'Votre nettoyage est prêt à être réservé !')) +
-        fg('Texte du bouton', inp('cta_label', data.cta_label, 'Prendre RDV en ligne')) +
-        fg('Mention sous le prix', ta('note', data.note, 'Prix « à partir de »…', 2)) +
         bgField(data.bg || 'cream') +
         visibilityField(data.visible);
-      var caF = ['key','name','badge','tagline','points','duration','cta_url','price_citadine_domicile','price_citadine_atelier','price_berline_domicile','price_berline_atelier','price_suv_domicile','price_suv_atelier','price_utilitaire_domicile','price_utilitaire_atelier'];
-      var caL = ['Clé','Nom','Badge','Accroche','Points compris (séparés par ;)','Durée','Lien RDV (vide = réglages)','Citadine domicile €','Citadine atelier €','Berline domicile €','Berline atelier €','SUV domicile €','SUV atelier €','Utilitaire domicile €','Utilitaire atelier €'];
-      var exF = ['label','desc','icon','price','atelier_only','url','preselect_if'];
-      var exL = ['Libellé','Description','Icône','Prix € (vide = sur devis)','Atelier uniquement (1)','Lien « en savoir plus »','Présélection si état'];
-      (data.formulas === undefined ? [
-        { key: 'shampoing', name: 'Shampoing des sièges', badge: 'NOUVEAU', tagline: 'Des sièges propres et sans taches, sans payer un nettoyage complet.', points: 'Aspiration des sièges;Shampoing des sièges en profondeur;Parfum longue durée', duration: '≈ 1 h', price_citadine_domicile: '80' },
-        { key: 'ie', name: 'Intérieur & Extérieur', badge: 'LE PLUS DEMANDÉ', tagline: "L'entretien complet pour une voiture propre dedans comme dehors.", points: "Dépoussiérage et aspiration complète de l'habitacle;Plastiques intérieurs et vitres sans traces;Prélavage mousse active et lavage manuel;Jantes, passages de roues et brillant pneus;Protection hydrophobe;Parfum d'ambiance", duration: '≈ 1 h 30', price_citadine_domicile: '95' },
-        { key: 'ran_int', name: 'Remise à neuf intérieur', badge: '', tagline: 'Un habitacle repris en profondeur, comme au premier jour.', points: "Tout l'intérieur de la formule Intérieur & Extérieur;Shampoing des sièges et des carpettes;Nettoyage des cuirs;Vitres, pare-brise et volant dégraissé;Parfum longue durée", duration: "Selon l'état", price_citadine_domicile: '180' },
-        { key: 'ran_full', name: 'Remise à neuf complète', badge: 'IDÉAL FIN DE LEASING', tagline: 'La formule la plus complète, pour une voiture comme neuve.', points: 'Toute la remise à neuf intérieure;Extérieur complet : prélavage, lavage manuel, jantes;Plastiques extérieurs traités;Protection hydrophobe', duration: "Jusqu'à ≈ 4 h", price_citadine_domicile: '240' }
-      ] : data.formulas).forEach(function(item) { addRepeaterRow(d.querySelector('[data-repeater="formulas"]'), 'formulas', caF, caL, item); });
-      d.querySelector('[data-repeater-add="formulas"]').addEventListener('click', function() { addRepeaterRow(d.querySelector('[data-repeater="formulas"]'), 'formulas', caF, caL, {}); });
-      (data.extras === undefined ? [
-        { label: 'Option ozone', desc: 'Supprime les odeurs tenaces à la source (tabac, animaux, humidité).', icon: 'wind' },
-        { label: 'Shampoing des carpettes', desc: 'Pour retrouver des tapis de sol sans traces.', icon: 'droplets' },
-        { label: "Poils d'animaux", desc: 'Retrait minutieux des poils incrustés dans les textiles.', icon: 'heart', preselect_if: 'enfants' },
-        { label: 'Polissage / céramique', desc: 'Correction des micro-rayures et protection longue durée, en atelier à Visé.', icon: 'sparkles', atelier_only: '1', url: '/polissage-voiture-liege' }
-      ] : data.extras).forEach(function(item) { addRepeaterRow(d.querySelector('[data-repeater="extras"]'), 'extras', exF, exL, item); });
-      d.querySelector('[data-repeater-add="extras"]').addEventListener('click', function() { addRepeaterRow(d.querySelector('[data-repeater="extras"]'), 'extras', exF, exL, {}); });
       break;
 
     case 'pricing':
@@ -1364,7 +1333,6 @@ function serializeBlock(blockItem) {
     'fleet-calculator': ['cats','freqs','engs','reassure'],
     'plan-cards':   'plans',
     'price-table':  'cards',
-    'car-advisor':  ['formulas','extras'],
     'before-after': 'items',
     'logos':        'items',
     'prestation':   ['items','metas'],
