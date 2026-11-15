@@ -193,7 +193,7 @@ $caAnchor = blockAnchor($block);
     }).join('') + '</div>');
     p.querySelectorAll('.kn-ca__choice').forEach(function (b) { b.addEventListener('click', function () {
       b.setAttribute('aria-checked', 'true'); b.classList.add('is-picked'); p.classList.add('is-done');
-      setTimeout(function () { p.remove(); onPick(list[+b.dataset.i]); }, reduce ? 0 : 220);
+      setTimeout(function () { p.remove(); open(); onPick(list[+b.dataset.i]); }, reduce ? 0 : 220);
     }); });
   }
   function push() { hist.push(JSON.parse(JSON.stringify({ S: S, html: log.innerHTML }))); }
@@ -280,8 +280,11 @@ $caAnchor = blockAnchor($block);
   // ── Plein écran façon messagerie ──────────────────────────
   var layout = root.querySelector('[data-ca-layout]'), resume = root.querySelector('[data-ca-resume]');
   var isOpen = false, pushed = false, ignorePop = false, lastFocus = null;
+  // Plein écran uniquement sur mobile / petite tablette ; sur ordinateur, le chat reste dans la page
+  var mqFull = window.matchMedia ? window.matchMedia('(max-width: 959px)') : null;
+  function canFull() { return !mqFull || mqFull.matches; }
   function open() {
-    if (isOpen) return;
+    if (isOpen || !canFull()) return;
     isOpen = true; lastFocus = document.activeElement;
     root.classList.add('is-full'); root.classList.remove('is-paused'); resume.hidden = true;
     document.documentElement.classList.add('kn-ca-lock');
@@ -308,6 +311,15 @@ $caAnchor = blockAnchor($block);
     track('simulateur_auto_fermeture', { etape: S.step });
     if (!fromPop && pushed) { pushed = false; ignorePop = true; history.back(); }
   }
+  // Passage en grand écran pendant que le chat est ouvert : retour dans la page, sans carte « Reprendre »
+  function onMq() {
+    if (!isOpen || canFull()) return;
+    isOpen = false;
+    root.classList.remove('is-full'); document.documentElement.classList.remove('kn-ca-lock');
+    layout.removeAttribute('role'); layout.removeAttribute('aria-modal');
+    if (pushed) { pushed = false; ignorePop = true; history.back(); }
+  }
+  if (mqFull) { if (mqFull.addEventListener) mqFull.addEventListener('change', onMq); else if (mqFull.addListener) mqFull.addListener(onMq); }
   window.addEventListener('popstate', function () {
     if (ignorePop) { ignorePop = false; return; }
     if (isOpen) { pushed = false; close(true); }
