@@ -121,6 +121,7 @@ $txtLabels = array(
   </section>
 
   <section class="ca-panel" data-panel="supplements" hidden>
+    <p class="ca-help">Les suppléments ne sont plus proposés dans le simulateur (ils ne se commandent pas en ligne). Ils restent enregistrés ici au cas où vous voudriez les réactiver.</p>
     <div data-list="extras"><?php foreach ($cfg['extras'] as $i => $e) echo $extraCard((string) $i, $e); ?></div>
     <button type="button" class="btn btn-secondary" data-add="extras">+ Ajouter un supplément</button>
   </section>
@@ -128,7 +129,7 @@ $txtLabels = array(
   <section class="ca-panel" data-panel="parcours" hidden>
     <div class="card">
       <div class="card-title">Question 2 — état de l'intérieur</div>
-      <p class="ca-help">La phrase « pourquoi » est reprise dans la recommandation, suivie de celle du choix pour l'extérieur. Les options cochées sont présélectionnées pour le client.</p>
+      <p class="ca-help">La phrase « pourquoi » est reprise dans la recommandation, suivie de celle du choix pour l'extérieur.</p>
       <?php foreach ($cfg['interior'] as $i => $s): ?>
       <div class="ca-sub-card">
         <input type="hidden" name="interior[<?= $i ?>][key]" value="<?= $h($s['key']) ?>">
@@ -137,10 +138,6 @@ $txtLabels = array(
           <div class="form-group"><label>Précision</label><input type="text" name="interior[<?= $i ?>][sub]" value="<?= $h($s['sub']) ?>" maxlength="80"></div>
         </div>
         <div class="form-group"><label>Phrase « pourquoi »</label><input type="text" name="interior[<?= $i ?>][why]" value="<?= $h($s['why']) ?>" maxlength="200"></div>
-        <div class="form-group"><label>Options présélectionnées</label><div class="ca-checks">
-          <input type="hidden" name="interior[<?= $i ?>][extras][]" value="">
-          <?php foreach ($extraKeys as $ek): ?><label><input type="checkbox" name="interior[<?= $i ?>][extras][]" value="<?= $h($ek[0]) ?>"<?= in_array($ek[0], $s['extras'], true) ? ' checked' : '' ?>> <?= $h($ek[1]) ?></label><?php endforeach; ?>
-        </div></div>
       </div>
       <?php endforeach; ?>
     </div>

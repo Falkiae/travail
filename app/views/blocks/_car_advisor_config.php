@@ -44,7 +44,7 @@ function knCaDefaultConfig(): array
             array('key' => 'propre',   'label' => 'Propre, juste un coup de frais', 'sub' => 'Pas de taches sur les sièges', 'why' => 'Vos sièges ne sont pas tachés : un bon entretien suffit, sans shampoing', 'extras' => array()),
             array('key' => 'taches',   'label' => 'Sièges tachés, le reste ça va',   'sub' => 'Un shampoing est nécessaire',  'why' => 'Vos sièges sont tachés : il leur faut un shampoing en profondeur', 'extras' => array()),
             array('key' => 'sale',     'label' => 'Sièges tachés et habitacle sale', 'sub' => 'Poussière, plastiques, tapis', 'why' => 'Vos sièges sont tachés et l\'habitacle est sale : il faut reprendre tout l\'intérieur en profondeur', 'extras' => array()),
-            array('key' => 'encrasse', 'label' => 'Très encrassé',                   'sub' => 'Enfants, animaux, odeurs, longtemps sans nettoyage', 'why' => 'Votre intérieur est très encrassé : une remise à neuf s\'impose, avec un traitement des odeurs et des poils', 'extras' => array('ozone', 'poils')),
+            array('key' => 'encrasse', 'label' => 'Très encrassé',                   'sub' => 'Enfants, animaux, odeurs, longtemps sans nettoyage', 'why' => 'Votre intérieur est très encrassé : une remise à neuf en profondeur s\'impose', 'extras' => array('ozone', 'poils')),
         ),
         'exterior' => array(
             array('key' => 'non',    'label' => "Pas besoin",               'sub' => "On s'occupe de l'intérieur", 'why' => "et l'extérieur n'est pas nécessaire"),

@@ -206,7 +206,7 @@ $caAnchor = blockAnchor($block);
       push(); S.exterior = o.key; userBubble(esc(o.label)); track('simulateur_auto_etape', { etape: 3, valeur: o.key });
       var cell = (C.grid[S.interior] || {})[S.exterior] || {};
       S.rec = cell.rec || C.formulas[0].key; S.alt = cell.alt || null; S.formula = S.rec;
-      S.extras = ((find(C.interior, S.interior) || {}).extras || []).slice(); S.place = 'domicile'; pruneExtras();
+      S.extras = []; S.place = 'domicile';
       go(3);
     }); }); },
     function () { botBubble(C.icons.sparkles + ' ' + esc(C.txt.q4), function () { resultPanel = panel('', 'kn-ca__panel--result'); renderResult(true); track('simulateur_auto_resultat', resultData()); }, 500); }
@@ -228,34 +228,24 @@ $caAnchor = blockAnchor($block);
     var f = F(), r = compute(), isRec = S.formula === S.rec;
     var otherKey = isRec ? S.alt : S.rec, other = otherKey ? find(C.formulas, otherKey) : null;
     var pr = function (x) { var v = price(x); return v == null ? 'Sur devis' : '<small>dès</small> ' + eur(v); };
-    var ex = available(), atel = forcedAtelier();
     var html = '<article class="kn-ca__reco is-rec' + (first ? '' : ' is-static') + '">' + (f.badge ? '<span class="kn-ca__badge">' + esc(f.badge) + '</span>' : '')
       + '<span class="kn-ca__reco-kicker">' + (isRec ? 'Recommandé pour vous' : 'Votre choix') + '</span>'
       + '<h3 class="kn-ca__reco-name">' + esc(f.name) + '</h3>'
       + '<p class="kn-ca__why">' + esc(isRec ? why() : f.tagline) + '</p>'
       + '<ul class="kn-ca__points">' + f.points.map(function (pt, k) { return '<li style="--d:' + (first ? k * 90 + 150 : 0) + 'ms">' + C.icons.check + '<span>' + esc(pt) + '</span></li>'; }).join('') + '</ul>'
-      + '<div class="kn-ca__reco-foot"><span class="kn-ca__price">' + pr(f) + '</span>' + (f.duration ? '<span class="kn-ca__dur">' + C.icons.clock + esc(f.duration) + '</span>' : '') + '</div></article>';
+      + (f.duration ? '<div class="kn-ca__reco-foot"><span class="kn-ca__dur">' + C.icons.clock + 'Durée : ' + esc(f.duration) + '</span></div>' : '') + '</article>';
     if (other) html += '<button type="button" class="kn-ca__alt" data-swap="' + esc(other.key) + '"><span class="kn-ca__alt-kind">' + (isRec ? kindLabel(other.key) : 'Revenir à la recommandation') + '</span>'
       + '<span class="kn-ca__alt-body"><strong>' + esc(other.name) + '</strong><small>' + esc(other.tagline) + '</small></span><span class="kn-ca__alt-price">' + pr(other) + '</span><span class="kn-ca__alt-go">Choisir →</span></button>';
-    if (ex.length) html += '<div class="kn-ca__opts"><p class="kn-ca__opts-title">Ajouter une option</p><div class="kn-ca__opts-list">' + ex.map(function (e) {
-      var on = S.extras.indexOf(e.key) >= 0;
-      return '<button type="button" role="checkbox" aria-checked="' + on + '" class="kn-ca__opt' + (on ? ' is-on' : '') + '" data-opt="' + esc(e.key) + '" title="' + esc(e.desc) + '">' + e.iconHtml + '<span>' + esc(e.label) + '</span><em>' + (e.price == null ? 'sur devis' : '+ ' + eur(e.price)) + '</em></button>';
-    }).join('') + '</div></div>';
     var pd = price(f, 'domicile'), pa = price(f, 'atelier');
     html += '<div class="kn-ca__place" role="radiogroup" aria-label="Lieu du nettoyage">'
-      + '<button type="button" role="radio" aria-checked="' + (S.place === 'domicile') + '" class="kn-ca__place-btn' + (S.place === 'domicile' ? ' is-on' : '') + '" data-place="domicile"' + (atel ? ' disabled' : '') + '>' + C.icons.home + '<span>À domicile<small>' + (pd == null ? 'sur devis' : 'dès ' + eur(pd)) + '</small></span></button>'
-      + '<button type="button" role="radio" aria-checked="' + (S.place === 'atelier') + '" class="kn-ca__place-btn' + (S.place === 'atelier' ? ' is-on' : '') + '" data-place="atelier">' + C.icons.factory + '<span>Atelier de Visé<small>' + (pa == null ? 'sur devis' : 'dès ' + eur(pa)) + '</small></span></button></div>'
-      + (atel ? '<p class="kn-ca__place-note">Le polissage et la céramique se font uniquement dans notre atelier de Visé.</p>' : '');
-    var more = S.extras.map(function (k) { return find(C.extras, k); }).filter(function (e) { return e && e.url; }).map(function (e) { return '<a href="' + esc(e.url) + '">En savoir plus : ' + esc(e.label) + ' →</a>'; }).join(' ');
-    html += '<div class="kn-ca__result' + (first ? '' : ' is-static') + '"><span class="kn-ca__result-label">Votre estimation</span>'
-      + '<div class="kn-ca__result-price" data-rp>' + (r.quote ? 'Sur devis' : '') + '</div>'
-      + '<div class="kn-ca__lines">' + r.lines.map(function (l) { return '<div class="kn-ca__line"><span>' + esc(l[0]) + '</span><strong>' + esc(l[1]) + '</strong></div>'; }).join('')
-      + '<div class="kn-ca__line"><span>Lieu</span><strong>' + (S.place === 'atelier' ? 'Atelier de Visé' : 'À domicile ou au travail') + '</strong></div></div>'
-      + '<ul class="kn-ca__badges"><li>Paiement après la prestation</li><li>Réservation en 2 min</li><li>Matériel fourni</li></ul>'
+      + '<button type="button" role="radio" aria-checked="' + (S.place === 'domicile') + '" class="kn-ca__place-btn' + (S.place === 'domicile' ? ' is-on' : '') + '" data-place="domicile">' + C.icons.home + '<span>À domicile<small>' + (pd == null ? 'sur devis' : 'dès ' + eur(pd)) + '</small></span></button>'
+      + '<button type="button" role="radio" aria-checked="' + (S.place === 'atelier') + '" class="kn-ca__place-btn' + (S.place === 'atelier' ? ' is-on' : '') + '" data-place="atelier">' + C.icons.factory + '<span>Atelier de Visé<small>' + (pa == null ? 'sur devis' : 'dès ' + eur(pa)) + '</small></span></button></div>';
+    html += '<div class="kn-ca__result kn-ca__result--compact' + (first ? '' : ' is-static') + '">'
+      + '<div class="kn-ca__result-row"><div><span class="kn-ca__result-label">' + esc(f.name) + ' · ' + (S.place === 'atelier' ? 'atelier de Visé' : 'à domicile') + '</span>'
+      + '<div class="kn-ca__result-price" data-rp>' + (r.quote ? 'Sur devis' : '') + '</div></div>'
+      + '<span class="kn-ca__result-pay">Paiement après la prestation</span></div>'
       + '<a class="kn-btn kn-ca__cta" href="' + esc(f.cta_url || C.booking) + '" data-cta>' + C.icons.calendar + esc(C.txt.cta) + '</a>'
-      + (more ? '<p class="kn-ca__more">' + more + '</p>' : '')
-      + '<p class="kn-ca__note">' + esc(C.txt.note) + '</p>'
-      + '<button type="button" class="kn-ca__link kn-ca__again" data-again>Recommencer la simulation</button></div>';
+      + '<p class="kn-ca__note">' + esc(C.txt.note) + ' <button type="button" class="kn-ca__link kn-ca__again" data-again>Recommencer</button></p></div>';
     var prevPrice = resultPanel.querySelector('[data-rp]'), prevV = prevPrice ? prevPrice.dataset.v : '0';
     resultPanel.innerHTML = html;
     if (!r.quote) { var el = resultPanel.querySelector('[data-rp]'); el.dataset.v = prevV || '0'; countTo(el, r.total); }
@@ -263,20 +253,12 @@ $caAnchor = blockAnchor($block);
 
     var sw = resultPanel.querySelector('[data-swap]');
     if (sw) sw.addEventListener('click', function () {
-      S.formula = sw.dataset.swap; pruneExtras(); renderResult(false);
+      S.formula = sw.dataset.swap; renderResult(false);
       track('simulateur_auto_alternative', { formule: S.formula, alternative_choisie: S.formula === S.rec ? 'retour' : kindLabel(S.formula) });
       var c = resultPanel.querySelector('[data-swap]') || resultPanel.querySelector('.kn-ca__reco'); if (c && !reduce) c.focus && c.focus({ preventScroll: true });
     });
-    resultPanel.querySelectorAll('[data-opt]').forEach(function (b) { b.addEventListener('click', function () {
-      var k = b.dataset.opt, j = S.extras.indexOf(k);
-      if (j >= 0) S.extras.splice(j, 1); else S.extras.push(k);
-      var e = find(C.extras, k); if (e && e.atelier) S.place = j >= 0 ? S.place : 'atelier';
-      pruneExtras(); renderResult(false);
-      track('simulateur_auto_option', { option: k, actif: j < 0 ? 1 : 0 });
-      var nb = resultPanel.querySelector('[data-opt="' + k + '"]'); if (nb) nb.focus({ preventScroll: true });
-    }); });
     resultPanel.querySelectorAll('[data-place]').forEach(function (b) { b.addEventListener('click', function () {
-      if (b.disabled) return; S.place = b.dataset.place; renderResult(false);
+      S.place = b.dataset.place; renderResult(false);
       track('simulateur_auto_lieu', { lieu: S.place });
       var nb = resultPanel.querySelector('[data-place="' + S.place + '"]'); if (nb) nb.focus({ preventScroll: true });
     }); });
