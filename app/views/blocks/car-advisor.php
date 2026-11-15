@@ -56,15 +56,27 @@ $caAnchor = blockAnchor($block);
       <h2 class="kn-section__title"><?php echo htmlspecialchars($h2); ?></h2>
       <p class="kn-ca__intro"><?php echo htmlspecialchars($intro); ?></p>
     </header>
-    <div class="kn-ca__layout">
+    <div class="kn-ca__resume" data-ca-resume hidden>
+      <span class="kn-ca__avatar" aria-hidden="true"><?php echo htmlspecialchars(mb_substr($CA['txt']['bot'], 0, 1)); ?></span>
+      <div class="kn-ca__resume-txt"><strong>Votre simulation est en cours</strong><span data-ca-resume-sum></span></div>
+      <div class="kn-ca__resume-actions">
+        <button type="button" class="kn-btn" data-ca-resume-open>Reprendre</button>
+        <button type="button" class="kn-ca__link" data-ca-resume-restart>Recommencer</button>
+      </div>
+    </div>
+    <div class="kn-ca__layout" data-ca-layout aria-labelledby="<?php echo $uid; ?>-title">
       <div class="kn-ca__chat">
         <div class="kn-ca__top">
-          <div class="kn-ca__progress" role="progressbar" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0" aria-label="Progression du simulateur"><span data-ca-bar></span></div>
-          <div class="kn-ca__nav">
-            <button type="button" class="kn-ca__navbtn" data-ca-back hidden>← Retour</button>
-            <span class="kn-ca__step" data-ca-step>Étape 1 / 3</span>
-            <button type="button" class="kn-ca__navbtn" data-ca-restart hidden>Recommencer</button>
+          <div class="kn-ca__bar">
+            <button type="button" class="kn-ca__iconbtn" data-ca-back hidden aria-label="Question précédente">←</button>
+            <span class="kn-ca__avatar kn-ca__avatar--head" aria-hidden="true"><?php echo htmlspecialchars(mb_substr($CA['txt']['bot'], 0, 1)); ?></span>
+            <div class="kn-ca__who">
+              <strong id="<?php echo $uid; ?>-title"><?php echo htmlspecialchars($CA['txt']['bot']); ?></strong>
+              <span class="kn-ca__status"><i aria-hidden="true"></i>En ligne · <span data-ca-step>Question 1 / 3</span></span>
+            </div>
+            <button type="button" class="kn-ca__navbtn kn-ca__restart" data-ca-restart hidden>Recommencer</button>
           </div>
+          <div class="kn-ca__progress" role="progressbar" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0" aria-label="Progression du simulateur"><span data-ca-bar></span></div>
         </div>
         <div class="kn-ca__log" data-ca-log aria-live="polite">
           <noscript><p class="kn-ca__bubble">Activez JavaScript pour utiliser le simulateur, ou <a href="<?php echo htmlspecialchars($booking_url); ?>">réservez directement en ligne</a>.</p></noscript>
@@ -75,6 +87,7 @@ $caAnchor = blockAnchor($block);
         <dl class="kn-ca__sum-list" data-ca-sumlist></dl>
         <div class="kn-ca__sum-total"><span>Total estimé</span><strong data-ca-total>—</strong></div>
       </aside>
+      <button type="button" class="kn-ca__iconbtn kn-ca__close" data-ca-close aria-label="Fermer le simulateur">×</button>
     </div>
   </div>
 </section>
@@ -147,14 +160,28 @@ $caAnchor = blockAnchor($block);
   }
 
   // ── Conversation ───────────────────────────────────────────
-  function botBubble(html, cb) {
+  function typingDelay(html, extra) {
+    if (reduce) return 0;
+    var len = String(html).replace(/<[^>]+>/g, '').length;
+    return Math.min(1600, 1100 + len * 4) + (extra || 0);
+  }
+  function botBubble(html, cb, extra) {
     var w = document.createElement('div'); w.className = 'kn-ca__msg kn-ca__msg--bot';
     w.innerHTML = '<span class="kn-ca__avatar" aria-hidden="true">' + esc((C.txt.bot || 'K').charAt(0)) + '</span><div class="kn-ca__bubble kn-ca__typing"><i></i><i></i><i></i></div>';
     log.appendChild(w); scrollIn(w);
-    setTimeout(function () { var b = w.querySelector('.kn-ca__bubble'); b.classList.remove('kn-ca__typing'); b.innerHTML = html; if (cb) cb(w); }, reduce ? 0 : 650);
+    setTimeout(function () { var b = w.querySelector('.kn-ca__bubble'); b.classList.remove('kn-ca__typing'); b.innerHTML = html; if (cb) cb(w); }, typingDelay(html, extra));
   }
   function userBubble(html) { var w = document.createElement('div'); w.className = 'kn-ca__msg kn-ca__msg--user'; w.innerHTML = '<div class="kn-ca__bubble">' + html + '</div>'; log.appendChild(w); }
-  function scrollIn(el) { var r = el.getBoundingClientRect(); if (r.bottom > window.innerHeight - 40 || r.top < 60) el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' }); }
+  function scrollIn(el) {
+    var beh = reduce ? 'auto' : 'smooth';
+    if (isOpen) {
+      var top = el.offsetTop - 12, room = log.clientHeight;
+      var target = el.offsetHeight > room - 24 ? top : el.offsetTop + el.offsetHeight - room + 24;
+      if (target > log.scrollTop) log.scrollTo({ top: target, behavior: beh });
+      return;
+    }
+    var r = el.getBoundingClientRect(); if (r.bottom > window.innerHeight - 40 || r.top < 60) el.scrollIntoView({ behavior: beh, block: 'nearest' });
+  }
   function panel(html, cls) {
     var p = document.createElement('div'); p.className = 'kn-ca__panel' + (cls ? ' ' + cls : ''); p.innerHTML = html; log.appendChild(p);
     setTimeout(function () { scrollIn(p); var first = p.querySelector('button, a'); if (first && !reduce) first.focus({ preventScroll: true }); }, 30);
@@ -173,7 +200,7 @@ $caAnchor = blockAnchor($block);
   function go(step) { S.step = step; summary(); STEPS[step](); }
 
   var STEPS = [
-    function () { botBubble(esc(C.txt.q1), function () { choices(C.vehicles, function (o) { push(); S.vehicle = o.key; userBubble(esc(o.label)); track('simulateur_auto_etape', { etape: 1, valeur: o.key }); go(1); }, 2); }); },
+    function () { botBubble(esc(C.txt.q1), function () { choices(C.vehicles, function (o) { open(); push(); S.vehicle = o.key; userBubble(esc(o.label)); track('simulateur_auto_etape', { etape: 1, valeur: o.key }); go(1); }, 2); }); },
     function () { botBubble(esc(C.txt.q2), function () { choices(C.interior, function (o) { push(); S.interior = o.key; userBubble(esc(o.label)); track('simulateur_auto_etape', { etape: 2, valeur: o.key }); go(2); }, 2); }); },
     function () { botBubble(esc(C.txt.q3), function () { choices(C.exterior, function (o) {
       push(); S.exterior = o.key; userBubble(esc(o.label)); track('simulateur_auto_etape', { etape: 3, valeur: o.key });
@@ -182,7 +209,7 @@ $caAnchor = blockAnchor($block);
       S.extras = ((find(C.interior, S.interior) || {}).extras || []).slice(); S.place = 'domicile'; pruneExtras();
       go(3);
     }); }); },
-    function () { botBubble(C.icons.sparkles + ' ' + esc(C.txt.q4), function () { resultPanel = panel('', 'kn-ca__panel--result'); renderResult(true); track('simulateur_auto_resultat', resultData()); }); }
+    function () { botBubble(C.icons.sparkles + ' ' + esc(C.txt.q4), function () { resultPanel = panel('', 'kn-ca__panel--result'); renderResult(true); track('simulateur_auto_resultat', resultData()); }, 500); }
   ];
 
   function why() {
@@ -263,7 +290,61 @@ $caAnchor = blockAnchor($block);
     var bots = log.querySelectorAll('.kn-ca__msg--bot'); if (bots.length) bots[bots.length - 1].remove();
     summary(); STEPS[S.step]();
   }
-  function restart() { hist = []; S = fresh(); resultPanel = null; log.innerHTML = ''; go(0); root.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); }
+  function restart() {
+    hist = []; S = fresh(); resultPanel = null; log.innerHTML = ''; go(0);
+    if (!isOpen) root.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); else log.scrollTop = 0;
+  }
+
+  // ── Plein écran façon messagerie ──────────────────────────
+  var layout = root.querySelector('[data-ca-layout]'), resume = root.querySelector('[data-ca-resume]');
+  var isOpen = false, pushed = false, ignorePop = false, lastFocus = null;
+  function open() {
+    if (isOpen) return;
+    isOpen = true; lastFocus = document.activeElement;
+    root.classList.add('is-full'); root.classList.remove('is-paused'); resume.hidden = true;
+    document.documentElement.classList.add('kn-ca-lock');
+    layout.setAttribute('role', 'dialog'); layout.setAttribute('aria-modal', 'true');
+    try { history.pushState({ knca: '<?php echo $uid; ?>' }, ''); pushed = true; } catch (e) { pushed = false; }
+    setTimeout(function () { log.scrollTop = log.scrollHeight; }, 30);
+    track('simulateur_auto_ouverture', { etape: S.step });
+  }
+  function close(fromPop) {
+    if (!isOpen) return;
+    isOpen = false;
+    root.classList.remove('is-full'); document.documentElement.classList.remove('kn-ca-lock');
+    layout.removeAttribute('role'); layout.removeAttribute('aria-modal');
+    if (S.step > 0 || S.vehicle) {
+      root.classList.add('is-paused'); resume.hidden = false;
+      var bits = [];
+      var v = find(C.vehicles, S.vehicle); if (v) bits.push(v.label);
+      if (F()) bits.push(F().name);
+      var r = F() ? compute() : null; if (r) bits.push(r.quote ? 'sur devis' : 'dès ' + eur(r.total));
+      root.querySelector('[data-ca-resume-sum]').textContent = bits.join(' · ') || 'Reprenez là où vous vous êtes arrêté.';
+      var rb = root.querySelector('[data-ca-resume-open]'); rb.focus({ preventScroll: true });
+      if (resume.getBoundingClientRect().top < 0 || resume.getBoundingClientRect().bottom > window.innerHeight) resume.scrollIntoView({ block: 'center' });
+    } else if (lastFocus && lastFocus.focus) { lastFocus.focus({ preventScroll: true }); }
+    track('simulateur_auto_fermeture', { etape: S.step });
+    if (!fromPop && pushed) { pushed = false; ignorePop = true; history.back(); }
+  }
+  window.addEventListener('popstate', function () {
+    if (ignorePop) { ignorePop = false; return; }
+    if (isOpen) { pushed = false; close(true); }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!isOpen) return;
+    if (e.key === 'Escape') { e.preventDefault(); close(false); return; }
+    if (e.key === 'Tab') {
+      var f = Array.prototype.filter.call(layout.querySelectorAll('button:not([disabled]), a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'), function (el) { return el.offsetParent !== null; });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (!layout.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+  root.querySelector('[data-ca-close]').addEventListener('click', function () { close(false); });
+  root.querySelector('[data-ca-resume-open]').addEventListener('click', function () { open(); var b = layout.querySelector('.kn-ca__panel button, .kn-ca__panel a'); if (b) b.focus({ preventScroll: true }); });
+  root.querySelector('[data-ca-resume-restart]').addEventListener('click', function () { root.classList.remove('is-paused'); resume.hidden = true; restart(); open(); });
   root.querySelector('[data-ca-back]').addEventListener('click', back);
   root.querySelector('[data-ca-restart]').addEventListener('click', restart);
   log.innerHTML = '';
